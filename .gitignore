@@ -10,6 +10,9 @@
 # Ignore all environment files.
 /.env*
 
+# Ignore Mac OS X files.
+.DS_Store
+
 # Ignore all logfiles and tempfiles.
 /log/*
 /tmp/*

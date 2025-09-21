@@ -1,0 +1,56 @@
+<div class="notification-container"
+      x-data
+      x-show="$store.notifications.showNotice"
+      x-init="
+        $store.notifications.noticeMessage= '<%= notice %>';
+        setTimeout(() => $store.notifications.showNotice = <%= notice.present? %>, 100);
+        setTimeout(() => $store.notifications.showNotice = false, 5000)"
+      x-transition.duration.500ms
+      @click="$store.notifications.showNotice = false"
+      role="alert"
+      aria-live="polite">
+  <div class="notification is-success rounded-lg shadow-lg px-5 py-3 flex items-center gap-2">
+    <span x-text="$store.notifications.noticeMessage"></span>
+    <button @click="$store.notifications.showNotice = false" aria-label="Close notification" class="ml-auto cursor-pointer">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="alert-container"
+      x-data
+      x-show="$store.notifications.showAlert"
+      x-init="
+        $store.notifications.alertMessage= '<%= j(alert) %>';
+        setTimeout(() => $store.notifications.showAlert = <%= alert.present? %>, 100);
+        setTimeout(() => $store.notifications.showAlert = false, 5000);"
+      x-transition.duration.500ms
+      @click="$store.notifications.showAlert = false"
+      role="alert"
+      aria-live="polite">
+  <div class="notification is-warning rounded-lg shadow-lg px-5 py-3 flex items-center gap-2">
+    <span x-text="$store.notifications.alertMessage" class="py-0 my-0"></span>
+    <button @click="$store.notifications.showAlert = false" aria-label="Close notification" class="ml-auto cursor-pointer">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="error-container"
+      x-data
+      x-show="$store.notifications.showError"
+      x-init="
+        $store.notifications.errorMessage= '<%= j(error) %>';
+        setTimeout(() => $store.notifications.showError = <%= error.present? %>, 100);
+        setTimeout(() => $store.notifications.showError = false, 5000)"
+      x-transition.duration.500ms
+      @click="$store.notifications.showError = false"
+      role="alert"
+      aria-live="polite">
+  <div class="notification is-error rounded-lg shadow-lg px-5 py-3 flex items-center gap-2">
+    <span x-text="$store.notifications.errorMessage"></span>
+    <button @click="$store.notifications.showError = false" aria-label="Close notification" class="ml-auto cursor-pointer">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+</div>

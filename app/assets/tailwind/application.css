@@ -1,1 +1,245 @@
 @import "tailwindcss";
+
+@theme {
+  /* Do not reset the whole palette to avoid regressions.
+     Declare a few base aliases and tokens only. */
+  --font-sans: Inter, ui-sans-serif, system-ui, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  /* Neutral aliases */
+  --color-bg: var(--color-zinc-50);
+  --color-surface: var(--color-white);
+  --color-border: var(--color-zinc-200);
+  --color-text: var(--color-zinc-900);
+  --color-muted: var(--color-zinc-600);
+
+  /* Accent */
+  --color-accent-50: var(--color-indigo-50);
+  --color-accent-100: var(--color-indigo-100);
+  --color-accent-200: var(--color-indigo-200);
+  --color-accent-300: var(--color-indigo-300);
+  --color-accent-400: var(--color-indigo-400);
+  --color-accent-500: var(--color-indigo-500);
+  --color-accent-600: var(--color-indigo-600);
+  --color-accent-700: var(--color-indigo-700);
+  --color-accent-800: var(--color-indigo-800);
+  --color-accent-900: var(--color-indigo-900);
+
+  /* Success → emerald */
+  --color-success-50: var(--color-emerald-50);
+  --color-success-100: var(--color-emerald-100);
+  --color-success-200: var(--color-emerald-200);
+  --color-success-300: var(--color-emerald-300);
+  --color-success-400: var(--color-emerald-400);
+  --color-success-500: var(--color-emerald-500);
+  --color-success-600: var(--color-emerald-600);
+  --color-success-700: var(--color-emerald-700);
+  --color-success-800: var(--color-emerald-800);
+  --color-success-900: var(--color-emerald-900);
+
+  /* Info → sky */
+  --color-info-50: var(--color-sky-50);
+  --color-info-100: var(--color-sky-100);
+  --color-info-200: var(--color-sky-200);
+  --color-info-300: var(--color-sky-300);
+  --color-info-400: var(--color-sky-400);
+  --color-info-500: var(--color-sky-500);
+  --color-info-600: var(--color-sky-600);
+  --color-info-700: var(--color-sky-700);
+  --color-info-800: var(--color-sky-800);
+  --color-info-900: var(--color-sky-900);
+
+  /* Warning → amber */
+  --color-warning-50: var(--color-amber-50);
+  --color-warning-100: var(--color-amber-100);
+  --color-warning-200: var(--color-amber-200);
+  --color-warning-300: var(--color-amber-300);
+  --color-warning-400: var(--color-amber-400);
+  --color-warning-500: var(--color-amber-500);
+  --color-warning-600: var(--color-amber-600);
+  --color-warning-700: var(--color-amber-700);
+  --color-warning-800: var(--color-amber-800);
+  --color-warning-900: var(--color-amber-900);
+
+  /* Error → rose */
+  --color-error-50: var(--color-rose-50);
+  --color-error-100: var(--color-rose-100);
+  --color-error-200: var(--color-rose-200);
+  --color-error-300: var(--color-rose-300);
+  --color-error-400: var(--color-rose-400);
+  --color-error-500: var(--color-rose-500);
+  --color-error-600: var(--color-rose-600);
+  --color-error-700: var(--color-rose-700);
+  --color-error-800: var(--color-rose-800);
+  --color-error-900: var(--color-rose-900);
+
+  /* Common radii (for reference) */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+@layer components {
+
+  .is-success {
+    @apply bg-success-500 text-white;
+  }
+
+  .is-warning {
+    @apply bg-yellow-500 text-white;
+  }
+
+  .is-error {
+    @apply bg-error-500 text-white;
+  }
+
+  .is-danger {
+    @apply text-error-500 dark:text-error-300;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-x-1.5 px-2.5 py-0.5 rounded-md text-xs font-medium ring-1 ring-inset ring-zinc-200 text-zinc-700 bg-zinc-50;
+  }
+
+  /* Badge variants & sizes */
+  .badge-neutral { @apply text-zinc-700 bg-zinc-50 ring-zinc-200; }
+  .badge-accent { @apply text-accent-700 bg-accent-50 ring-accent-200; }
+  .badge-success { @apply text-success-700 bg-success-50 ring-success-200; }
+  .badge-warning { @apply text-warning-700 bg-warning-50 ring-warning-200; }
+  .badge-error { @apply text-error-700 bg-error-50 ring-error-200; }
+  .badge-info { @apply text-info-700 bg-info-50 ring-info-200; }
+
+  .badge-sm { @apply px-2 py-0.5 text-[11px] rounded; }
+  .badge-md { @apply px-2.5 py-0.5 text-xs rounded-md; }
+
+  .body {
+    @apply bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-gray-900 dark:to-gray-800 dark:text-gray-100;
+  }
+
+  /* Auth Layout Components */
+  .auth-layout {
+    @apply min-h-screen bg-white dark:bg-gray-900;
+  }
+
+  .auth-form-section {
+    @apply w-full lg:w-5/12 flex items-center justify-center p-8;
+  }
+
+  .auth-preview-section {
+    @apply hidden lg:flex lg:w-7/12 relative overflow-hidden;
+  }
+
+  .auth-form-container {
+    @apply w-full max-w-md mx-auto;
+  }
+
+  .auth-form-card {
+    @apply bg-transparent rounded-xl shadow-lg border border-zinc-200 dark:border-gray-700 p-8 lg:bg-transparent lg:shadow-none lg:border-none lg:p-0;
+  }
+
+  .auth-logo-section {
+    @apply flex items-center justify-center mb-8;
+  }
+
+  .auth-title {
+    @apply text-3xl font-bold text-center text-zinc-900 dark:text-white mb-2;
+  }
+
+  .auth-subtitle {
+    @apply text-zinc-600 dark:text-gray-400 text-center mb-8;
+  }
+
+  .btn {
+    @apply sm:w-auto text-center rounded-lg px-3 py-2 inline-block font-medium cursor-pointer text-sm border border-zinc-300 hover:bg-zinc-100 hover:text-zinc-800 focus:ring-3 focus:ring-accent-500 focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-gray-900;
+  }
+
+  /* Button variants & sizes */
+  .btn-secondary {
+    @apply bg-white text-zinc-800 border border-zinc-300 hover:bg-zinc-50 focus:ring-3 focus:ring-accent-500;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-zinc-700 border border-transparent hover:bg-zinc-50 focus:ring-3 focus:ring-accent-500;
+  }
+  
+  .btn-icon { @apply inline-flex items-center justify-center h-10 w-10 rounded-md border border-zinc-300 hover:bg-zinc-100; }
+
+  .btn-sm { @apply h-9 px-2.5 py-1.5 text-sm; }
+  .btn-md { @apply h-10 px-3 py-2 text-sm; }
+  .btn-lg { @apply h-12 px-4 py-2.5 text-base; }
+
+  .btn-loading { @apply pointer-events-none opacity-60; }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-accent-500 to-accent-600 text-white border-0 hover:from-accent-600 hover:to-accent-700 hover:text-white focus:ring-3 focus:ring-accent-500 dark:bg-gradient-to-r dark:from-accent-500 dark:to-accent-400 dark:hover:from-accent-600 dark:hover:to-accent-500;
+  }
+
+  .btn-danger {
+    @apply border border-error-600 text-error-600 hover:bg-error-50 hover:text-error-600 focus:ring-3 focus:ring-error-500 focus:outline-none bg-transparent dark:border-error-300 dark:text-error-300 dark:hover:bg-error-300 dark:hover:text-error-900;
+  }
+
+  .btn-xs {
+    @apply text-xs px-2 py-1 rounded-md;
+  }
+
+  .btn-tab {
+    @apply px-3 py-2 border-b-2 border-transparent text-sm font-medium text-zinc-500 hover:text-zinc-700 dark:text-gray-400 dark:hover:text-gray-200 cursor-pointer;
+  }
+
+  .btn-tab-active {
+    @apply px-3 py-2 border-b-2 border-accent-500 text-accent-600 dark:text-accent-400 text-sm font-medium cursor-pointer;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-sm p-4 md:p-6 mb-8 border border-zinc-200 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700;
+  }
+
+  .input {
+    @apply block w-full h-10 rounded-md border border-zinc-300 px-3 py-2 shadow-sm placeholder-zinc-400 focus:outline-none focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-accent-500 sm:text-sm dark:bg-gray-700 dark:text-gray-50;
+  }
+
+  .input-invalid { @apply border-error-300 focus:outline-none focus-visible:ring-error-500; }
+  .input-icon-left { @apply pl-10; }
+  .input-icon-right { @apply pr-10; }
+  .input-icon { @apply pointer-events-none absolute inset-y-0 left-3 my-auto h-4 w-4 text-zinc-400; }
+
+  .label {
+    @apply block text-sm font-medium text-zinc-700 mb-1 dark:text-neutral-100;
+  }
+
+  .link {
+    @apply text-zinc-700 underline text-sm hover:no-underline dark:text-slate-300;
+  }
+
+  .menu-entry {
+    @apply w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-zinc-800 rounded-lg hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:bg-gray-700 dark:text-gray-200;
+  }
+
+  .menu-entry-active {
+    @apply bg-zinc-100 text-zinc-800 dark:bg-gray-700 dark:text-gray-200;
+  }
+
+  /* Dropdown/Menu */
+  .dropdown { @apply relative inline-block text-left; }
+  .dropdown-menu { @apply absolute z-50 mt-2 min-w-48 rounded-md bg-white py-2 shadow-lg ring-1 ring-zinc-200 focus:outline-none dark:bg-gray-800 dark:ring-gray-600 dark:shadow-xl; }
+  .dropdown-item { @apply flex w-full items-center gap-x-2 px-3 py-2 text-sm text-zinc-800 hover:bg-zinc-50 focus:bg-zinc-50 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:bg-gray-700; }
+  .dropdown-divider { @apply my-2 h-px bg-zinc-100 dark:bg-gray-600; }
+
+  .table {
+    @apply min-w-full bg-white dark:bg-gray-800 rounded-lg shadow-sm text-sm border border-zinc-200 dark:border-gray-700;
+  }
+
+  .thead {
+    @apply px-4 py-2 text-left text-xs font-medium text-zinc-500 uppercase dark:text-neutral-400;
+  }
+
+  .title {
+    @apply text-2xl font-bold font-sans;
+  }
+
+  /* Notification positioning */
+  .notification-container,
+  .alert-container,
+  .error-container {
+    @apply fixed bottom-4 right-4 z-50 max-w-sm;
+  }
+}
