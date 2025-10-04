@@ -1,0 +1,72 @@
+    <%= render "shared/desktop_logo" %>
+
+    <div class="auth-form-container">
+      <div class="auth-form-card">
+        <%= render "shared/mobile_logo" %>
+
+        <!-- Title and subtitle -->
+        <h1 class="auth-title">Create Account</h1>
+        <p class="auth-subtitle">Sign up to start managing your tests</p>
+
+    <!-- Form -->
+    <%= form_with model: @user, url: users_path, method: :post, local: true do |f| %>
+      <div class="space-y-6">
+        <% if @user.errors.any? %>
+          <div class="rounded-lg bg-error-50 dark:bg-error-900/20 p-4 border border-error-200 dark:border-error-800">
+            <ul class="text-error-700 dark:text-error-300 text-sm space-y-1">
+              <% @user.errors.full_messages.each do |msg| %>
+                <li>• <%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div>
+          <%= f.label :email_address, "Email address", class: "label" %>
+          <%= f.email_field :email_address,
+              required: true,
+              autofocus: true,
+              class: "input",
+              placeholder: "Enter your email address" %>
+        </div>
+
+        <div>
+          <%= f.label :password, "Password", class: "label" %>
+          <%= f.password_field :password,
+              required: true,
+              class: "input",
+              placeholder: "Create a strong password" %>
+          <p class="text-xs text-zinc-500 dark:text-gray-400 mt-1">
+            <%= t('auth.password_requirements') %>
+          </p>
+        </div>
+
+        <div>
+          <%= f.label :password_confirmation, "Password confirmation", class: "label" %>
+          <%= f.password_field :password_confirmation,
+              required: true,
+              class: "input",
+              placeholder: "Confirm your password" %>
+        </div>
+
+        <!-- Honeypot field: hidden from users, visible to bots -->
+        <div style="display:none">
+          <%= f.label :nickname, "Leave this field blank" %>
+          <%= f.text_field :nickname, autocomplete: "off" %>
+        </div>
+
+        <div>
+          <%= f.submit "Create Account", class: "btn btn-primary w-full py-3 text-base font-medium" %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Sign in link -->
+    <div class="text-center mt-6">
+      <p class="text-zinc-600 dark:text-gray-400">
+        Already have an account?
+        <%= link_to "Sign in", new_session_path, class: "link font-medium text-accent-600 dark:text-accent-400" %>
+      </p>
+    </div>
+  </div>
+</div>

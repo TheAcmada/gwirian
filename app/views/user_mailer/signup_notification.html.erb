@@ -1,0 +1,6 @@
+<h1>New User Signup</h1>
+<p>A new user has signed up:</p>
+<ul>
+  <li><strong>Email:</strong> <%= @user.email_address %></li>
+  <li><strong>Signup time:</strong> <%= @user.created_at.strftime('%Y-%m-%d %H:%M:%S') %></li>
+</ul>

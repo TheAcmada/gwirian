@@ -1,4 +1,12 @@
 Rails.application.routes.draw do
+  resource :session
+  resources :passwords, param: :token
+  resources :users, except: [ :show ] do
+    member do
+      patch :update_password
+    end
+  end
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)

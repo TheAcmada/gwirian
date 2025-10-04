@@ -1,0 +1,44 @@
+    <%= render "shared/desktop_logo" %>
+
+    <div class="auth-form-container">
+      <div class="auth-form-card">
+        <%= render "shared/mobile_logo" %>
+
+        <!-- Title and subtitle -->
+        <h1 class="auth-title">Forgot your password?</h1>
+        <p class="auth-subtitle">Enter your email address and we'll send you reset instructions</p>
+
+    <!-- Form -->
+    <%= form_with url: passwords_path, method: :post, local: true do |f| %>
+      <div class="space-y-6">
+        <div>
+          <%= f.label :email_address, "Email address", class: "label" %>
+          <%= f.email_field :email_address,
+              class: "input",
+              required: true,
+              autofocus: true,
+              autocomplete: "email",
+              placeholder: "Enter your email address" %>
+        </div>
+
+        <!-- Honeypot field -->
+        <div style="position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden;">
+          <%= f.label :website, "Leave this field blank" %>
+          <%= f.text_field :website, autocomplete: "off", tabindex: -1 %>
+        </div>
+
+        <div>
+          <%= f.submit "Send reset instructions", class: "btn btn-primary w-full py-3 text-base font-medium" %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Back link -->
+    <div class="text-center mt-6">
+      <p class="text-zinc-600 dark:text-gray-400">
+        Remember your password?
+        <%= link_to "Back to sign in", new_session_path, class: "link font-medium text-accent-600 dark:text-accent-400" %>
+      </p>
+    </div>
+  </div>
+</div>
