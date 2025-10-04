@@ -2,6 +2,9 @@
 <html>
   <%= render "layouts/head" %>
   <body hx-boost="true" hx-headers='{"X-CSRF-Token": "<%= form_authenticity_token %>"}' class="body">
-    <%= yield %>
+    <%= render "shared/navbar" %>
+    <main>
+      <%= yield %>
+    </main>
   </body>
 </html>
