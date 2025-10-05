@@ -12,12 +12,12 @@ class SessionsController < ApplicationController
       user.login_histories.create(ip_address: request.remote_ip, user_agent: request.user_agent)
       redirect_to after_authentication_url
     else
-      redirect_to new_session_path, alert: "Try another credentials"
+      redirect_to new_session_path, alert: "Invalid email or password. Please check your credentials and try again."
     end
   end
 
   def destroy
     terminate_session
-    redirect_to new_session_path
+    redirect_to new_session_path, notice: "You've been logged out successfully. See you next time!"
   end
 end

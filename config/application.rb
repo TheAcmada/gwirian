@@ -23,5 +23,18 @@ module Gwirian
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # Mailer
+    smtp_host = ENV.fetch("SMTP_HOST") { "localhost" }
+    smtp_port = ENV.fetch("SMTP_PORT") { "1025" }
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      address: smtp_host,
+      port: smtp_port,
+      enable_starttls_auto: false
+    }
+
+    config.signup = ActiveSupport::OrderedOptions.new
+    config.signup.notify_email = ENV.fetch("SIGNUP_NOTIFY_EMAIL") { "" }
   end
 end

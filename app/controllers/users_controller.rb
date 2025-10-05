@@ -10,7 +10,7 @@ class UsersController < ApplicationController
   def create
     # Honeypot: if the hidden field is filled, treat as spam
     if spam_detected?
-      redirect_to new_user_path, alert: "Signup failed"
+      redirect_to new_user_path, alert: "Oops! Something went wrong with your signup. Please try again."
       return
     end
 
@@ -18,7 +18,7 @@ class UsersController < ApplicationController
     if @user.save
       UserMailer.signup_notification(@user).deliver_later if Rails.application.config.signup.notify_email.present?
       start_new_session_for(@user)
-      redirect_to root_path, notice: "Welcome account created"
+      redirect_to root_path, notice: "🎉 Welcome to Gwirian! Your account has been created successfully."
     else
       render :new, status: :unprocessable_entity
     end
@@ -32,7 +32,7 @@ class UsersController < ApplicationController
     @user = Current.user
 
     if @user.update(user_params)
-      redirect_to edit_user_path, notice: "Profile updated"
+      redirect_to edit_user_path, notice: "Your profile has been updated successfully!"
     else
       render :edit, status: :unprocessable_entity
     end
@@ -48,7 +48,7 @@ class UsersController < ApplicationController
     end
 
     if @user.update(password_params)
-      redirect_to edit_user_path, notice: "Password updated"
+      redirect_to edit_user_path, notice: "Your password has been updated successfully!"
     else
       render :edit, status: :unprocessable_entity
     end
@@ -57,7 +57,7 @@ class UsersController < ApplicationController
   def destroy
     @user = Current.user
     @user.destroy
-    redirect_to root_path, notice: "Account deleted"
+    redirect_to root_path, notice: "Your account has been deleted. We're sorry to see you go!"
   end
 
   private
