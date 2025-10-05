@@ -1,0 +1,8 @@
+<a href="<%= project_path(project) %>" class="card mb-0 block h-full flex flex-col">
+  <div class="flex items-center justify-between mb-2">
+    <h2 class="text-lg font-semibold text-zinc-900 dark:text-white"><%= project.name %></h2>
+  </div>
+  <% if project.respond_to?(:description) && project.description.present? %>
+    <p class="text-zinc-600 dark:text-gray-300 text-sm mb-4"><%= project.description %></p>
+  <% end %>
+</a>

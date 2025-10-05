@@ -7,6 +7,12 @@ class User < ApplicationRecord
 
   validate :password_complexity
 
+  def projects
+    Project.joins(:project_members)
+        .where(project_members: { email: email_address, invitation_accepted: true })
+        .order(:name)
+  end
+
   private
 
   def password_complexity

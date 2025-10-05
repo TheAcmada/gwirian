@@ -1,6 +1,13 @@
 Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
+  resources :projects do
+    member do
+      post :add_member
+      delete :remove_member
+      patch :update_member
+    end
+  end
   resources :users, except: [ :show ] do
     member do
       patch :update_password

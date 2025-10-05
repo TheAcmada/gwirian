@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_05_211825) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_05_213025) do
   create_table "login_histories", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "ip_address"
@@ -18,6 +18,29 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_05_211825) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_login_histories_on_user_id"
+  end
+
+  create_table "project_members", force: :cascade do |t|
+    t.integer "project_id", null: false
+    t.string "email", null: false
+    t.string "role", default: "guest", null: false
+    t.boolean "invitation_accepted", default: false, null: false
+    t.string "project_members"
+    t.string "invitation_token"
+    t.datetime "last_invitation_sent_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_project_members_on_email"
+    t.index ["invitation_token"], name: "index_project_members_on_invitation_token", unique: true
+    t.index ["project_id", "email"], name: "index_project_members_on_project_id_and_email", unique: true
+    t.index ["project_id"], name: "index_project_members_on_project_id"
+  end
+
+  create_table "projects", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -38,5 +61,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_05_211825) do
   end
 
   add_foreign_key "login_histories", "users"
+  add_foreign_key "project_members", "projects"
   add_foreign_key "sessions", "users"
 end

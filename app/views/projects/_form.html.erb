@@ -1,0 +1,19 @@
+<div class="max-w-xl mx-auto mt-10 card">
+  <h1 class="title mb-6"><%= local_assigns[:title] || (project.persisted? ? "Edit project" : "Create a new project") %></h1>
+  <%= form_with model: project, local: true do |f| %>
+    <%= render 'shared/errors', model: project %>
+    <div class="mb-4">
+      <%= f.label :name, "Name", class: 'label' %>
+      <%= f.text_field :name, class: 'input', placeholder: "Enter project name", autofocus: true %>
+    </div>
+    <div class="mb-4">
+      <%= f.label :description, "Description", class: 'label' %>
+      <%= f.text_area :description, class: 'input h-24', placeholder: "Enter project description" %>
+      <p class="mt-1 text-xs text-gray-400">Optional</p>
+    </div>
+    <div class="flex justify-end gap-2">
+      <%= link_to "Cancel", projects_path, class: 'btn' %>
+      <%= f.submit local_assigns[:submit_label] || (project.persisted? ? "Update project" : "Create project"), class: 'btn btn-primary' %>
+    </div>
+  <% end %>
+</div>

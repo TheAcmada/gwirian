@@ -1,0 +1,9 @@
+<% if model.errors.any? %>
+  <div class="mb-4 rounded-md border border-rose-200 bg-rose-50 p-3 dark:border-rose-900/40 dark:bg-rose-900/30">
+    <ul class="text-rose-700 text-sm dark:text-rose-200">
+      <% model.errors.full_messages.each do |msg| %>
+        <li class="list-disc ml-4"><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
