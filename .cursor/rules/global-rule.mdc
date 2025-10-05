@@ -1,0 +1,12 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+- Always use Tailwind CSS version 4 for all styling and layout.
+- Always use the latest version of Alpine.js for interactivity, following official documentation and recommended patterns.
+- Always use the latest version of htmx for dynamic HTML interactions, following official documentation and recommended patterns.
+- Always use Tailwind CSS version 4 for all styling and layout.
+- Always use cursor7 mcp to retrieve the latest official documentation for any library or tool (such as Tailwind 4), ensuring all implementations follow the most current best practices.
+- Never use hotwire or stimulus

@@ -1,0 +1,290 @@
+# i18n Rules for Rails
+
+## Translation File Structure
+
+### File Organization
+- `config/locales/defaults/` : Common translations (common, placeholders, etc.)
+- `config/locales/models/` : ActiveRecord model translations
+- `config/locales/views/` : View-specific translations
+- `config/locales/views/navigation/` : Navigation translations
+- `config/locales/views/auth/` : Authentication translations
+
+### Naming Conventions
+- One file per model : `config/locales/models/project/en.yml`
+- One file per view : `config/locales/views/projects/en.yml`
+- Always create files in English AND French
+
+## ActiveRecord Model Translations
+
+### Standard Structure
+```yaml
+en:
+  activerecord:
+    models:
+      project:
+        one: "Project"
+        other: "Projects"
+    attributes:
+      project:
+        name: "Name"
+        description: "Description"
+        start_date: "Start date"
+        end_date: "End date"
+        # Pour les énumérations et statuts
+        statuses:
+          todo: "To Do"
+          in_progress: "In Progress"
+          done: "Done"
+```
+
+### French Translations
+```yaml
+fr:
+  activerecord:
+    models:
+      project:
+        one: "Projet"
+        other: "Projets"
+    attributes:
+      project:
+        name: "Nom"
+        description: "Description"
+        start_date: "Date de début"
+        end_date: "Date de fin"
+        statuses:
+          todo: "À faire"
+          in_progress: "En cours"
+          done: "Terminé"
+```
+
+## View Translations
+
+### Recommended Structure
+```yaml
+en:
+  projects:
+    index:
+      new_project: "+ New Project"
+      no_projects_yet: "No projects yet"
+    form:
+      edit_title: "Edit project"
+      create_title: "Create a new project"
+    card:
+      no_planning_defined: "No planning defined"
+    show:
+      progress: "Progress"
+      build_capacity: "Build Capacity"
+```
+
+### Avoid Redundancy
+- Don't duplicate model translations in views
+- Use `t('activerecord.attributes.project.name')` instead of redefining
+- Use `t('common.cancel')` for common elements
+
+## Pluralization
+
+### Use Native I18n Pluralization
+```yaml
+en:
+  projects:
+    card:
+      member:
+        zero: "0 members"
+        one: "1 member"
+        other: "%{count} members"
+```
+
+```yaml
+fr:
+  projects:
+    card:
+      member:
+        zero: "0 membre"
+        one: "1 membre"
+        other: "%{count} membres"
+```
+
+### In Views
+```erb
+<%= t('projects.card.member', count: project.members.count) %>
+```
+
+### French Pluralization Rules
+- 0 = plural (0 membres)
+- 1 = singular (1 membre)
+- 2+ = plural (2 membres)
+
+## Common Translations
+
+### Defaults File
+```yaml
+en:
+  common:
+    cancel: "Cancel"
+    optional: "Optional"
+    placeholders:
+      na: "N/A"
+
+fr:
+  common:
+    cancel: "Annuler"
+    optional: "Optionnel"
+    placeholders:
+      na: "N/A"
+```
+
+## Date and Time Formats
+
+### Complete Configuration
+```yaml
+fr:
+  date:
+    formats:
+      default: "%d/%m/%Y"
+      short: "%d %b"
+      long: "%d %B %Y"
+    day_names: [Dimanche, Lundi, Mardi, Mercredi, Jeudi, Vendredi, Samedi]
+    abbr_day_names: [Dim, Lun, Mar, Mer, Jeu, Ven, Sam]
+    month_names: [~, Janvier, Février, Mars, Avril, Mai, Juin, Juillet, Août, Septembre, Octobre, Novembre, Décembre]
+    abbr_month_names: [~, Jan, Fév, Mar, Avr, Mai, Jun, Jui, Aoû, Sep, Oct, Nov, Déc]
+    order:
+      - :day
+      - :month
+      - :year
+
+  time:
+    formats:
+      default: "%d/%m/%Y %H:%M"
+      short: "%d %b %H:%M"
+      long: "%d %B %Y %H:%M"
+    am: "matin"
+    pm: "après-midi"
+```
+
+### Usage in Helpers
+```ruby
+def format_date(date)
+  if date.present?
+    I18n.l(date, format: :long)  # Utilise les traductions
+  else
+    ""
+  end
+end
+```
+
+## Rails Configuration
+
+### application.rb
+```ruby
+# Internationalization
+config.i18n.available_locales = [ :en, :fr ]
+config.i18n.default_locale = :en
+config.i18n.fallbacks = { fr: :en }  # Fallback spécifique
+```
+
+### Automatic Locale Detection
+```ruby
+# app/controllers/concerns/locale_concern.rb
+module LocaleConcern
+  extend ActiveSupport::Concern
+
+  included do
+    before_action :set_locale
+  end
+
+  private
+
+  def set_locale
+    I18n.locale = locale_from_header || I18n.default_locale
+  end
+
+  def locale_from_header
+    return nil unless request.env["HTTP_ACCEPT_LANGUAGE"]
+
+    accept_language = request.env["HTTP_ACCEPT_LANGUAGE"]
+    languages = accept_language.split(",").map do |lang|
+      lang.strip.split(";q=")
+    end.sort_by { |lang, q| -(q || "1").to_f }
+
+    languages.each do |lang, _|
+      locale = lang.split("-").first.to_sym
+      return locale if I18n.available_locales.include?(locale)
+    end
+    nil
+  end
+end
+```
+
+## Helpers and Methods
+
+### Update Helpers to Use Translations
+```ruby
+# app/helpers/risks_helper.rb
+def status_options
+  [
+    [ t("activerecord.attributes.risk.statuses.open"), "open" ],
+    [ t("activerecord.attributes.risk.statuses.mitigated"), "mitigated" ],
+    [ t("activerecord.attributes.risk.statuses.realized"), "realized" ],
+    [ t("activerecord.attributes.risk.statuses.closed"), "closed" ]
+  ]
+end
+
+def status_text(status)
+  status_options.find { |s| s[1] == status }&.first || t("activerecord.attributes.risk.statuses.unknown")
+end
+```
+
+## Best Practices
+
+### 1. Organization
+- Separate translations by domain (models, views, navigation)
+- Use descriptive and hierarchical keys
+- Avoid keys that are too long or too short
+
+### 2. Reusability
+- Create common translations in `defaults/`
+- Reuse model translations in views
+- Avoid translation duplication
+
+### 3. Pluralization
+- Always use I18n pluralization for counters
+- Respect pluralization rules for each language
+- Use `count` as parameter for pluralization
+
+### 4. Fallbacks
+- Configure specific fallbacks per language
+- Use English as fallback for French
+- Test fallbacks when a translation is missing
+
+### 5. Maintenance
+- Always create translations in English AND French
+- Check translation consistency
+- Use comments to clarify context
+
+### 6. Performance
+- Translations are automatically loaded by Rails
+- Avoid `t()` calls in loops if possible
+- Use short keys for performance
+
+## Usage Examples
+
+### In Views
+```erb
+<h1><%= t('activerecord.models.project.other') %></h1>
+<p><%= t('projects.index.no_projects_yet') %></p>
+<%= link_to t('common.cancel'), projects_path %>
+<span><%= t('projects.card.member', count: project.members.count) %></span>
+```
+
+### In Controllers
+```ruby
+flash[:notice] = t('projects.create.success')
+redirect_to @project, notice: t('projects.update.success')
+```
+
+### In Models
+```ruby
+validates :name, presence: { message: :blank }
+# Automatically uses activerecord.errors.messages.blank
+```
+
