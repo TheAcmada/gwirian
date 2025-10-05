@@ -12,12 +12,12 @@
       <div class="relative" x-data="{ open: false }">
         <button
           @click="open = !open"
-          class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+          class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer"
           aria-expanded="false"
           aria-haspopup="true"
         >
-          <div class="h-8 w-8 rounded-full bg-accent-500 flex items-center justify-center text-white font-medium">
-            U
+          <div class="h-8 w-8 rounded-full bg-gradient-to-br from-accent-500 to-accent-600 flex items-center justify-center text-white font-medium text-sm shadow-sm">
+            <%= Current.user&.email_address&.first&.upcase || "U" %>
           </div>
         </button>
 
@@ -31,16 +31,36 @@
           x-transition:leave="transition ease-in duration-75"
           x-transition:leave-start="transform opacity-100 scale-100"
           x-transition:leave-end="transform opacity-0 scale-95"
-          class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800 dark:ring-gray-600"
+          class="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800 dark:ring-gray-600"
           role="menu"
           aria-orientation="vertical"
           style="display: none;"
         >
-          <%= link_to "#",
-              class: "block px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-gray-200 dark:hover:bg-gray-700 transition-colors",
-              role: "menuitem" do %>
-            Logout
-          <% end %>
+          <!-- User info header -->
+          <div class="px-4 py-3 border-b border-zinc-200 dark:border-gray-700">
+            <p class="text-sm font-medium text-zinc-900 dark:text-white">
+              <%= Current.user&.email_address || "User" %>
+            </p>
+            <p class="text-xs text-zinc-500 dark:text-gray-400">
+              Signed in
+            </p>
+          </div>
+
+          <!-- Menu items -->
+          <div class="py-1">
+            <%= form_with url: session_path, method: :delete, local: true, class: "block" do |f| %>
+              <button type="submit"
+                      class="w-full text-left px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                      role="menuitem">
+                <div class="flex items-center">
+                  <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                  </svg>
+                  Logout
+                </div>
+              </button>
+            <% end %>
+          </div>
         </div>
       </div>
     </div>
