@@ -3,8 +3,11 @@
     <div class="flex justify-between items-center h-16">
       <!-- App name/logo on the left -->
       <div class="flex-shrink-0">
-        <%= link_to root_path, class: "text-xl font-bold text-zinc-900 dark:text-white hover:text-accent-600 dark:hover:text-accent-400 transition-colors" do %>
-          Gwirian
+        <%= link_to root_path, class: "flex items-center space-x-3 text-xl font-bold text-zinc-900 dark:text-white hover:text-accent-600 dark:hover:text-accent-400 transition-colors" do %>
+          <!-- Logo image -->
+          <img src="/logo.svg" alt="Gwirian Logo" class="h-8 w-8" />
+          <!-- App name -->
+          <span>Gwirian</span>
         <% end %>
       </div>
 
