@@ -1,0 +1,70 @@
+<% content_for :title, @project.name %>
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <!-- Project Header -->
+  <div class="mb-8">
+    <h1 class="title mb-2"><%= @project.name %></h1>
+    <% if @project.description.present? %>
+      <p class="text-lg text-zinc-600 dark:text-gray-300 leading-relaxed"><%= @project.description %></p>
+    <% else %>
+      <p class="text-zinc-500 dark:text-gray-400 italic">No description provided</p>
+    <% end %>
+  </div>
+
+  <!-- Project Details Card -->
+  <div class="card">
+    <h2 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Project Details</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <h3 class="text-sm font-medium text-zinc-500 dark:text-gray-400 uppercase tracking-wide mb-2">Project Name</h3>
+        <p class="text-zinc-900 dark:text-white"><%= @project.name %></p>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-medium text-zinc-500 dark:text-gray-400 uppercase tracking-wide mb-2">Created</h3>
+        <p class="text-zinc-900 dark:text-white"><%= @project.created_at.strftime("%B %d, %Y") %></p>
+      </div>
+
+      <% if @project.description.present? %>
+        <div class="md:col-span-2">
+          <h3 class="text-sm font-medium text-zinc-500 dark:text-gray-400 uppercase tracking-wide mb-2">Description</h3>
+          <p class="text-zinc-900 dark:text-white leading-relaxed"><%= @project.description %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Project Members Section (if applicable) -->
+  <% if @project.project_members.any? %>
+    <div class="card mt-6">
+      <h2 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Project Members</h2>
+      <div class="space-y-3">
+        <% @project.project_members.each do |member| %>
+          <div class="flex items-center justify-between py-2 px-3 bg-zinc-50 dark:bg-zinc-800 rounded-lg">
+            <div class="flex items-center">
+              <div class="w-8 h-8 bg-zinc-200 dark:bg-zinc-700 rounded-full flex items-center justify-center mr-3">
+                <span class="text-sm font-medium text-zinc-600 dark:text-gray-300">
+                  <%= member.email.first.upcase %>
+                </span>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-zinc-900 dark:text-white"><%= member.email %></p>
+                <p class="text-xs text-zinc-500 dark:text-gray-400 capitalize"><%= member.role %></p>
+              </div>
+            </div>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+              <%= case member.role
+                  when 'administrator' then 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                  when 'editor' then 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                  when 'viewer' then 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+                  else 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+                  end %>">
+              <%= member.role.humanize %>
+            </span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+</div>

@@ -1,0 +1,175 @@
+<% content_for :title, "Edit #{@project.name}" %>
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <!-- Page Header -->
+  <div class="mb-8">
+    <h1 class="title mb-2">Project Settings</h1>
+    <p class="text-zinc-600 dark:text-gray-300">Manage your project details and team members</p>
+  </div>
+
+  <div class="space-y-8">
+    <!-- Project Details Form -->
+    <div class="card">
+      <h2 class="text-lg font-semibold text-zinc-900 dark:text-white mb-6">Project Details</h2>
+      <%= form_with model: @project, local: true do |f| %>
+        <%= render 'shared/errors', model: @project %>
+
+        <div class="mb-6">
+          <%= f.label :name, "Project Name", class: 'label' %>
+          <%= f.text_field :name, class: 'input', placeholder: "Enter project name", autofocus: true %>
+          <p class="mt-1 text-xs text-zinc-500 dark:text-gray-400">Choose a clear, descriptive name for your project</p>
+        </div>
+
+        <div class="mb-6">
+          <%= f.label :description, "Description", class: 'label' %>
+          <%= f.text_area :description, class: 'input h-32', placeholder: "Describe your project goals, scope, and any important details" %>
+          <p class="mt-1 text-xs text-zinc-500 dark:text-gray-400">Optional - Help team members understand the project better</p>
+        </div>
+
+        <div class="flex justify-end gap-3">
+          <%= link_to "Cancel", project_path(@project), class: 'btn' %>
+          <%= f.submit "Update Project", class: 'btn btn-primary' %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Project Members Management -->
+    <div class="card">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-lg font-semibold text-zinc-900 dark:text-white">Team Members</h2>
+        <button type="button"
+                class="btn btn-primary btn-sm"
+                onclick="document.getElementById('add-member-form').classList.toggle('hidden')">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          Add Member
+        </button>
+      </div>
+
+      <!-- Add Member Form -->
+      <div id="add-member-form" class="hidden mb-6 p-4 bg-zinc-50 dark:bg-zinc-800 rounded-lg">
+        <%= form_with url: add_member_project_path(@project), method: :post, local: true, class: "flex gap-3" do |f| %>
+          <div class="flex-1">
+            <%= f.email_field :email, placeholder: "Enter email address", class: "input", required: true %>
+          </div>
+          <div>
+            <%= f.select :role,
+                options_for_select([
+                  ['Viewer', 'viewer'],
+                  ['Editor', 'editor'],
+                  ['Administrator', 'administrator']
+                ], 'viewer'),
+                {},
+                { class: "input" } %>
+          </div>
+          <div class="flex gap-2">
+            <%= f.submit "Add", class: "btn btn-primary btn-sm" %>
+            <button type="button"
+                    class="btn btn-sm"
+                    onclick="document.getElementById('add-member-form').classList.add('hidden')">
+              Cancel
+            </button>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Members List -->
+      <% if @project.project_members.any? %>
+        <div class="space-y-3">
+          <% @project.project_members.each do |member| %>
+            <div class="flex items-center justify-between py-3 px-4 bg-zinc-50 dark:bg-zinc-800 rounded-lg">
+              <div class="flex items-center">
+                <div class="w-10 h-10 bg-zinc-200 dark:bg-zinc-700 rounded-full flex items-center justify-center mr-3">
+                  <span class="text-sm font-medium text-zinc-600 dark:text-gray-300">
+                    <%= member.email.first.upcase %>
+                  </span>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-zinc-900 dark:text-white"><%= member.email %></p>
+                  <p class="text-xs text-zinc-500 dark:text-gray-400">
+                    <%= member.invitation_accepted? ? 'Active' : 'Pending invitation' %>
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <!-- Role Badge -->
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                  <%= case member.role
+                      when 'administrator' then 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                      when 'editor' then 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                      when 'viewer' then 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+                      else 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+                      end %>">
+                  <%= member.role.humanize %>
+                </span>
+
+                <!-- Actions -->
+                <div class="flex items-center gap-1">
+                  <% if can? :update, member %>
+                    <%= form_with url: update_member_project_path(@project), method: :patch, local: true, class: "inline" do |f| %>
+                      <%= f.hidden_field :member_id, value: member.id %>
+                      <%= f.select :role,
+                          options_for_select([
+                            ['Viewer', 'viewer'],
+                            ['Editor', 'editor'],
+                            ['Administrator', 'administrator']
+                          ], member.role),
+                          {},
+                          {
+                            class: "text-xs border-0 bg-transparent cursor-pointer",
+                            onchange: "this.form.submit()"
+                          } %>
+                    <% end %>
+                  <% end %>
+
+                  <% if can? :remove, member %>
+                    <%= link_to remove_member_project_path(@project, member_id: member.id),
+                        method: :delete,
+                        class: "text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200",
+                        data: {
+                          confirm: "Are you sure you want to remove this member?",
+                          turbo_method: :delete
+                        } do %>
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                      </svg>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-8">
+          <svg class="w-12 h-12 text-zinc-400 dark:text-gray-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+          <p class="text-zinc-500 dark:text-gray-400 mb-2">No team members yet</p>
+          <p class="text-sm text-zinc-400 dark:text-gray-500">Add members to collaborate on this project</p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Danger Zone -->
+    <% if can? :destroy, @project %>
+      <div class="card overflow-x-auto mt-4 border-1 border-error-500 dark:border-error-300">
+        <h2 class="text-xl font-bold mb-6 is-danger">Danger Zone</h2>
+        <div class="flex flex-row items-center gap-2">
+          <div class="flex-1">
+            <p class="text-sm is-danger">Delete this project</p>
+            <p class="text-xs is-danger">Once you delete a project, there is no going back. Please be certain.</p>
+          </div>
+          <% delete_confirmation_message = "Are you absolutely sure? This will permanently delete the project '#{@project.name}' and all its data. This action cannot be undone." %>
+          <%= button_to "Delete Project",
+                        project_path(@project),
+                        method: :delete,
+                        "x-data": "{}",
+                        "@click.prevent": "showConfirmation(\"#{delete_confirmation_message}\").then(result => { if (result.isConfirmed) $el.closest('form').submit() })",
+                        class: "btn btn-danger text-xs" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

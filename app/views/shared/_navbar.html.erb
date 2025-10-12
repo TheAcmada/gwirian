@@ -1,5 +1,6 @@
 <nav class="bg-white border-b border-zinc-200 dark:bg-gray-800 dark:border-gray-700">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Main navbar row -->
     <div class="flex justify-between items-center h-16">
       <!-- App name/logo on the left -->
       <div class="flex-shrink-0">
@@ -67,5 +68,12 @@
         </div>
       </div>
     </div>
+
+    <!-- Project bar row (only shown when @project is present) -->
+    <% if @project.present? %>
+      <div class="border-t border-zinc-200 dark:border-gray-700 py-3">
+        <%= render 'projects/project_bar', project: @project %>
+      </div>
+    <% end %>
   </div>
 </nav>
