@@ -14,6 +14,9 @@ Rails.application.routes.draw do
     end
   end
 
+  get "project_members/accept/:token", to: "project_members#accept", as: :accept_invitation
+  post "project_members/:id/resend_invitation", to: "project_members#resend_invitation", as: :resend_invitation_project_member
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)

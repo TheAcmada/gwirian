@@ -1,0 +1,15 @@
+<div style="max-width:480px;margin:0 auto;background:#fff;border-radius:8px;box-shadow:0 2px 8px #e5e7eb;padding:32px 24px;font-family:sans-serif;">
+  <div style="text-align:center;margin-bottom:24px;">
+    <h1 style="font-size:1.5rem;font-weight:700;color:#1e293b;margin:0;"><%= t('project_invitation_mailer.invite.title') %></h1>
+  </div>
+  <p style="font-size:1.1rem;color:#334155;margin-bottom:16px;"><%= t('project_invitation_mailer.common.greeting') %></p>
+  <p style="color:#334155;margin-bottom:16px;"><%= t('project_invitation_mailer.invite.invitation_message', project_name: @project.name) %></p>
+  <div style="text-align:center;margin:32px 0;">
+    <a href="<%= @accept_url %>" style="display:inline-block;padding:14px 32px;background:#4f46e5;color:#fff;text-decoration:none;font-weight:600;border-radius:6px;font-size:1rem;"><%= t('project_invitation_mailer.invite.accept_button') %></a>
+  </div>
+  <p style="color:#64748b;font-size:0.95rem;margin-bottom:0;"><%= t('project_invitation_mailer.common.ignore_message') %></p>
+  <hr style="margin:32px 0 16px 0;border:none;border-top:1px solid #e5e7eb;">
+  <div style="text-align:center;color:#94a3b8;font-size:0.85rem;">
+    <%= t('project_invitation_mailer.common.copyright', year: Time.current.year) %>
+  </div>
+</div>

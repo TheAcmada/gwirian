@@ -1,0 +1,10 @@
+<%= t('project_invitation_mailer.text.subject', project_name: @project.name) %>
+
+<%= t('project_invitation_mailer.common.greeting') %>
+
+<%= t('project_invitation_mailer.text.invitation_message', project_name: @project.name) %>
+
+<%= t('project_invitation_mailer.text.accept_instructions') %>
+<%= @accept_url %>
+
+<%= t('project_invitation_mailer.common.ignore_message') %>
