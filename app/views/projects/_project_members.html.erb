@@ -57,7 +57,6 @@
                       hx-target="#project-members-<%= project.id %>"
                       hx-swap="outerHTML"
                       hx-trigger="confirmed"
-                      class="cursor-pointer"
                       x-data="{}"
                       @click.prevent="showConfirmation('Are you sure you want to remove this member?').then(result => {
                         if (result.isConfirmed) {
