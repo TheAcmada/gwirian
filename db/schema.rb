@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_05_213025) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_12_184811) do
   create_table "login_histories", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "ip_address"
@@ -52,6 +52,30 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_05_213025) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "test_cases", force: :cascade do |t|
+    t.integer "project_id", null: false
+    t.string "title", null: false
+    t.text "description"
+    t.text "preconditions"
+    t.text "expected_result", null: false
+    t.string "priority", default: "medium"
+    t.string "status", default: "draft"
+    t.string "category"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_test_cases_on_project_id"
+  end
+
+  create_table "test_steps", force: :cascade do |t|
+    t.integer "test_case_id", null: false
+    t.integer "position", null: false
+    t.text "action", null: false
+    t.text "expected_result"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["test_case_id"], name: "index_test_steps_on_test_case_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email_address", null: false
     t.string "password_digest", null: false
@@ -63,4 +87,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_05_213025) do
   add_foreign_key "login_histories", "users"
   add_foreign_key "project_members", "projects"
   add_foreign_key "sessions", "users"
+  add_foreign_key "test_cases", "projects"
+  add_foreign_key "test_steps", "test_cases"
 end
