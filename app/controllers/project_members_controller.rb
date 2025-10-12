@@ -21,6 +21,6 @@ class ProjectMembersController < ApplicationController
       notice = "Invitation already accepted"
     end
     project = member.project
-    render "projects/project_members", project: project, notice: notice
+    render partial: "projects/project_members", locals: { project: project, notice: notice }
   end
 end
