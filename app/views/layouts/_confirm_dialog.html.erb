@@ -1,0 +1,12 @@
+<dialog id="confirmDialog" class="rounded-lg shadow-lg mt-12 p-0 w-full max-w-md mx-auto">
+  <form method="dialog" class="bg-white dark:bg-gray-800 p-6 rounded-lg flex flex-col gap-4 border border-zinc-200">
+    <h2 class="text-lg font-semibold dark:text-white"><%= t('layouts.confirm_action') %></h2>
+    <p data-confirm-message class="text-sm text-zinc-600 dark:text-gray-300"></p>
+    <div class="flex justify-end gap-2">
+      <button type="button" class="btn dark:text-gray-300 dark:hover:text-black" data-confirm-cancel><%= t('layouts.cancel') %></button>
+      <button type="button" class="btn btn-primary" data-confirm-yes><%= t('layouts.confirm') %></button>
+    </div>
+  </form>
+</dialog>
+
+
