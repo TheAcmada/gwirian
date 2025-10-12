@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
   resources :projects do
+    resources :test_cases
     member do
       post :add_member
       delete :remove_member

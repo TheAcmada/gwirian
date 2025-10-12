@@ -1,0 +1,168 @@
+<% content_for :title, "#{@project.name} - Test Cases" %>
+
+<div class="max-w-5xl mx-auto px-4 py-8">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="title">Test Cases</h1>
+      <p class="text-zinc-600 dark:text-gray-300 mt-1">Manage test cases for <%= @project.name %></p>
+    </div>
+    <% if can? :create, @project.test_cases.build %>
+      <%= link_to new_project_test_case_path(@project), class: "btn btn-primary inline-flex items-center" do %>
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        New Test Case
+      <% end %>
+    <% end %>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="card mb-6">
+    <h2 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Filters</h2>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div>
+        <label class="label">Priority</label>
+        <select class="input">
+          <option value="">All Priorities</option>
+          <option value="critical">Critical</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+      <div>
+        <label class="label">Status</label>
+        <select class="input">
+          <option value="">All Statuses</option>
+          <option value="active">Active</option>
+          <option value="draft">Draft</option>
+          <option value="deprecated">Deprecated</option>
+        </select>
+      </div>
+      <div>
+        <label class="label">Category</label>
+        <input type="text" class="input" placeholder="Filter by category">
+      </div>
+      <div>
+        <label class="label">Tags</label>
+        <input type="text" class="input" placeholder="Filter by tags">
+      </div>
+    </div>
+  </div>
+
+  <!-- Test Cases Grid -->
+  <% if @test_cases.any? %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <% @test_cases.each do |test_case| %>
+        <div class="card hover:shadow-md transition-shadow">
+          <!-- Header -->
+          <div class="flex items-start justify-between mb-3">
+            <h3 class="text-lg font-semibold text-zinc-900 dark:text-white line-clamp-2">
+              <%= test_case.title %>
+            </h3>
+            <div class="flex items-center space-x-1 ml-2">
+              <!-- Priority Badge -->
+              <span class="badge badge-sm <%= case test_case.priority
+                when 'critical' then 'badge-error'
+                when 'high' then 'badge-warning'
+                when 'medium' then 'badge-info'
+                else 'badge-neutral'
+                end %>">
+                <%= test_case.priority.humanize %>
+              </span>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <% if test_case.description.present? %>
+            <p class="text-sm text-zinc-600 dark:text-gray-300 mb-3 line-clamp-3">
+              <%= test_case.description %>
+            </p>
+          <% end %>
+
+          <!-- Status and Category -->
+          <div class="flex items-center justify-between mb-3">
+            <span class="badge badge-sm <%= case test_case.status
+              when 'active' then 'badge-success'
+              when 'deprecated' then 'badge-warning'
+              else 'badge-neutral'
+              end %>">
+              <%= test_case.status.humanize %>
+            </span>
+            <% if test_case.category.present? %>
+              <span class="text-xs text-zinc-500 dark:text-gray-400">
+                <%= test_case.category %>
+              </span>
+            <% end %>
+          </div>
+
+          <!-- Tags -->
+          <% if test_case.tag_list.any? %>
+            <div class="mb-3">
+              <div class="flex flex-wrap gap-1">
+                <% test_case.tag_list.each do |tag| %>
+                  <span class="badge badge-sm badge-accent">
+                    <%= tag %>
+                  </span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Step Count -->
+          <div class="flex items-center text-sm text-zinc-500 dark:text-gray-400 mb-4">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+            </svg>
+            <%= pluralize(test_case.test_steps.count, 'step') %>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <%= link_to project_test_case_path(@project, test_case), class: "btn btn-sm" do %>
+                View
+              <% end %>
+              <% if can? :update, test_case %>
+                <%= link_to edit_project_test_case_path(@project, test_case), class: "btn btn-sm" do %>
+                  Edit
+                <% end %>
+              <% end %>
+            </div>
+            <% if can? :destroy, test_case %>
+              <%= link_to project_test_case_path(@project, test_case),
+                  method: :delete,
+                  data: { confirm: "Are you sure you want to delete this test case?" },
+                  class: "btn btn-sm btn-danger" do %>
+                Delete
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <!-- Empty State -->
+    <div class="flex flex-col items-center justify-center py-24">
+      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list text-zinc-400 dark:text-gray-500">
+        <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+        <path d="M12 11h4"/>
+        <path d="M12 16h4"/>
+        <path d="M8 11h.01"/>
+        <path d="M8 16h.01"/>
+      </svg>
+      <p class="text-lg text-zinc-500 dark:text-gray-400 mb-2">No test cases yet</p>
+      <p class="text-sm text-zinc-400 dark:text-gray-500 mb-4">Create your first test case to get started</p>
+      <% if can? :create, @project.test_cases.build %>
+        <%= link_to new_project_test_case_path(@project), class: "btn btn-primary inline-flex items-center" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Create your first test case
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

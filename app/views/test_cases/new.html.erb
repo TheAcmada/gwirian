@@ -1,0 +1,26 @@
+<% content_for :title, "Create New Test Case" %>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <!-- Breadcrumb Navigation -->
+  <nav class="flex items-center space-x-2 text-sm text-zinc-500 dark:text-gray-400 mb-6">
+    <%= link_to "Projects", projects_path, class: "hover:text-zinc-700 dark:hover:text-gray-200" %>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    </svg>
+    <%= link_to @project.name, project_path(@project), class: "hover:text-zinc-700 dark:hover:text-gray-200" %>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    </svg>
+    <%= link_to "Test Cases", project_test_cases_path(@project), class: "hover:text-zinc-700 dark:hover:text-gray-200" %>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    </svg>
+    <span class="text-zinc-900 dark:text-white">New Test Case</span>
+  </nav>
+
+  <!-- Form Card -->
+  <div class="card">
+    <h1 class="title mb-6">Create New Test Case</h1>
+    <%= render 'form', test_case: @test_case %>
+  </div>
+</div>
