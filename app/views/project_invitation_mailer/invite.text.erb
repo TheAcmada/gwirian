@@ -1,10 +1,10 @@
-<%= t('project_invitation_mailer.text.subject', project_name: @project.name) %>
+You're invited to join the project "<%= @project.name %>"
 
-<%= t('project_invitation_mailer.common.greeting') %>
+Hello!
 
-<%= t('project_invitation_mailer.text.invitation_message', project_name: @project.name) %>
+You have been invited to join the project "<%= @project.name %>". Please click the link below to accept the invitation and start collaborating.
 
-<%= t('project_invitation_mailer.text.accept_instructions') %>
+Accept invitation:
 <%= @accept_url %>
 
-<%= t('project_invitation_mailer.common.ignore_message') %>
+If you don't want to join this project, you can safely ignore this email.
