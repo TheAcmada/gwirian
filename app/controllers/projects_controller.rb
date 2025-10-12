@@ -63,13 +63,6 @@ class ProjectsController < ApplicationController
       return
     end
 
-    member = @project.project_members.new(email: member_params[:email])
-    if @project.admin?(Current.user) && params[:project_member][:role].present?
-      member.role = params[:project_member][:role]
-    else
-      member.role = "viewer"
-    end
-
     # Check if the email is already in the project
     if @project.project_members.exists?(email: member_params[:email])
       alert = "The member is already in the project"
@@ -79,6 +72,13 @@ class ProjectsController < ApplicationController
         redirect_to projects_path, alert: alert
       end
       return
+    end
+
+    member = @project.project_members.new(email: member_params[:email])
+    if @project.admin?(Current.user) && params[:project_member][:role].present?
+      member.role = params[:project_member][:role]
+    else
+      member.role = "viewer"
     end
 
     if member.save

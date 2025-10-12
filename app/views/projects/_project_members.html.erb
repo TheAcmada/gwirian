@@ -17,7 +17,7 @@
         <td class="px-4 py-2">
           <% if can?(:update, member) %>
             <%= select_tag "project_member[role]",
-              options_for_select([["administrator", "administrator"], ["editor", "editor"], ["viewer", "viewer"]], member.role),
+              options_for_select([["Administrator", "administrator"], ["Editor", "editor"], ["Viewer", "viewer"]], member.role),
               "hx-patch": update_member_project_path(project, member_id: member.id),
               "hx-target": "#project-members-#{project.id}",
               "hx-trigger": "change",
@@ -30,7 +30,7 @@
                 when 'editor' then 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
                 when 'viewer' then 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
                 else 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
-                end %> text-xs px-3 py-1 rounded"><%= member.role %></span>
+                end %> text-xs px-3 py-1 rounded"><%= member.role.humanize %></span>
           <% end %>
         </td>
         <td class="px-4 py-2">
@@ -41,21 +41,23 @@
           <% end %>
         </td>
         <td class="px-4 py-2">
-          <div class="flex flex-row gap-2">
+          <div class="flex flex-row gap-2 justify-end">
             <% if !member.invitation_accepted && can?(:update, member) %>
               <button title="Resend invitation"
                       hx-post="<%= resend_invitation_project_member_path(member) %>"
-                      hx-target="#project-members-#{project.id}"
+                      hx-target="#project-members-<%= project.id %>"
                       hx-swap="outerHTML">
                 <%= resend_icon %>
               </button>
             <% end %>
             <% if can?(:remove, member) %>
               <button title="Remove member"
+                      class="cursor-pointer"
                       hx-delete="<%= remove_member_project_path(project, member_id: member.id) %>"
-                      hx-target="#project-members-#{project.id}"
+                      hx-target="#project-members-<%= project.id %>"
                       hx-swap="outerHTML"
                       hx-trigger="confirmed"
+                      class="cursor-pointer"
                       x-data="{}"
                       @click.prevent="showConfirmation('Are you sure you want to remove this member?').then(result => {
                         if (result.isConfirmed) {
