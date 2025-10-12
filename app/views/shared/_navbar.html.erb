@@ -69,8 +69,8 @@
       </div>
     </div>
 
-    <!-- Project bar row (only shown when @project is present) -->
-    <% if @project.present? %>
+    <!-- Project bar row (only shown when @project is present and persisted) -->
+    <% if @project.present? && @project.persisted? %>
       <div class="border-t border-zinc-200 dark:border-gray-700 py-3">
         <%= render 'projects/project_bar', project: @project %>
       </div>

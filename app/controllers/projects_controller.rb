@@ -25,7 +25,7 @@ class ProjectsController < ApplicationController
     @project = Project.new(project_params)
     if @project.save
       @project.project_members.create!(email: Current.user.email_address, role: "administrator", invitation_accepted: true)
-      redirect_to projects_path, notice: "The project has been created successfully"
+      redirect_to project_path(@project), notice: "The project has been created successfully"
     else
       render :new, status: :unprocessable_entity
     end
