@@ -1,61 +1,50 @@
-<div class="card hover:shadow-md transition-shadow relative">
-  <!-- Clickable area for edit -->
-  <%= link_to edit_project_test_case_path(project, test_case), class: "block absolute inset-0 z-10" do %>
-    <span class="sr-only">Edit <%= test_case.title %></span>
+<div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-sm p-0 w-full flex flex-col h-full group overflow-hidden border border-zinc-200 dark:border-gray-700 hover:shadow-lg transition">
+  <% if deletable %>
+    <%= render partial: 'test_cases/dropdown_menu', locals: { project: project, test_case: test_case } %>
   <% end %>
 
-  <!-- Header -->
-  <div class="mb-3">
-    <h3 class="text-lg font-semibold text-zinc-900 dark:text-white line-clamp-2 mb-3">
-      <%= test_case.title %>
-    </h3>
-
-    <!-- Status, Priority, and Step Count -->
-    <div class="flex items-center space-x-2">
-      <span class="badge badge-sm <%= status_badge_class %>">
-        <%= test_case.status.humanize %>
-      </span>
-      <span class="badge badge-sm <%= priority_badge_class %>">
-        <%= test_case.priority.humanize %>
-      </span>
-      <div class="flex items-center text-sm text-zinc-500 dark:text-gray-400">
-        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-        </svg>
-        <%= pluralize(test_case.test_steps.count, 'step') %>
+  <%= link_to edit_project_test_case_path(project, test_case), class: "block" do %>
+    <div class="absolute left-0 top-0 h-full w-2 <%= priority_border_class %>" title="<%= test_case.priority.humanize %> Priority"></div>
+    <div class="flex flex-col gap-2 p-6 pb-4 relative">
+      <!-- Title -->
+      <div class="text-lg font-bold text-zinc-900 dark:text-white tracking-tight mb-2">
+        <%= test_case.title %>
       </div>
-    </div>
-  </div>
 
-  <!-- Description -->
-  <% if test_case.description.present? %>
-    <p class="text-sm text-zinc-600 dark:text-gray-300 mb-3 line-clamp-3">
-      <%= test_case.description %>
-    </p>
-  <% end %>
-
-  <!-- Tags -->
-  <% if test_case.tag_list.any? %>
-    <div class="mb-4">
-      <div class="flex flex-wrap gap-1">
-        <% test_case.tag_list.each do |tag| %>
-          <span class="badge badge-sm badge-accent">
-            <%= tag %>
-          </span>
-        <% end %>
+      <!-- Badges row -->
+      <div class="flex items-center gap-2 mb-2">
+        <span class="badge badge-sm <%= status_badge_class %>" title="Status"><%= test_case.status.humanize %></span>
+        <span class="badge badge-sm <%= priority_badge_class %>" title="Priority"><%= test_case.priority.humanize %></span>
+        <span class="badge badge-sm badge-neutral" title="Category"><%= test_case.category.present? ? test_case.category.capitalize : 'Uncategorized' %></span>
+        <div class="flex items-center text-sm text-zinc-500 dark:text-gray-400">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+          </svg>
+          <%= pluralize(test_case.test_steps.count, 'step') %>
+        </div>
       </div>
-    </div>
-  <% end %>
 
-  <!-- Actions -->
-  <div class="flex items-center justify-end relative z-20">
-    <% if deletable %>
-      <%= link_to project_test_case_path(project, test_case),
-          method: :delete,
-          data: { confirm: "Are you sure you want to delete this test case?" },
-          class: "btn btn-sm btn-danger" do %>
-        Delete
+      <% if test_case.description.present? %>
+        <div class="text-base font-semibold text-zinc-900 dark:text-white mb-1"><%= test_case.description %></div>
       <% end %>
-    <% end %>
-  </div>
+
+      <div class="flex flex-wrap gap-2 text-xs text-zinc-500 dark:text-gray-400 mb-2">
+        <span class="text-zinc-700 dark:text-gray-200">Created: <%= test_case.created_at.strftime("%B %d, %Y") %></span>
+        <span class="ml-4 text-zinc-700 dark:text-gray-200">Updated: <%= test_case.updated_at.strftime("%B %d, %Y") %></span>
+      </div>
+
+      <% if test_case.tag_list.any? %>
+        <div class="rounded bg-zinc-50 dark:bg-gray-900/40 p-3 text-sm mt-1 border border-zinc-200 dark:border-gray-700">
+          <div class="text-xs font-semibold text-zinc-500 dark:text-gray-400 uppercase mb-1 tracking-wide">Tags</div>
+          <div class="flex flex-wrap gap-1">
+            <% test_case.tag_list.each do |tag| %>
+              <span class="badge badge-sm badge-accent">
+                <%= tag %>
+              </span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
 </div>
