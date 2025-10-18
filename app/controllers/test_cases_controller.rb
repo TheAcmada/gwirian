@@ -57,7 +57,11 @@ class TestCasesController < ApplicationController
     end
 
     @test_case.destroy
-    redirect_to project_test_cases_path(@project), notice: "Test case has been deleted successfully"
+    if request.headers["HX-Request"]
+      head :ok
+    else
+      redirect_to project_test_cases_path(@project), notice: "Test case has been deleted successfully"
+    end
   end
 
   private
