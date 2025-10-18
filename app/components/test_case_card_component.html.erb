@@ -1,6 +1,6 @@
-<div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-sm p-0 w-full flex flex-col h-full group overflow-hidden border border-zinc-200 dark:border-gray-700 hover:shadow-lg transition">
+<div id="test-case-<%= test_case.id %>" class="relative bg-white dark:bg-gray-800 rounded-lg shadow-sm p-0 w-full flex flex-col h-full group overflow-hidden border border-zinc-200 dark:border-gray-700 hover:shadow-lg transition">
   <% if deletable %>
-    <%= render partial: 'test_cases/dropdown_menu', locals: { project: project, test_case: test_case } %>
+    <%= render TestCaseCardDropdownComponent.new(test_case: test_case, project: project) %>
   <% end %>
 
   <%= link_to edit_project_test_case_path(project, test_case), class: "block" do %>
@@ -24,13 +24,16 @@
         </div>
       </div>
 
-      <% if test_case.description.present? %>
-        <div class="text-base font-semibold text-zinc-900 dark:text-white mb-1"><%= test_case.description %></div>
-      <% end %>
+      <div class="text-base font-semibold text-zinc-900 dark:text-white mb-1">
+        <% if test_case.description.present? %>
+          <%= test_case.description %>
+        <% else %>
+          <span class="italic text-zinc-500 dark:text-gray-400">No description provided</span>
+        <% end %>
+      </div>
 
       <div class="flex flex-wrap gap-2 text-xs text-zinc-500 dark:text-gray-400 mb-2">
-        <span class="text-zinc-700 dark:text-gray-200">Created: <%= test_case.created_at.strftime("%B %d, %Y") %></span>
-        <span class="ml-4 text-zinc-700 dark:text-gray-200">Updated: <%= test_case.updated_at.strftime("%B %d, %Y") %></span>
+        <span class="text-zinc-700 dark:text-gray-200">Updated: <%= test_case.updated_at.strftime("%B %d, %Y") %></span>
       </div>
 
       <% if test_case.tag_list.any? %>
