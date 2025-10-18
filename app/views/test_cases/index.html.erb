@@ -55,14 +55,27 @@
   <% if @test_cases.any? %>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       <% @test_cases.each do |test_case| %>
-        <div class="card hover:shadow-md transition-shadow">
+        <div class="card hover:shadow-md transition-shadow relative">
+          <!-- Clickable area for edit -->
+          <%= link_to edit_project_test_case_path(@project, test_case), class: "block absolute inset-0 z-10" do %>
+            <span class="sr-only">Edit <%= test_case.title %></span>
+          <% end %>
+
           <!-- Header -->
-          <div class="flex items-start justify-between mb-3">
-            <h3 class="text-lg font-semibold text-zinc-900 dark:text-white line-clamp-2">
+          <div class="mb-3">
+            <h3 class="text-lg font-semibold text-zinc-900 dark:text-white line-clamp-2 mb-3">
               <%= test_case.title %>
             </h3>
-            <div class="flex items-center space-x-1 ml-2">
-              <!-- Priority Badge -->
+
+            <!-- Status, Priority, and Step Count -->
+            <div class="flex items-center space-x-2">
+              <span class="badge badge-sm <%= case test_case.status
+                when 'active' then 'badge-success'
+                when 'deprecated' then 'badge-warning'
+                else 'badge-neutral'
+                end %>">
+                <%= test_case.status.humanize %>
+              </span>
               <span class="badge badge-sm <%= case test_case.priority
                 when 'critical' then 'badge-error'
                 when 'high' then 'badge-warning'
@@ -71,6 +84,12 @@
                 end %>">
                 <%= test_case.priority.humanize %>
               </span>
+              <div class="flex items-center text-sm text-zinc-500 dark:text-gray-400">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <%= pluralize(test_case.test_steps.count, 'step') %>
+              </div>
             </div>
           </div>
 
@@ -81,25 +100,9 @@
             </p>
           <% end %>
 
-          <!-- Status and Category -->
-          <div class="flex items-center justify-between mb-3">
-            <span class="badge badge-sm <%= case test_case.status
-              when 'active' then 'badge-success'
-              when 'deprecated' then 'badge-warning'
-              else 'badge-neutral'
-              end %>">
-              <%= test_case.status.humanize %>
-            </span>
-            <% if test_case.category.present? %>
-              <span class="text-xs text-zinc-500 dark:text-gray-400">
-                <%= test_case.category %>
-              </span>
-            <% end %>
-          </div>
-
           <!-- Tags -->
           <% if test_case.tag_list.any? %>
-            <div class="mb-3">
+            <div class="mb-4">
               <div class="flex flex-wrap gap-1">
                 <% test_case.tag_list.each do |tag| %>
                   <span class="badge badge-sm badge-accent">
@@ -110,26 +113,8 @@
             </div>
           <% end %>
 
-          <!-- Step Count -->
-          <div class="flex items-center text-sm text-zinc-500 dark:text-gray-400 mb-4">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-            </svg>
-            <%= pluralize(test_case.test_steps.count, 'step') %>
-          </div>
-
           <!-- Actions -->
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-              <%= link_to project_test_case_path(@project, test_case), class: "btn btn-sm" do %>
-                View
-              <% end %>
-              <% if can? :update, test_case %>
-                <%= link_to edit_project_test_case_path(@project, test_case), class: "btn btn-sm" do %>
-                  Edit
-                <% end %>
-              <% end %>
-            </div>
+          <div class="flex items-center justify-end relative z-20">
             <% if can? :destroy, test_case %>
               <%= link_to project_test_case_path(@project, test_case),
                   method: :delete,

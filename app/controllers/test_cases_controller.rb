@@ -1,6 +1,6 @@
 class TestCasesController < ApplicationController
   before_action :set_project
-  before_action :set_test_case, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_test_case, only: [ :edit, :update, :destroy ]
 
   def index
     @test_cases = @project.test_cases.includes(:test_steps)
@@ -9,11 +9,6 @@ class TestCasesController < ApplicationController
     end
   end
 
-  def show
-    unless can? :read, @test_case
-      render_alert("You are not authorized to view this test case")
-    end
-  end
 
   def new
     @test_case = @project.test_cases.build
@@ -30,7 +25,7 @@ class TestCasesController < ApplicationController
     end
 
     if @test_case.save
-      redirect_to project_test_case_path(@project, @test_case), notice: "Test case has been created successfully"
+      redirect_to edit_project_test_case_path(@project, @test_case), notice: "Test case has been created successfully"
     else
       render :new, status: :unprocessable_entity
     end
@@ -49,7 +44,7 @@ class TestCasesController < ApplicationController
     end
 
     if @test_case.update(test_case_params)
-      redirect_to project_test_case_path(@project, @test_case), notice: "Test case has been updated successfully"
+      redirect_to project_test_cases_path(@project), notice: "Test case has been updated successfully"
     else
       render :edit, status: :unprocessable_entity
     end
