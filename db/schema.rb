@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_05_213025) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_11_085259) do
+  create_table "features", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.text "background"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "project_id", null: false
+    t.index ["project_id"], name: "index_features_on_project_id"
+  end
+
   create_table "login_histories", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "ip_address"
@@ -60,6 +70,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_05_213025) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "features", "projects"
   add_foreign_key "login_histories", "users"
   add_foreign_key "project_members", "projects"
   add_foreign_key "sessions", "users"
