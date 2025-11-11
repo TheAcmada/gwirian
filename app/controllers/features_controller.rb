@@ -10,9 +10,9 @@ class FeaturesController < ApplicationController
   end
 
   def create
-    authorize! :create, Feature
-
     @feature = @project.features.new(title: "New feature")
+    authorize! :create, @feature
+
     if @feature.save
       redirect_to project_feature_path(@project, @feature), notice: "Feature created successfully"
     else

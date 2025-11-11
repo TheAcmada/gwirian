@@ -52,7 +52,9 @@ class Ability
   end
 
   def initialize_feature_ability(user)
-    can :create, Feature
+    can :create, Feature do |feature|
+      feature.project.editor?(user) || feature.project.admin?(user)
+    end
 
     can [ :update, :destroy ], Feature do |feature|
       feature.project.editor?(user) || feature.project.admin?(user)
