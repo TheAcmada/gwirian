@@ -1,0 +1,14 @@
+<% content_for :title, "#{@feature.title} - #{@project.name}" %>
+<div class="max-w-3xl mx-auto px-4 py-12">
+  <!-- Feature Header -->
+  <div class="mb-8">
+    <h1 class="title mb-2">
+      <%= @feature.title %>
+    </h1>
+    <% if @feature.description.present? %>
+      <p class="text-lg text-zinc-600 dark:text-gray-300 leading-relaxed"><%= @feature.description %></p>
+    <% else %>
+      <p class="text-zinc-500 dark:text-gray-400 italic">No description provided</p>
+    <% end %>
+  </div>
+</div>
