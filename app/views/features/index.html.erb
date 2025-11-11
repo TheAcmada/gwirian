@@ -2,7 +2,12 @@
 <div class="max-w-4xl mx-auto px-4 py-8">
   <!-- Header -->
   <div class="mb-8">
-    <h1 class="title mb-2">Features</h1>
+    <div class="flex items-center justify-between mb-2">
+      <h1 class="title">Features</h1>
+      <% if @project.editor?(Current.user) || @project.admin?(Current.user) %>
+        <%= button_to "New Feature", project_features_path(@project), method: :post, class: "btn btn-primary" %>
+      <% end %>
+    </div>
     <p class="text-lg text-zinc-600 dark:text-gray-300">Manage and track features for <%= @project.name %></p>
   </div>
 
