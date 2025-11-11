@@ -54,63 +54,91 @@ end
 puts "Creating features..."
 
 # Features for E-Commerce Platform
-Feature.find_or_create_by!(project: project1, title: "Shopping Cart") do |f|
+f1_1 = Feature.find_or_create_by!(project: project1, title: "Shopping Cart") do |f|
   f.description = "Users can add products to their cart and manage quantities before checkout."
 end
+f1_1.tag_list = "critical-path, cart, checkout, e-commerce"
+f1_1.save!
 
-Feature.find_or_create_by!(project: project1, title: "Payment Processing") do |f|
+f1_2 = Feature.find_or_create_by!(project: project1, title: "Payment Processing") do |f|
   f.description = "Secure payment processing with support for credit cards, PayPal, and other payment methods."
 end
+f1_2.tag_list = "critical-path, payment, security, checkout"
+f1_2.save!
 
-Feature.find_or_create_by!(project: project1, title: "Product Search") do |f|
+f1_3 = Feature.find_or_create_by!(project: project1, title: "Product Search") do |f|
   f.description = "Advanced search functionality with filters for category, price range, and ratings."
 end
+f1_3.tag_list = "search, functionality, user-experience"
+f1_3.save!
 
-Feature.find_or_create_by!(project: project1, title: "Order Tracking") do |f|
+f1_4 = Feature.find_or_create_by!(project: project1, title: "Order Tracking") do |f|
   f.description = "Real-time order tracking with status updates and delivery notifications for customers."
 end
+f1_4.tag_list = "tracking, notifications, customer-service"
+f1_4.save!
 
-Feature.find_or_create_by!(project: project1, title: "Product Reviews") do |f|
+f1_5 = Feature.find_or_create_by!(project: project1, title: "Product Reviews") do |f|
   f.description = "Customer review system with ratings, photos, and verified purchase badges."
 end
+f1_5.tag_list = "reviews, social-proof, user-generated-content"
+f1_5.save!
 
 # Features for Content Management System
-Feature.find_or_create_by!(project: project2, title: "Article Editor") do |f|
+f2_1 = Feature.find_or_create_by!(project: project2, title: "Article Editor") do |f|
   f.description = "Rich text editor for creating and editing articles with support for images, videos, and formatting."
 end
+f2_1.tag_list = "editor, content-creation, wysiwyg"
+f2_1.save!
 
-Feature.find_or_create_by!(project: project2, title: "Role-Based Access Control") do |f|
+f2_2 = Feature.find_or_create_by!(project: project2, title: "Role-Based Access Control") do |f|
   f.description = "Manage user permissions with roles like admin, editor, author, and viewer."
 end
+f2_2.tag_list = "security, rbac, permissions, access-control"
+f2_2.save!
 
-Feature.find_or_create_by!(project: project2, title: "Media Library") do |f|
+f2_3 = Feature.find_or_create_by!(project: project2, title: "Media Library") do |f|
   f.description = "Upload, organize, and manage media files including images, videos, and documents."
 end
+f2_3.tag_list = "upload, media, file-management"
+f2_3.save!
 
-Feature.find_or_create_by!(project: project2, title: "Content Scheduling") do |f|
+f2_4 = Feature.find_or_create_by!(project: project2, title: "Content Scheduling") do |f|
   f.description = "Schedule articles and pages to be published at specific dates and times."
 end
+f2_4.tag_list = "scheduling, automation, publishing"
+f2_4.save!
 
-Feature.find_or_create_by!(project: project2, title: "SEO Management") do |f|
+f2_5 = Feature.find_or_create_by!(project: project2, title: "SEO Management") do |f|
   f.description = "Built-in SEO tools for meta tags, descriptions, and URL optimization."
 end
+f2_5.tag_list = "seo, optimization, marketing"
+f2_5.save!
 
 # Features for Mobile Banking App
-Feature.find_or_create_by!(project: project3, title: "Account Balance Display") do |f|
+f3_1 = Feature.find_or_create_by!(project: project3, title: "Account Balance Display") do |f|
   f.description = "Real-time display of account balances for checking, savings, and investment accounts."
 end
+f3_1.tag_list = "mobile, dashboard, account-information, critical-path"
+f3_1.save!
 
-Feature.find_or_create_by!(project: project3, title: "Money Transfer") do |f|
+f3_2 = Feature.find_or_create_by!(project: project3, title: "Money Transfer") do |f|
   f.description = "Transfer funds between accounts or to external recipients with transaction history."
 end
+f3_2.tag_list = "mobile, transfer, critical-path, payment"
+f3_2.save!
 
-Feature.find_or_create_by!(project: project3, title: "Bill Payment") do |f|
+f3_3 = Feature.find_or_create_by!(project: project3, title: "Bill Payment") do |f|
   f.description = "Pay bills directly from the app with support for scheduled and recurring payments."
 end
+f3_3.tag_list = "mobile, bill-payment, payment, automation"
+f3_3.save!
 
-Feature.find_or_create_by!(project: project3, title: "Transaction History") do |f|
+f3_4 = Feature.find_or_create_by!(project: project3, title: "Transaction History") do |f|
   f.description = "Comprehensive transaction history with search, filters, and export functionality."
 end
+f3_4.tag_list = "mobile, transactions, history, reporting"
+f3_4.save!
 
 # Project 4: Task Management System
 project4 = Project.find_or_create_by!(name: "Task Management System") do |p|
@@ -124,21 +152,29 @@ ProjectMember.find_or_create_by!(project: project4, email: admin_user.email_addr
 end
 
 # Features for Task Management System
-Feature.find_or_create_by!(project: project4, title: "Task Creation") do |f|
+f4_1 = Feature.find_or_create_by!(project: project4, title: "Task Creation") do |f|
   f.description = "Create and assign tasks with due dates, priorities, and detailed descriptions."
 end
+f4_1.tag_list = "task-management, core-feature, productivity"
+f4_1.save!
 
-Feature.find_or_create_by!(project: project4, title: "Project Boards") do |f|
+f4_2 = Feature.find_or_create_by!(project: project4, title: "Project Boards") do |f|
   f.description = "Kanban-style boards for visualizing task progress across different stages."
 end
+f4_2.tag_list = "kanban, visualization, project-management"
+f4_2.save!
 
-Feature.find_or_create_by!(project: project4, title: "Team Collaboration") do |f|
+f4_3 = Feature.find_or_create_by!(project: project4, title: "Team Collaboration") do |f|
   f.description = "Real-time collaboration with comments, mentions, and activity feeds."
 end
+f4_3.tag_list = "collaboration, communication, real-time"
+f4_3.save!
 
-Feature.find_or_create_by!(project: project4, title: "Time Tracking") do |f|
+f4_4 = Feature.find_or_create_by!(project: project4, title: "Time Tracking") do |f|
   f.description = "Track time spent on tasks with detailed reports and analytics."
 end
+f4_4.tag_list = "time-tracking, reporting, analytics"
+f4_4.save!
 
 puts "Seeding complete! Created:"
 puts "  - #{Project.count} projects"
