@@ -2,13 +2,13 @@
 <div class="max-w-3xl mx-auto px-4 py-12">
   <!-- Feature Header -->
   <div class="mb-8">
-    <h1 class="title mb-2" contenteditable="true">
+    <h1 class="title mb-2 is-editable" contenteditable="true">
       <%= @feature.title %>
     </h1>
     <% if @feature.description.present? %>
-      <p class="text-lg text-zinc-600 dark:text-gray-300 leading-relaxed"><%= @feature.description %></p>
+      <p class="text-lg text-zinc-600 dark:text-gray-300 leading-relaxed is-editable" contenteditable="true"><%= @feature.description %></p>
     <% else %>
-      <p class="text-zinc-500 dark:text-gray-400 italic">No description provided</p>
+      <p class="text-zinc-500 dark:text-gray-400 italic is-editable" contenteditable="true">No description provided</p>
     <% end %>
   </div>
 </div>

@@ -96,6 +96,10 @@
     @apply text-error-500 dark:text-error-300;
   }
 
+  .is-editable {
+    @apply outline-none focus:outline-none focus:ring-0 focus:border-none;
+  }
+
   .badge {
     @apply inline-flex items-center gap-x-1.5 px-2.5 py-0.5 rounded-md text-xs font-medium ring-1 ring-inset ring-zinc-200 text-zinc-700 bg-zinc-50;
   }
