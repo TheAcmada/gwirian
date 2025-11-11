@@ -1,16 +1,16 @@
 class FeaturesController < ApplicationController
   before_action :set_project
+  before_action :set_feature, only: [ :show, :update, :destroy ]
 
   def index
     @features = @project.features.order(:title)
   end
 
   def show
-    @feature = @project.features.find(params[:id])
   end
 
   def update
-    @feature = @project.features.find(params[:id])
+    authorize! :update, @feature
 
     if @feature.update(feature_params)
       if request.headers["HX-Request"]
@@ -27,10 +27,27 @@ class FeaturesController < ApplicationController
     end
   end
 
+  def destroy
+    authorize! :destroy, @feature
+
+    @feature.destroy
+
+    if request.headers["HX-Request"]
+      @features = @project.features.order(:title)
+      render partial: "features/features", locals: { features: @features, project: @project, notice: "Feature deleted successfully" }
+    else
+      redirect_to project_features_path(@project), notice: "Feature deleted successfully"
+    end
+  end
+
   private
 
   def set_project
     @project = Current.user.projects.find(params[:project_id])
+  end
+
+  def set_feature
+    @feature = @project.features.find(params[:id])
   end
 
   def feature_params

@@ -32,6 +32,7 @@ class Ability
     return unless user.present?
 
     initialize_project_ability(user)
+    initialize_feature_ability(user)
   end
 
   def initialize_project_ability(user)
@@ -47,6 +48,12 @@ class Ability
 
     can [ :remove, :update, :invite ], ProjectMember do |member|
       member.project.admin?(user) && member.email != user.email_address
+    end
+  end
+
+  def initialize_feature_ability(user)
+    can [ :update, :destroy ], Feature do |feature|
+      feature.project.editor?(user)
     end
   end
 end
