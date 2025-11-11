@@ -32,7 +32,6 @@ class Ability
     return unless user.present?
 
     initialize_project_ability(user)
-    initialize_test_case_ability(user)
   end
 
   def initialize_project_ability(user)
@@ -48,20 +47,6 @@ class Ability
 
     can [ :remove, :update, :invite ], ProjectMember do |member|
       member.project.admin?(user) && member.email != user.email_address
-    end
-  end
-
-  def initialize_test_case_ability(user)
-    can :create, TestCase do |test_case|
-      test_case.project.member?(user)
-    end
-
-    can :read, TestCase do |test_case|
-      test_case.project.member?(user)
-    end
-
-    can [ :update, :destroy ], TestCase do |test_case|
-      test_case.project.editor?(user) || test_case.project.admin?(user)
     end
   end
 end

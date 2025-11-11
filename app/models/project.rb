@@ -1,6 +1,5 @@
 class Project < ApplicationRecord
   has_many :project_members, dependent: :destroy
-  has_many :test_cases, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 80 }
   validates :description, length: { maximum: 1000 }
