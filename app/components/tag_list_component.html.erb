@@ -1,53 +1,27 @@
 <% if update_path && form_id %>
   <div
     class="<%= css_class %>"
-    data-form-id="<%= form_id %>"
-    data-update-path="<%= update_path %>"
     x-data="{
       editing: false,
       tagListValue: <%= tag_list_string.to_json %>,
-      getParentData() {
-        const parent = $el.closest('.mb-8');
-        return parent && parent.__x ? parent.__x.$data : null;
-      },
-      syncWithParent() {
-        const parentData = this.getParentData();
-        if (parentData && parentData.tagList !== undefined) {
-          this.tagListValue = parentData.tagList;
-        }
-      },
-      updateParentTagList(value) {
-        const parentData = this.getParentData();
-        if (parentData) {
-          parentData.tagList = value;
-        }
-      },
       updateTags(event) {
         const input = this.$refs.tagInput;
         if (!input) return;
 
         const trimmedValue = input.value.trim();
-        const parentData = this.getParentData();
-        if (parentData) {
-          parentData.tagList = trimmedValue;
-          // Small delay to ensure Alpine updates before htmx sends
+        this.tagListValue = trimmedValue;
+        // Small delay to ensure Alpine updates before htmx sends
+        setTimeout(() => {
+          if (htmx && input) {
+            htmx.trigger(input, 'save-tags');
+          }
+          // Delay stopping editing to ensure htmx can process the trigger
           setTimeout(() => {
-            // Trigger htmx on the input element which has all the htmx attributes
-            // The input's hx-include will automatically include the form data
-            if (htmx && input) {
-              htmx.trigger(input, 'save-tags');
-            }
-            // Delay stopping editing to ensure htmx can process the trigger
-            setTimeout(() => {
-              this.stopEditing();
-            }, 100);
-          }, 10);
-        } else {
-          this.stopEditing();
-        }
+            this.stopEditing();
+          }, 100);
+        }, 10);
       },
       startEditing() {
-        this.syncWithParent();
         this.editing = true;
         this.$nextTick(() => {
           const input = this.$refs.tagInput;
@@ -64,6 +38,9 @@
     @click="if (!editing) startEditing()"
     @click.outside="if (editing) stopEditing()"
   >
+    <form id="<%= form_id %>" style="display: none;">
+      <input type="hidden" name="feature[tag_list]" x-bind:value="tagListValue">
+    </form>
     <div x-show="!editing" class="flex flex-wrap gap-1.5 min-h-[1.5rem] cursor-pointer">
       <% if tags&.any? %>
         <% tags.each do |tag| %>
@@ -78,7 +55,6 @@
       x-ref="tagInput"
       type="text"
       x-model="tagListValue"
-      x-on:input="updateParentTagList($event.target.value)"
       x-on:blur="updateTags($event)"
       x-on:keydown.enter.prevent="updateTags($event)"
       x-on:keydown.escape.prevent="stopEditing()"

@@ -1,0 +1,41 @@
+<div
+  x-data="{
+    description: <%= description_text.to_json %>,
+    updateDescription(event) {
+      let text = event.target.innerText.trim();
+      this.description = text === 'No description provided' ? '' : text;
+      // Small delay to ensure Alpine updates before htmx sends
+      setTimeout(() => {
+        htmx.trigger(event.target, 'save-description');
+      }, 10);
+    }
+  }"
+>
+  <form id="<%= form_id %>" style="display: none;">
+    <input type="hidden" name="feature[description]" x-bind:value="description">
+  </form>
+  <% if has_description? %>
+    <p
+      class="text-lg text-zinc-600 dark:text-gray-300 leading-relaxed is-editable"
+      contenteditable="true"
+      x-on:blur="updateDescription($event)"
+      hx-patch="<%= update_path %>"
+      hx-trigger="save-description"
+      hx-include="#<%= form_id %>"
+      hx-target="closest .mb-8"
+      hx-swap="outerHTML"
+    ><%= feature.description %></p>
+  <% else %>
+    <p
+      class="text-zinc-500 dark:text-gray-400 italic is-editable"
+      contenteditable="true"
+      x-on:blur="updateDescription($event)"
+      hx-patch="<%= update_path %>"
+      hx-trigger="save-description"
+      hx-include="#<%= form_id %>"
+      hx-target="closest .mb-8"
+      hx-swap="outerHTML"
+    >No description provided</p>
+  <% end %>
+</div>
+

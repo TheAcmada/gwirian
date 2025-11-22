@@ -1,71 +1,7 @@
 <!-- Feature Header -->
-<div class="mb-8" x-data="{
-  title: '<%= j(@feature.title) %>',
-  description: '<%= j(@feature.description || '') %>',
-  tagList: '<%= j(@feature.tag_list || '') %>',
-  updateTitle(event) {
-    this.title = event.target.innerText.trim();
-    // Small delay to ensure Alpine updates before htmx sends
-    setTimeout(() => {
-      htmx.trigger(event.target, 'save-feature');
-    }, 10);
-  },
-  updateDescription(event) {
-    let text = event.target.innerText.trim();
-    this.description = text === 'No description provided' ? '' : text;
-    // Small delay to ensure Alpine updates before htmx sends
-    setTimeout(() => {
-      htmx.trigger(event.target, 'save-feature');
-    }, 10);
-  },
-  updateTagList(event) {
-    this.tagList = event.target.value.trim();
-    // Small delay to ensure Alpine updates before htmx sends
-    setTimeout(() => {
-      htmx.trigger(event.target, 'save-tags');
-    }, 10);
-  }
-}">
-  <form id="feature-form-<%= @feature.id %>" style="display: none;">
-    <input type="hidden" name="feature[title]" x-bind:value="title">
-    <input type="hidden" name="feature[description]" x-bind:value="description">
-    <input type="hidden" name="feature[tag_list]" x-bind:value="tagList">
-  </form>
-  <h1
-    class="title mb-2 is-editable"
-    contenteditable="true"
-    x-on:blur="updateTitle($event)"
-    hx-patch="<%= project_feature_path(@project, @feature) %>"
-    hx-trigger="save-feature"
-    hx-include="#feature-form-<%= @feature.id %>"
-    hx-target="closest .mb-8"
-    hx-swap="outerHTML"
-  >
-    <%= @feature.title %>
-  </h1>
-  <% if @feature.description.present? %>
-    <p
-      class="text-lg text-zinc-600 dark:text-gray-300 leading-relaxed is-editable"
-      contenteditable="true"
-      x-on:blur="updateDescription($event)"
-      hx-patch="<%= project_feature_path(@project, @feature) %>"
-      hx-trigger="save-feature"
-      hx-include="#feature-form-<%= @feature.id %>"
-      hx-target="closest .mb-8"
-      hx-swap="outerHTML"
-    ><%= @feature.description %></p>
-  <% else %>
-    <p
-      class="text-zinc-500 dark:text-gray-400 italic is-editable"
-      contenteditable="true"
-      x-on:blur="updateDescription($event)"
-      hx-patch="<%= project_feature_path(@project, @feature) %>"
-      hx-trigger="save-feature"
-      hx-include="#feature-form-<%= @feature.id %>"
-      hx-target="closest .mb-8"
-      hx-swap="outerHTML"
-    >No description provided</p>
-  <% end %>
-  <%= render TagListComponent.new(taggable: @feature, project: @project, css_class: "mt-4") %>
+<div class="mb-8">
+  <%= render FeatureTitleComponent.new(feature: @feature, project: @project) %>
+  <%= render FeatureDescriptionComponent.new(feature: @feature, project: @project) %>
+  <%= render FeatureTagListComponent.new(feature: @feature, project: @project) %>
 </div>
 

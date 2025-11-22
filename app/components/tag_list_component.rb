@@ -18,11 +18,10 @@ class TagListComponent < ApplicationComponent
 
   def form_id
     return nil unless taggable
-    "feature-form-#{taggable.id}"
+    "feature-tag-list-form-#{taggable.id}"
   end
 
   private
 
   attr_reader :taggable, :tags, :css_class, :project
 end
-
