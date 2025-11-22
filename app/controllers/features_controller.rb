@@ -1,6 +1,6 @@
 class FeaturesController < ApplicationController
   before_action :set_project
-  before_action :set_feature, only: [ :show, :update, :destroy ]
+  before_action :set_feature, only: [ :show, :update, :destroy, :add_tag, :remove_tag ]
 
   def index
     @features = @project.features.order(:title)
@@ -48,6 +48,38 @@ class FeaturesController < ApplicationController
       render partial: "features/features", locals: { features: @features, project: @project, notice: "Feature deleted successfully" }
     else
       redirect_to project_features_path(@project), notice: "Feature deleted successfully"
+    end
+  end
+
+  def add_tag
+    authorize! :update, @feature
+
+    tag_name = params[:tag_name]&.strip
+    if tag_name.present?
+      @feature.tag_list.add(tag_name)
+      @feature.save
+    end
+
+    if request.headers["HX-Request"]
+      render partial: "features/feature_header", locals: { feature: @feature.reload, project: @project }
+    else
+      redirect_to project_feature_path(@project, @feature)
+    end
+  end
+
+  def remove_tag
+    authorize! :update, @feature
+
+    tag_name = params[:tag_name]&.strip
+    if tag_name.present?
+      @feature.tag_list.remove(tag_name)
+      @feature.save
+    end
+
+    if request.headers["HX-Request"]
+      render partial: "features/feature_header", locals: { feature: @feature.reload, project: @project }
+    else
+      redirect_to project_feature_path(@project, @feature)
     end
   end
 

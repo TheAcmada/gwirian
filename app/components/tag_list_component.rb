@@ -21,6 +21,20 @@ class TagListComponent < ApplicationComponent
     "feature-tag-list-form-#{taggable.id}"
   end
 
+  def add_tag_path
+    return nil unless taggable && @project
+    add_tag_project_feature_path(@project, taggable)
+  end
+
+  def remove_tag_path(tag_name)
+    return nil unless taggable && @project
+    remove_tag_project_feature_path(@project, taggable)
+  end
+
+  def can_edit?
+    update_path.present?
+  end
+
   private
 
   attr_reader :taggable, :tags, :css_class, :project

@@ -2,7 +2,12 @@ Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
   resources :projects do
-    resources :features, only: [ :index, :show, :create, :update, :destroy ]
+    resources :features, only: [ :index, :show, :create, :update, :destroy ] do
+      member do
+        post :add_tag
+        delete :remove_tag
+      end
+    end
     member do
       post :add_member
       delete :remove_member

@@ -1,72 +1,79 @@
-<% if update_path && form_id %>
+<% if can_edit? %>
   <div
     class="<%= css_class %>"
     x-data="{
-      editing: false,
-      tagListValue: <%= tag_list_string.to_json %>,
-      updateTags(event) {
-        const input = this.$refs.tagInput;
-        if (!input) return;
-
-        const trimmedValue = input.value.trim();
-        this.tagListValue = trimmedValue;
-        // Small delay to ensure Alpine updates before htmx sends
-        setTimeout(() => {
-          if (htmx && input) {
-            htmx.trigger(input, 'save-tags');
-          }
-          // Delay stopping editing to ensure htmx can process the trigger
-          setTimeout(() => {
-            this.stopEditing();
-          }, 100);
-        }, 10);
-      },
-      startEditing() {
-        this.editing = true;
-        this.$nextTick(() => {
-          const input = this.$refs.tagInput;
-          if (input) {
-            input.focus();
-            input.select();
-          }
-        });
-      },
-      stopEditing() {
-        this.editing = false;
+      showAddInput: false,
+      newTagName: '',
+      cancelAdd() {
+        this.newTagName = '';
+        this.showAddInput = false;
       }
     }"
-    @click="if (!editing) startEditing()"
-    @click.outside="if (editing) stopEditing()"
+    x-on:htmx:after-swap.window="if ($event.detail.target.closest('.mb-8')) { showAddInput = false; newTagName = ''; }"
+    x-on:mouseenter="$refs.addButton?.classList.remove('opacity-0')"
+    x-on:mouseleave="if (!showAddInput) $refs.addButton?.classList.add('opacity-0')"
   >
-    <form id="<%= form_id %>" style="display: none;">
-      <input type="hidden" name="feature[tag_list]" x-bind:value="tagListValue">
-    </form>
-    <div x-show="!editing" class="flex flex-wrap gap-1.5 min-h-[1.5rem] cursor-pointer">
+    <div class="flex flex-wrap gap-1.5 items-center min-h-[1.5rem]">
       <% if tags&.any? %>
         <% tags.each do |tag| %>
-          <span class="badge badge-sm badge-neutral"><%= tag.name %></span>
+          <span class="badge badge-sm badge-neutral inline-flex items-center gap-1 group">
+            <%= tag.name %>
+            <button
+              type="button"
+              hx-delete="<%= remove_tag_path(tag.name) %>"
+              hx-vals='{"tag_name": <%= tag.name.to_json %>}'
+              hx-target="closest .mb-8"
+              hx-swap="outerHTML"
+              class="opacity-0 group-hover:opacity-100 transition-opacity ml-0.5 hover:text-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 rounded cursor-pointer"
+              aria-label="Remove tag <%= tag.name %>"
+            >
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </span>
         <% end %>
-      <% else %>
-        <span class="text-zinc-400 dark:text-gray-500 italic text-sm">Click to add tags</span>
       <% end %>
+
+      <form
+        x-ref="addTagForm"
+        x-show="showAddInput"
+        x-transition
+        hx-post="<%= add_tag_path %>"
+        hx-target="closest .mb-8"
+        hx-swap="outerHTML"
+        hx-trigger="submit"
+        hx-on::after-swap="showAddInput = false; newTagName = '';"
+        class="inline-flex items-center gap-1"
+        style="display: none;"
+      >
+        <input
+          type="text"
+          name="tag_name"
+          x-model="newTagName"
+          x-ref="tagInput"
+          x-on:blur="if (!newTagName.trim()) cancelAdd()"
+          x-on:keydown.escape.prevent="cancelAdd()"
+          x-init="$watch('showAddInput', value => value && $nextTick(() => $refs.tagInput?.focus()))"
+          class="px-2 py-0.5 text-sm border border-zinc-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-zinc-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-accent-500 w-24"
+          placeholder="Tag name"
+          autocomplete="off"
+          required
+        />
+      </form>
+      <button
+        x-ref="addButton"
+        type="button"
+        x-show="!showAddInput"
+        x-on:click="showAddInput = true"
+        class="opacity-0 transition-opacity inline-flex items-center justify-center w-5 h-5 rounded border border-zinc-300 dark:border-gray-600 hover:border-zinc-400 dark:hover:border-gray-500 hover:bg-zinc-100 dark:hover:bg-gray-700 text-zinc-600 dark:text-gray-400 hover:text-zinc-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-accent-500 cursor-pointer"
+        aria-label="Add tag"
+      >
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+      </button>
     </div>
-    <input
-      x-show="editing"
-      x-ref="tagInput"
-      type="text"
-      x-model="tagListValue"
-      x-on:blur="updateTags($event)"
-      x-on:keydown.enter.prevent="updateTags($event)"
-      x-on:keydown.escape.prevent="stopEditing()"
-      hx-patch="<%= update_path %>"
-      hx-trigger="save-tags"
-      hx-include="#<%= form_id %>"
-      hx-target="closest .mb-8"
-      hx-swap="outerHTML"
-      class="w-full px-2 py-1 text-sm border border-zinc-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-zinc-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-accent-500"
-      placeholder="Enter tags separated by commas"
-      style="display: none;"
-    />
   </div>
 <% else %>
   <% if tags&.any? %>
@@ -77,4 +84,3 @@
     </div>
   <% end %>
 <% end %>
-
