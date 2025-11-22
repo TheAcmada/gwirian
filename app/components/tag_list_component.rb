@@ -35,6 +35,13 @@ class TagListComponent < ApplicationComponent
     update_path.present?
   end
 
+  def tag_color_class(tag)
+    # Deterministically assign a color based on tag name hash
+    # This ensures the same tag always gets the same color
+    color_index = tag.name.hash.abs % 8 + 1
+    "badge-tag-#{color_index}"
+  end
+
   private
 
   attr_reader :taggable, :tags, :css_class, :project

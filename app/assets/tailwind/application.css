@@ -112,6 +112,16 @@
   .badge-error { @apply text-error-700 bg-error-50 ring-error-200; }
   .badge-info { @apply text-info-700 bg-info-50 ring-info-200; }
 
+  /* Tag-specific badge variants (Notion-style colors) */
+  .badge-tag-1 { @apply text-blue-700 bg-blue-50 ring-blue-200; }
+  .badge-tag-2 { @apply text-purple-700 bg-purple-50 ring-purple-200; }
+  .badge-tag-3 { @apply text-emerald-700 bg-emerald-50 ring-emerald-200; }
+  .badge-tag-4 { @apply text-pink-700 bg-pink-50 ring-pink-200; }
+  .badge-tag-5 { @apply text-orange-700 bg-orange-50 ring-orange-200; }
+  .badge-tag-6 { @apply text-teal-700 bg-teal-50 ring-teal-200; }
+  .badge-tag-7 { @apply text-amber-700 bg-amber-50 ring-amber-200; }
+  .badge-tag-8 { @apply text-slate-700 bg-slate-50 ring-slate-200; }
+
   .badge-sm { @apply px-2 py-0.5 text-[11px] rounded; }
   .badge-md { @apply px-2.5 py-0.5 text-xs rounded-md; }
 

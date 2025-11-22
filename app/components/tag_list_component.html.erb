@@ -16,7 +16,7 @@
     <div class="flex flex-wrap gap-1.5 items-center min-h-[1.5rem]">
       <% if tags&.any? %>
         <% tags.each do |tag| %>
-          <span class="badge badge-sm badge-neutral inline-flex items-center gap-1 group">
+          <span class="badge badge-sm <%= tag_color_class(tag) %> inline-flex items-center gap-1 group">
             <%= tag.name %>
             <button
               type="button"
@@ -79,7 +79,7 @@
   <% if tags&.any? %>
     <div class="<%= css_class %> flex flex-wrap gap-1.5">
       <% tags.each do |tag| %>
-        <span class="badge badge-sm badge-neutral"><%= tag.name %></span>
+        <span class="badge badge-sm <%= tag_color_class(tag) %>"><%= tag.name %></span>
       <% end %>
     </div>
   <% end %>
