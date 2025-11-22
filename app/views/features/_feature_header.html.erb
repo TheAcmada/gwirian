@@ -2,6 +2,7 @@
 <div class="mb-8" x-data="{
   title: '<%= j(@feature.title) %>',
   description: '<%= j(@feature.description || '') %>',
+  tagList: '<%= j(@feature.tag_list || '') %>',
   updateTitle(event) {
     this.title = event.target.innerText.trim();
     // Small delay to ensure Alpine updates before htmx sends
@@ -16,11 +17,19 @@
     setTimeout(() => {
       htmx.trigger(event.target, 'save-feature');
     }, 10);
+  },
+  updateTagList(event) {
+    this.tagList = event.target.value.trim();
+    // Small delay to ensure Alpine updates before htmx sends
+    setTimeout(() => {
+      htmx.trigger(event.target, 'save-tags');
+    }, 10);
   }
 }">
   <form id="feature-form-<%= @feature.id %>" style="display: none;">
     <input type="hidden" name="feature[title]" x-bind:value="title">
     <input type="hidden" name="feature[description]" x-bind:value="description">
+    <input type="hidden" name="feature[tag_list]" x-bind:value="tagList">
   </form>
   <h1
     class="title mb-2 is-editable"
@@ -57,6 +66,6 @@
       hx-swap="outerHTML"
     >No description provided</p>
   <% end %>
-  <%= render TagListComponent.new(taggable: @feature, css_class: "mt-4") %>
+  <%= render TagListComponent.new(taggable: @feature, project: @project, css_class: "mt-4") %>
 </div>
 

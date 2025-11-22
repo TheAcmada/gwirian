@@ -1,8 +1,104 @@
-<% if tags&.any? %>
-  <div class="<%= css_class %> flex flex-wrap gap-1.5">
-    <% tags.each do |tag| %>
-      <span class="badge badge-sm badge-neutral"><%= tag.name %></span>
-    <% end %>
+<% if update_path && form_id %>
+  <div
+    class="<%= css_class %>"
+    data-form-id="<%= form_id %>"
+    data-update-path="<%= update_path %>"
+    x-data="{
+      editing: false,
+      tagListValue: <%= tag_list_string.to_json %>,
+      getParentData() {
+        const parent = $el.closest('.mb-8');
+        return parent && parent.__x ? parent.__x.$data : null;
+      },
+      syncWithParent() {
+        const parentData = this.getParentData();
+        if (parentData && parentData.tagList !== undefined) {
+          this.tagListValue = parentData.tagList;
+        }
+      },
+      updateParentTagList(value) {
+        const parentData = this.getParentData();
+        if (parentData) {
+          parentData.tagList = value;
+        }
+      },
+      updateTags(event) {
+        const input = this.$refs.tagInput;
+        if (!input) return;
+
+        const trimmedValue = input.value.trim();
+        const parentData = this.getParentData();
+        if (parentData) {
+          parentData.tagList = trimmedValue;
+          // Small delay to ensure Alpine updates before htmx sends
+          setTimeout(() => {
+            // Trigger htmx on the input element which has all the htmx attributes
+            // The input's hx-include will automatically include the form data
+            if (htmx && input) {
+              htmx.trigger(input, 'save-tags');
+            }
+            // Delay stopping editing to ensure htmx can process the trigger
+            setTimeout(() => {
+              this.stopEditing();
+            }, 100);
+          }, 10);
+        } else {
+          this.stopEditing();
+        }
+      },
+      startEditing() {
+        this.syncWithParent();
+        this.editing = true;
+        this.$nextTick(() => {
+          const input = this.$refs.tagInput;
+          if (input) {
+            input.focus();
+            input.select();
+          }
+        });
+      },
+      stopEditing() {
+        this.editing = false;
+      }
+    }"
+    @click="if (!editing) startEditing()"
+    @click.outside="if (editing) stopEditing()"
+  >
+    <div x-show="!editing" class="flex flex-wrap gap-1.5 min-h-[1.5rem] cursor-pointer">
+      <% if tags&.any? %>
+        <% tags.each do |tag| %>
+          <span class="badge badge-sm badge-neutral"><%= tag.name %></span>
+        <% end %>
+      <% else %>
+        <span class="text-zinc-400 dark:text-gray-500 italic text-sm">Click to add tags</span>
+      <% end %>
+    </div>
+    <input
+      x-show="editing"
+      x-ref="tagInput"
+      type="text"
+      x-model="tagListValue"
+      x-on:input="updateParentTagList($event.target.value)"
+      x-on:blur="updateTags($event)"
+      x-on:keydown.enter.prevent="updateTags($event)"
+      x-on:keydown.escape.prevent="stopEditing()"
+      hx-patch="<%= update_path %>"
+      hx-trigger="save-tags"
+      hx-include="#<%= form_id %>"
+      hx-target="closest .mb-8"
+      hx-swap="outerHTML"
+      class="w-full px-2 py-1 text-sm border border-zinc-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-zinc-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-accent-500"
+      placeholder="Enter tags separated by commas"
+      style="display: none;"
+    />
   </div>
+<% else %>
+  <% if tags&.any? %>
+    <div class="<%= css_class %> flex flex-wrap gap-1.5">
+      <% tags.each do |tag| %>
+        <span class="badge badge-sm badge-neutral"><%= tag.name %></span>
+      <% end %>
+    </div>
+  <% end %>
 <% end %>
 
