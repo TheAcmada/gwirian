@@ -44,6 +44,9 @@ gem "view_component"
 # Use CanCanCan for authorization [https://github.com/CanCanCommunity/cancancan]
 gem "cancancan"
 
+# Use acts_as_list for sortable list support in Rails models
+gem "acts_as_list"
+
 # Use acts_as_taggable_on for tagging support in Rails models
 gem "acts-as-taggable-on"
 
