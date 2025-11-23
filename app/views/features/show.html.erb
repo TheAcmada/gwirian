@@ -1,4 +1,5 @@
 <% content_for :title, "#{@feature.title} - #{@project.name}" %>
 <div class="max-w-3xl mx-auto px-4 py-12">
   <%= render partial: "features/feature_header", locals: { feature: @feature, project: @project } %>
+  <%= render partial: "scenarios/scenarios", locals: { feature: @feature, project: @project } %>
 </div>

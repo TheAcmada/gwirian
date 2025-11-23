@@ -1,0 +1,28 @@
+<div
+  id="<%= wrapper_id %>"
+  x-data="{
+    title: <%= title_text.to_json %>,
+    updateTitle(event) {
+      this.title = event.target.innerText.trim();
+      setTimeout(() => {
+        htmx.trigger(event.target, 'save-title');
+      }, 10);
+    }
+  }"
+  class="flex-1"
+>
+  <form id="<%= form_id %>" style="display: none;">
+    <input type="hidden" name="scenario[title]" x-bind:value="title">
+  </form>
+  <h3
+    class="text-lg font-semibold text-zinc-900 dark:text-white is-editable"
+    contenteditable="true"
+    x-on:blur="updateTitle($event)"
+    hx-patch="<%= update_path %>"
+    hx-trigger="save-title"
+    hx-include="#<%= form_id %>"
+    hx-target="#<%= wrapper_id %>"
+    hx-swap="outerHTML"
+  ><%= scenario.title %></h3>
+</div>
+

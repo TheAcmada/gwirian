@@ -7,6 +7,7 @@ Rails.application.routes.draw do
         post :add_tag
         delete :remove_tag
       end
+      resources :scenarios, only: [ :create, :update ]
     end
     member do
       post :add_member
