@@ -10,14 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_11_194715) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_23_105113) do
   create_table "features", force: :cascade do |t|
     t.string "title"
     t.text "description"
-    t.text "background"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "project_id", null: false
+    t.text "background"
     t.index ["project_id"], name: "index_features_on_project_id"
   end
 
@@ -53,6 +53,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_11_194715) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "scenarios", force: :cascade do |t|
+    t.integer "feature_id", null: false
+    t.string "title"
+    t.string "given"
+    t.string "when"
+    t.string "then"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["feature_id"], name: "index_scenarios_on_feature_id"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "ip_address"
@@ -60,6 +71,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_11_194715) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
+  create_table "steps", force: :cascade do |t|
+    t.integer "scenario_id", null: false
+    t.text "action"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["scenario_id"], name: "index_steps_on_scenario_id"
   end
 
   create_table "taggings", force: :cascade do |t|
@@ -104,6 +123,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_11_194715) do
   add_foreign_key "features", "projects"
   add_foreign_key "login_histories", "users"
   add_foreign_key "project_members", "projects"
+  add_foreign_key "scenarios", "features"
   add_foreign_key "sessions", "users"
+  add_foreign_key "steps", "scenarios"
   add_foreign_key "taggings", "tags"
 end
