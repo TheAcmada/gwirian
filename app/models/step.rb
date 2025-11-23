@@ -3,4 +3,3 @@ class Step < ApplicationRecord
 
   validates :action, presence: true
 end
-

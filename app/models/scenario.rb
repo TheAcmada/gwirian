@@ -4,4 +4,3 @@ class Scenario < ApplicationRecord
 
   validates :title, presence: true
 end
-
