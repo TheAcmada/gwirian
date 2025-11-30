@@ -1,7 +1,27 @@
 <div id="scenarios-list" class="mb-8">
   <h2 class="text-xl font-semibold text-zinc-900 dark:text-white mb-4">Scenarios</h2>
-  
-  <div id="scenarios-container" class="space-y-4">
+
+  <div
+    id="scenarios-container"
+    class="space-y-4"
+    <% if feature.project.editor?(Current.user) || feature.project.admin?(Current.user) %>
+      x-data
+      x-init="
+        new Sortable($el, {
+          handle: '.drag-handle',
+          animation: 150,
+          onEnd: (evt) => {
+            htmx.ajax('POST', '<%= reorder_project_feature_scenarios_path(project, feature) %>', {
+              values: {
+                'order[]': Array.from($el.children).map(e => e.dataset.id)
+              },
+              swap: 'none'
+            });
+          }
+        });
+      "
+    <% end %>
+  >
     <% if feature.scenarios.any? %>
       <% feature.scenarios.each do |scenario| %>
         <%= render ScenarioComponent.new(scenario: scenario, feature: feature, project: project) %>

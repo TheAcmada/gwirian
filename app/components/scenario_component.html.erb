@@ -1,8 +1,21 @@
 <div
-  class="scenario-item p-4 bg-white dark:bg-gray-800 rounded-lg border border-zinc-200 dark:border-gray-700"
+  class="scenario-item group p-4 bg-white dark:bg-gray-800 rounded-lg border border-zinc-200 dark:border-gray-700"
   x-data="{ expanded: false }"
+  data-id="<%= scenario.id %>"
 >
   <div class="flex items-center gap-2 mb-2">
+    <% if helpers.can?(:update, scenario) %>
+      <span class="drag-handle opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing text-zinc-400 dark:text-gray-500 hover:text-zinc-600 dark:hover:text-gray-400 transition-opacity" title="Drag to reorder">
+        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="12" r="1"/>
+          <circle cx="9" cy="5" r="1"/>
+          <circle cx="9" cy="19" r="1"/>
+          <circle cx="15" cy="12" r="1"/>
+          <circle cx="15" cy="5" r="1"/>
+          <circle cx="15" cy="19" r="1"/>
+        </svg>
+      </span>
+    <% end %>
     <button
       type="button"
       @click="expanded = !expanded"

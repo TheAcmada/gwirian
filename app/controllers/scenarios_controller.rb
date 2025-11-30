@@ -49,6 +49,18 @@ class ScenariosController < ApplicationController
     end
   end
 
+  def reorder
+    # Check authorization - user must be able to update scenarios
+    # We check by trying to authorize on the first scenario, or create a dummy scenario for authorization
+    test_scenario = @feature.scenarios.first || @feature.scenarios.new
+    authorize! :update, test_scenario
+
+    params[:order].each_with_index do |id, idx|
+      @feature.scenarios.where(id: id).update_all(position: idx + 1)
+    end
+    head :ok
+  end
+
   private
 
   def set_project
