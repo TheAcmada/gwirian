@@ -4,9 +4,9 @@
   <div
     id="scenarios-container"
     class="space-y-4"
-    <% if feature.project.editor?(Current.user) || feature.project.admin?(Current.user) %>
-      x-data
-      x-init="
+    x-data
+    x-init="
+      <% if feature.project.editor?(Current.user) || feature.project.admin?(Current.user) %>
         new Sortable($el, {
           handle: '.drag-handle',
           animation: 150,
@@ -19,8 +19,14 @@
             });
           }
         });
-      "
-    <% end %>
+      <% end %>
+      $el.addEventListener('htmx:afterSwap', () => {
+        const noScenariosMsg = document.getElementById('no-scenarios-message');
+        if (noScenariosMsg) {
+          noScenariosMsg.remove();
+        }
+      });
+    "
   >
     <% if feature.scenarios.any? %>
       <% feature.scenarios.each do |scenario| %>
@@ -38,7 +44,6 @@
         hx-post="<%= project_feature_scenarios_path(project, feature) %>"
         hx-target="#scenarios-container"
         hx-swap="beforeend"
-        hx-on::after-swap="document.getElementById('no-scenarios-message')?.remove()"
         class="inline-flex items-center gap-2 text-zinc-600 dark:text-gray-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
