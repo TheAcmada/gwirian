@@ -25,4 +25,3 @@ class ScenarioTitleComponent < ApplicationComponent
 
   attr_reader :scenario, :feature, :project
 end
-
