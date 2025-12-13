@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Alpine.js cloak - hide elements until Alpine initializes */
+[x-cloak] { display: none !important; }
+
 @theme {
   /* Do not reset the whole palette to avoid regressions.
      Declare a few base aliases and tokens only. */
@@ -255,5 +258,157 @@
   .alert-container,
   .error-container {
     @apply fixed bottom-4 right-4 z-50 max-w-sm;
+  }
+
+  /* ========================================
+   * Notion-style Drag and Drop
+   * ======================================== */
+
+  /* Prevent text selection during drag */
+  .is-drag-active {
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: grabbing !important;
+  }
+
+  .is-drag-active * {
+    cursor: grabbing !important;
+  }
+
+  /* Original item being dragged */
+  .is-dragging {
+    @apply opacity-40 bg-zinc-100 dark:bg-gray-700;
+    transition: opacity 0.15s ease, background-color 0.15s ease;
+  }
+
+  /* Ghost element that follows cursor */
+  .drag-ghost {
+    @apply bg-white dark:bg-gray-800 shadow-2xl;
+    border-radius: 12px;
+    opacity: 0.95;
+    transform: rotate(1.5deg) scale(1.02);
+    box-shadow:
+      0 20px 40px -10px rgba(0, 0, 0, 0.15),
+      0 10px 20px -8px rgba(0, 0, 0, 0.1),
+      0 0 0 1px rgba(0, 0, 0, 0.05);
+    transition: transform 0.1s ease;
+  }
+
+  /* Drop indicator line - before position */
+  .drop-before {
+    position: relative;
+  }
+
+  .drop-before::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent-500), var(--color-accent-400));
+    border-radius: 2px;
+    z-index: 10;
+    animation: dropIndicatorPulse 1s ease-in-out infinite;
+  }
+
+  .drop-before::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -4px;
+    width: 8px;
+    height: 8px;
+    background: var(--color-accent-500);
+    border-radius: 50%;
+    z-index: 11;
+    box-shadow: 0 0 0 2px white;
+  }
+
+  /* Drop indicator line - after position */
+  .drop-after {
+    position: relative;
+  }
+
+  .drop-after::before {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent-500), var(--color-accent-400));
+    border-radius: 2px;
+    z-index: 10;
+    animation: dropIndicatorPulse 1s ease-in-out infinite;
+  }
+
+  .drop-after::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: -4px;
+    width: 8px;
+    height: 8px;
+    background: var(--color-accent-500);
+    border-radius: 50%;
+    z-index: 11;
+    box-shadow: 0 0 0 2px white;
+  }
+
+  @keyframes dropIndicatorPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  /* Animation for just-dropped item */
+  .just-dropped {
+    animation: dropBounce 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes dropBounce {
+    0% { transform: scale(1.02); }
+    50% { transform: scale(0.98); }
+    100% { transform: scale(1); }
+  }
+
+  /* Drag handle styles */
+  .drag-handle {
+    @apply opacity-0 cursor-grab active:cursor-grabbing;
+    transition: opacity 0.15s ease, color 0.15s ease;
+  }
+
+  .drag-handle:hover {
+    @apply text-zinc-600 dark:text-gray-300;
+  }
+
+  .drag-handle:active {
+    @apply text-accent-500;
+  }
+
+  /* Show drag handle on parent hover */
+  .scenario-item:hover .drag-handle,
+  .draggable-item:hover .drag-handle {
+    @apply opacity-100;
+  }
+
+  /* Keep handle visible during drag */
+  .is-dragging .drag-handle {
+    @apply opacity-100;
+  }
+
+  /* Dark mode adjustments for ghost */
+  @media (prefers-color-scheme: dark) {
+    .drag-ghost {
+      box-shadow:
+        0 20px 40px -10px rgba(0, 0, 0, 0.4),
+        0 10px 20px -8px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .drop-before::after,
+    .drop-after::after {
+      box-shadow: 0 0 0 2px var(--color-gray-800);
+    }
   }
 }
