@@ -1,7 +1,7 @@
 <div class="relative" x-data="{ open: false }">
   <button
     type="button"
-    class="absolute top-0 right-0 mt-2 mr-2 flex items-center justify-center w-8 h-8 rounded-full cursor-pointer hover:bg-zinc-100 dark:hover:bg-gray-700 focus:outline-none focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-accent-500"
+    class="<%= button_classes %> opacity-0 group-hover:opacity-100 transition-opacity"
     aria-label="Open menu"
     @click.stop="open = !open"
     @keydown.escape.window="open = false"
@@ -12,7 +12,7 @@
     x-show="open"
     @click.outside="open = false"
     x-transition
-    class="absolute right-0 mt-12 mr-2 z-10 bg-white dark:bg-gray-800 border border-zinc-200 dark:border-gray-700 rounded-lg shadow-lg py-1 focus:outline-none"
+    class="absolute right-0 mt-1 z-10 bg-white dark:bg-gray-800 border border-zinc-200 dark:border-gray-700 rounded-lg shadow-lg py-1 focus:outline-none"
     style="display: none;"
     role="menu"
     aria-orientation="vertical"
@@ -21,11 +21,11 @@
     <button
       type="button"
       class="w-full text-left px-4 py-2 text-sm text-error-600 hover:bg-error-50 dark:text-error-300 dark:hover:bg-gray-700 flex items-center gap-2 rounded-md focus-visible:ring-3 focus-visible:ring-error-500 cursor-pointer"
-      hx-delete="<%= project_feature_path(project, feature) %>"
-      hx-target="#features"
+      hx-delete="<%= delete_path %>"
+      hx-target="<%= delete_target %>"
       hx-swap="outerHTML"
       hx-trigger="confirmed"
-      @click.prevent="showConfirmation('<%= escape_javascript('Are you sure you want to delete this feature?') %>').then(result => { if (result.isConfirmed) { htmx.trigger($el, 'confirmed') } })"
+      @click.prevent="showConfirmation('<%= escape_javascript(confirmation_message) %>').then(result => { if (result.isConfirmed) { htmx.trigger($el, 'confirmed') } })"
       x-data="{}"
       role="menuitem">
       <%= helpers.delete_icon %>
@@ -33,4 +33,3 @@
     </button>
   </div>
 </div>
-

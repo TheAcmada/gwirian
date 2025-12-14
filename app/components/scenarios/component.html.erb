@@ -60,11 +60,11 @@
     </button>
 
     <div class="flex-1 min-w-0">
-      <%= render ScenarioTitleComponent.new(scenario: scenario, feature: feature, project: project) %>
+      <%= render Scenarios::TitleComponent.new(scenario: scenario, feature: feature, project: project) %>
     </div>
 
     <% if helpers.can?(:destroy, scenario) %>
-      <%= render ScenarioDropdownMenuComponent.new(scenario: scenario, feature: feature, project: project) %>
+      <%= render Scenarios::DropdownMenuComponent.new(scenario: scenario, feature: feature, project: project) %>
     <% end %>
   </div>
 

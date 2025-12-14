@@ -1,7 +1,7 @@
 <!-- Feature Header -->
 <div class="mb-8">
-  <%= render FeatureTitleComponent.new(feature: @feature, project: @project) %>
-  <%= render FeatureDescriptionComponent.new(feature: @feature, project: @project) %>
-  <%= render FeatureTagListComponent.new(feature: @feature, project: @project) %>
+  <%= render Features::TitleComponent.new(feature: @feature, project: @project) %>
+  <%= render Features::DescriptionComponent.new(feature: @feature, project: @project) %>
+  <%= render Features::TagListComponent.new(feature: @feature, project: @project) %>
 </div>
 

@@ -1,0 +1,44 @@
+<div
+  id="<%= wrapper_id %>"
+  class="step-item group relative pl-8 py-2 text-sm"
+  x-data="{
+    actionText: <%= action_text.to_json %>,
+    updateAction(event) {
+      this.actionText = event.target.innerText.trim();
+      setTimeout(() => htmx.trigger(event.target, 'save-action'), 10);
+    }
+  }"
+  data-id="<%= step.id %>"
+>
+  <form id="<%= form_id %>" style="display: none;">
+    <input type="hidden" name="step[action]" x-bind:value="actionText">
+  </form>
+
+  <div class="flex items-center gap-2">
+    <span class="flex-shrink-0 text-zinc-400 dark:text-gray-500 text-xs font-mono">#<%= step.position %></span>
+    <span
+      class="flex-1 text-zinc-600 dark:text-gray-300 leading-relaxed editable-placeholder is-editable"
+      contenteditable="true"
+      data-placeholder="Enter step action..."
+      x-on:blur="updateAction($event)"
+      hx-patch="<%= update_path %>"
+      hx-trigger="save-action"
+      hx-include="#<%= form_id %>"
+      hx-swap="none"
+    ><%= step.action.to_s.strip.presence %></span>
+    <% if helpers.can?(:destroy, step) %>
+      <button
+        type="button"
+        class="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-400 hover:text-error-600 dark:hover:text-error-400 focus:outline-none"
+        hx-delete="<%= helpers.project_feature_scenario_step_path(project, feature, scenario, step) %>"
+        hx-target="#<%= wrapper_id %>"
+        hx-swap="outerHTML"
+        aria-label="Delete step"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    <% end %>
+  </div>
+</div>

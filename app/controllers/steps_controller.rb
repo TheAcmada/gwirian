@@ -15,7 +15,7 @@ class StepsController < ApplicationController
 
     if @step.save
       if request.headers["HX-Request"]
-        render StepComponent.new(
+        render Steps::Component.new(
           step: @step,
           scenario: @scenario,
           feature: @feature,

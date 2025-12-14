@@ -1,6 +1,6 @@
 <div
   x-data="{
-    description: <%= description_text.to_json %>,
+    description: <%= field_value.to_json %>,
     updateDescription(event) {
       let text = event.target.innerText.trim();
       this.description = text === 'No description provided' ? '' : text;
@@ -38,4 +38,3 @@
     >No description provided</p>
   <% end %>
 </div>
-

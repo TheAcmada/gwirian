@@ -12,7 +12,7 @@
   >
 
     <% feature.scenarios.each do |scenario| %>
-      <%= render ScenarioComponent.new(scenario: scenario, feature: feature, project: project) %>
+      <%= render Scenarios::Component.new(scenario: scenario, feature: feature, project: project) %>
     <% end %>
 
   </div>

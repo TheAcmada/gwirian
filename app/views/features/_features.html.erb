@@ -2,7 +2,7 @@
   <% if features.any? %>
     <div>
       <% features.each do |feature| %>
-        <%= render FeatureCardComponent.new(feature: feature, project: project) %>
+        <%= render Features::CardComponent.new(feature: feature, project: project) %>
       <% end %>
     </div>
   <% else %>

@@ -9,7 +9,7 @@ class ScenariosController < ApplicationController
 
     if @scenario.save
       if request.headers["HX-Request"]
-        render ScenarioComponent.new(scenario: @scenario, feature: @feature, project: @project), layout: false
+        render Scenarios::Component.new(scenario: @scenario, feature: @feature, project: @project), layout: false
       else
         redirect_to project_feature_path(@project, @feature), notice: "Scenario created successfully"
       end
@@ -29,9 +29,9 @@ class ScenariosController < ApplicationController
       if request.headers["HX-Request"]
         # Check if this is a title-only update by checking if only title is in params
         if scenario_params.keys == [ "title" ] || (scenario_params.keys.include?("title") && scenario_params.keys.length == 1)
-          render ScenarioTitleComponent.new(scenario: @scenario, feature: @feature, project: @project), layout: false
+          render Scenarios::TitleComponent.new(scenario: @scenario, feature: @feature, project: @project), layout: false
         else
-          render ScenarioComponent.new(scenario: @scenario, feature: @feature, project: @project), layout: false
+          render Scenarios::Component.new(scenario: @scenario, feature: @feature, project: @project), layout: false
         end
       else
         redirect_to project_feature_path(@project, @feature), notice: "Scenario updated successfully"
@@ -39,9 +39,9 @@ class ScenariosController < ApplicationController
     else
       if request.headers["HX-Request"]
         if scenario_params.keys == [ "title" ] || (scenario_params.keys.include?("title") && scenario_params.keys.length == 1)
-          render ScenarioTitleComponent.new(scenario: @scenario, feature: @feature, project: @project), layout: false, status: :unprocessable_entity
+          render Scenarios::TitleComponent.new(scenario: @scenario, feature: @feature, project: @project), layout: false, status: :unprocessable_entity
         else
-          render ScenarioComponent.new(scenario: @scenario, feature: @feature, project: @project), layout: false, status: :unprocessable_entity
+          render Scenarios::Component.new(scenario: @scenario, feature: @feature, project: @project), layout: false, status: :unprocessable_entity
         end
       else
         redirect_to project_feature_path(@project, @feature), alert: "Failed to update scenario"
