@@ -1,8 +1,32 @@
 <div
+  id="<%= wrapper_id %>"
   class="scenario-item group relative p-4 bg-white dark:bg-gray-800 rounded-xl border border-zinc-200 dark:border-gray-700 hover:border-zinc-300 dark:hover:border-gray-600 transition-all duration-150"
-  x-data="{ expanded: false }"
+  x-data="{
+    expanded: false,
+    givenText: <%= given_text.to_json %>,
+    whenText: <%= when_text.to_json %>,
+    thenText: <%= then_text.to_json %>,
+    updateGiven(event) {
+      this.givenText = event.target.innerText.trim();
+      setTimeout(() => htmx.trigger(event.target, 'save-given'), 10);
+    },
+    updateWhen(event) {
+      this.whenText = event.target.innerText.trim();
+      setTimeout(() => htmx.trigger(event.target, 'save-when'), 10);
+    },
+    updateThen(event) {
+      this.thenText = event.target.innerText.trim();
+      setTimeout(() => htmx.trigger(event.target, 'save-then'), 10);
+    }
+  }"
   data-id="<%= scenario.id %>"
 >
+  <form id="<%= form_id %>" style="display: none;">
+    <input type="hidden" name="scenario[given]" x-bind:value="givenText">
+    <input type="hidden" name="scenario[when]" x-bind:value="whenText">
+    <input type="hidden" name="scenario[then]" x-bind:value="thenText">
+  </form>
+
   <div class="flex items-center gap-3">
     <% if helpers.can?(:update, scenario) %>
       <div class="drag-handle flex-shrink-0 flex items-center justify-center w-6 h-8 -ml-1 rounded text-zinc-400 dark:text-gray-500 hover:text-zinc-600 dark:hover:text-gray-300 hover:bg-zinc-100 dark:hover:bg-gray-700 transition-all" title="Drag to reorder">
@@ -55,29 +79,46 @@
     x-cloak
     class="mt-4 ml-9 pl-3 border-l-2 border-zinc-200 dark:border-gray-700"
   >
-    <% if scenario.given.present? || scenario[:when].present? || scenario[:then].present? %>
-      <div class="space-y-3 text-sm">
-        <% if scenario.given.present? %>
-          <div class="flex gap-3">
-            <span class="flex-shrink-0 font-semibold text-emerald-600 dark:text-emerald-400 uppercase text-xs tracking-wide pt-0.5">Given</span>
-            <span class="text-zinc-600 dark:text-gray-300 leading-relaxed"><%= scenario.given %></span>
-          </div>
-        <% end %>
-        <% if scenario[:when].present? %>
-          <div class="flex gap-3">
-            <span class="flex-shrink-0 font-semibold text-blue-600 dark:text-blue-400 uppercase text-xs tracking-wide pt-0.5">When</span>
-            <span class="text-zinc-600 dark:text-gray-300 leading-relaxed"><%= scenario[:when] %></span>
-          </div>
-        <% end %>
-        <% if scenario[:then].present? %>
-          <div class="flex gap-3">
-            <span class="flex-shrink-0 font-semibold text-purple-600 dark:text-purple-400 uppercase text-xs tracking-wide pt-0.5">Then</span>
-            <span class="text-zinc-600 dark:text-gray-300 leading-relaxed"><%= scenario[:then] %></span>
-          </div>
-        <% end %>
+    <div class="space-y-3 text-sm">
+      <div class="flex gap-3">
+        <span class="flex-shrink-0 font-semibold text-emerald-600 dark:text-emerald-400 uppercase text-xs tracking-wide pt-0.5 w-12">Given</span>
+        <span
+          class="flex-1 text-zinc-600 dark:text-gray-300 leading-relaxed editable-placeholder is-editable"
+          contenteditable="true"
+          data-placeholder="Describe the initial context..."
+          x-on:blur="updateGiven($event)"
+          hx-patch="<%= update_path %>"
+          hx-trigger="save-given"
+          hx-include="#<%= form_id %>"
+          hx-swap="none"
+        ><%= scenario.given.to_s.strip.presence %></span>
       </div>
-    <% else %>
-      <p class="text-sm text-zinc-400 dark:text-gray-500 italic">No details provided</p>
-    <% end %>
+      <div class="flex gap-3">
+        <span class="flex-shrink-0 font-semibold text-blue-600 dark:text-blue-400 uppercase text-xs tracking-wide pt-0.5 w-12">When</span>
+        <span
+          class="flex-1 text-zinc-600 dark:text-gray-300 leading-relaxed editable-placeholder is-editable"
+          contenteditable="true"
+          data-placeholder="Describe the action or event..."
+          x-on:blur="updateWhen($event)"
+          hx-patch="<%= update_path %>"
+          hx-trigger="save-when"
+          hx-include="#<%= form_id %>"
+          hx-swap="none"
+        ><%= scenario[:when].to_s.strip.presence %></span>
+      </div>
+      <div class="flex gap-3">
+        <span class="flex-shrink-0 font-semibold text-purple-600 dark:text-purple-400 uppercase text-xs tracking-wide pt-0.5 w-12">Then</span>
+        <span
+          class="flex-1 text-zinc-600 dark:text-gray-300 leading-relaxed editable-placeholder is-editable"
+          contenteditable="true"
+          data-placeholder="Describe the expected outcome..."
+          x-on:blur="updateThen($event)"
+          hx-patch="<%= update_path %>"
+          hx-trigger="save-then"
+          hx-include="#<%= form_id %>"
+          hx-swap="none"
+        ><%= scenario[:then].to_s.strip.presence %></span>
+      </div>
+    </div>
   </div>
 </div>

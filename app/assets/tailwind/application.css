@@ -103,6 +103,34 @@
     @apply outline-none focus:outline-none focus:ring-0 focus:border-none;
   }
 
+  /* Notion-style editable placeholder */
+  .editable-placeholder {
+    min-height: 1.5em;
+    display: block;
+    position: relative;
+  }
+
+  .editable-placeholder:empty::before {
+    content: attr(data-placeholder);
+    color: var(--color-zinc-400);
+    font-style: italic;
+    pointer-events: none;
+  }
+
+  .editable-placeholder:focus:empty::before {
+    color: var(--color-zinc-300);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .editable-placeholder:empty::before {
+      color: var(--color-gray-500);
+    }
+
+    .editable-placeholder:focus:empty::before {
+      color: var(--color-gray-600);
+    }
+  }
+
   .badge {
     @apply inline-flex items-center gap-x-1.5 px-2.5 py-0.5 rounded-md text-xs font-medium ring-1 ring-inset ring-zinc-200 text-zinc-700 bg-zinc-50;
   }
