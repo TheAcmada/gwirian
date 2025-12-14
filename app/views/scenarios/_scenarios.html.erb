@@ -3,38 +3,18 @@
 
   <div
     id="scenarios-container"
-    class="space-y-4"
-    x-data
-    x-init="
-      <% if feature.project.editor?(Current.user) || feature.project.admin?(Current.user) %>
-        new Sortable($el, {
-          handle: '.drag-handle',
-          animation: 150,
-          onEnd: (evt) => {
-            htmx.ajax('POST', '<%= reorder_project_feature_scenarios_path(project, feature) %>', {
-              values: {
-                'order[]': Array.from($el.children).map(e => e.dataset.id)
-              },
-              swap: 'none'
-            });
-          }
-        });
-      <% end %>
-      $el.addEventListener('htmx:afterSwap', () => {
-        const noScenariosMsg = document.getElementById('no-scenarios-message');
-        if (noScenariosMsg) {
-          noScenariosMsg.remove();
-        }
-      });
-    "
-  >
-    <% if feature.scenarios.any? %>
-      <% feature.scenarios.each do |scenario| %>
-        <%= render ScenarioComponent.new(scenario: scenario, feature: feature, project: project) %>
-      <% end %>
+    class="space-y-3"
+    <% if feature.project.editor?(Current.user) || feature.project.admin?(Current.user) %>
+      x-data="dragDropList({ reorderUrl: '<%= reorder_project_feature_scenarios_path(project, feature) %>' })"
     <% else %>
-      <p id="no-scenarios-message" class="text-zinc-500 dark:text-gray-400 italic mb-4">No scenarios yet</p>
+      x-data
     <% end %>
+  >
+
+    <% feature.scenarios.each do |scenario| %>
+      <%= render ScenarioComponent.new(scenario: scenario, feature: feature, project: project) %>
+    <% end %>
+
   </div>
 
   <% if feature.project.editor?(Current.user) || feature.project.admin?(Current.user) %>
@@ -44,14 +24,15 @@
         hx-post="<%= project_feature_scenarios_path(project, feature) %>"
         hx-target="#scenarios-container"
         hx-swap="beforeend"
-        class="inline-flex items-center gap-2 text-zinc-600 dark:text-gray-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
+        class="inline-flex items-center gap-2 text-zinc-600 dark:text-gray-400 hover:text-zinc-900 dark:hover:text-white transition-colors group"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-        </svg>
-        <span>Add New Scenario</span>
+        <span class="flex items-center justify-center w-6 h-6 rounded-md bg-zinc-100 dark:bg-gray-700 group-hover:bg-accent-100 dark:group-hover:bg-accent-900 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+        </span>
+        <span class="font-medium">Add Scenario</span>
       </a>
     </div>
   <% end %>
 </div>
-

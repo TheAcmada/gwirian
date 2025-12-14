@@ -1,7 +1,7 @@
 class ScenariosController < ApplicationController
   before_action :set_project
   before_action :set_feature
-  before_action :set_scenario, only: [ :update ]
+  before_action :set_scenario, only: [ :update, :destroy ]
 
   def create
     @scenario = @feature.scenarios.new(title: "New scenario")
@@ -46,6 +46,17 @@ class ScenariosController < ApplicationController
       else
         redirect_to project_feature_path(@project, @feature), alert: "Failed to update scenario"
       end
+    end
+  end
+
+  def destroy
+    authorize! :destroy, @scenario
+    @scenario.destroy!
+
+    if request.headers["HX-Request"]
+      head :ok
+    else
+      redirect_to project_feature_path(@project, @feature), notice: "Scenario deleted successfully"
     end
   end
 
