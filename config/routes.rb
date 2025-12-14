@@ -7,7 +7,7 @@ Rails.application.routes.draw do
         post :add_tag
         delete :remove_tag
       end
-      resources :scenarios, only: [ :create, :update ] do
+      resources :scenarios, only: [ :create, :update, :destroy ] do
         collection do
           post :reorder
         end
