@@ -9,18 +9,12 @@
     <% else %>
       x-data
     <% end %>
-    x-on:htmx:after-swap.window="
-      const noScenariosMsg = document.getElementById('no-scenarios-message');
-      if (noScenariosMsg) noScenariosMsg.remove();
-    "
   >
-    <% if feature.scenarios.any? %>
-      <% feature.scenarios.each do |scenario| %>
-        <%= render ScenarioComponent.new(scenario: scenario, feature: feature, project: project) %>
-      <% end %>
-    <% else %>
-      <p id="no-scenarios-message" class="text-zinc-500 dark:text-gray-400 italic mb-4">No scenarios yet</p>
+
+    <% feature.scenarios.each do |scenario| %>
+      <%= render ScenarioComponent.new(scenario: scenario, feature: feature, project: project) %>
     <% end %>
+
   </div>
 
   <% if feature.project.editor?(Current.user) || feature.project.admin?(Current.user) %>
