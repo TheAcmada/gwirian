@@ -11,6 +11,7 @@ Rails.application.routes.draw do
         collection do
           post :reorder
         end
+        resources :steps, only: [ :create, :update, :destroy ]
       end
     end
     member do
