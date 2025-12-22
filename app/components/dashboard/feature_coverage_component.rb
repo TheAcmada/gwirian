@@ -47,7 +47,7 @@ module Dashboard
           pending: statuses.count("pending"),
           total: statuses.size
         )
-      end.sort_by { |fs| [-fs.failed, -fs.pending, fs.feature.title] }
+      end.sort_by { |fs| [ -fs.failed, -fs.pending, fs.feature.title ] }
     end
 
     def has_features?
@@ -69,4 +69,3 @@ module Dashboard
     end
   end
 end
-
