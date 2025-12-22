@@ -85,7 +85,7 @@
   >
     <% if latest_execution %>
       <div class="mb-2 pb-2 text-xs text-stone-400 dark:text-white/40 border-b border-stone-100 dark:border-white/5">
-        Last run: <%= latest_execution.executed_at.strftime("%b %d, %Y at %I:%M %p") %>
+        Last run: <%= helpers.format_datetime(latest_execution.executed_at) %>
         <% if latest_execution.notes.present? %>
           <div class="mt-0.5 text-stone-500 dark:text-white/60"><%= latest_execution.notes %></div>
         <% end %>

@@ -44,7 +44,7 @@ module History
     end
 
     def formatted_timestamp(execution)
-      execution.executed_at.strftime("%b %d, %Y, %I:%M %p")
+      helpers.format_datetime(execution.executed_at)
     end
 
     def scenario_link(execution)
