@@ -1,51 +1,49 @@
 <% content_for :title, "Edit #{@project.name}" %>
-<div class="max-w-4xl mx-auto px-4 py-8">
+<div class="max-w-3xl mx-auto px-4 py-12">
   <!-- Page Header -->
   <div class="mb-8">
-    <h1 class="title mb-2">Project Settings</h1>
-    <p class="text-zinc-600 dark:text-gray-300">Manage your project details and team members</p>
+    <h1 class="text-4xl font-bold tracking-tight mb-2 text-stone-800 dark:text-white/90" style="letter-spacing: -0.02em;">Settings</h1>
+    <p class="text-stone-500 dark:text-white/60">Manage project details and team</p>
   </div>
 
   <div class="space-y-8">
     <!-- Project Details Form -->
-    <div class="card">
-      <h2 class="text-lg font-semibold text-zinc-900 dark:text-white mb-6">Project Details</h2>
+    <div>
+      <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Project Details</h2>
       <%= form_with model: @project, local: true do |f| %>
         <%= render 'shared/errors', model: @project %>
 
-        <div class="mb-6">
-          <%= f.label :name, "Project Name", class: 'label' %>
+        <div class="mb-4">
+          <%= f.label :name, "Name", class: 'block text-sm font-medium mb-1 text-stone-800 dark:text-white/90' %>
           <%= f.text_field :name, class: 'input', placeholder: "Enter project name", autofocus: true %>
-          <p class="mt-1 text-xs text-zinc-500 dark:text-gray-400">Choose a clear, descriptive name for your project</p>
         </div>
 
-        <div class="mb-6">
-          <%= f.label :description, "Description", class: 'label' %>
-          <%= f.text_area :description, class: 'input h-32', placeholder: "Describe your project goals, scope, and any important details" %>
-          <p class="mt-1 text-xs text-zinc-500 dark:text-gray-400">Optional - Help team members understand the project better</p>
+        <div class="mb-4">
+          <%= f.label :description, "Description", class: 'block text-sm font-medium mb-1 text-stone-800 dark:text-white/90' %>
+          <%= f.text_area :description, class: 'input h-24', placeholder: "Describe your project" %>
         </div>
 
-        <div class="flex justify-end gap-3">
-          <%= link_to "Cancel", project_path(@project), class: 'btn' %>
-          <%= f.submit "Update Project", class: 'btn btn-primary' %>
+        <div class="flex justify-end gap-2">
+          <%= link_to "Cancel", project_path(@project), class: 'btn btn-ghost' %>
+          <%= f.submit "Save changes", class: 'btn btn-primary' %>
         </div>
       <% end %>
     </div>
 
     <!-- Project Members Management -->
-    <div class="card overflow-x-auto mt-4">
-      <h2 class="text-xl font-bold mb-6">Team Members</h2>
+    <div>
+      <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Team Members</h2>
       <%= render "projects/project_members", project: @project %>
       <% if can? :add_member, @project %>
         <form hx-post="<%= add_member_project_path(@project) %>"
               hx-target="#project-members-<%= @project.id %>"
               hx-swap="outerHTML"
-              class="flex gap-2 items-center">
-          <input type="email" name="project_member[email]" class="input" placeholder="Enter email address" required>
-          <select name="project_member[role]" class="input w-48">
-            <option value="administrator">administrator</option>
-            <option value="editor">editor</option>
-            <option value="viewer" selected>viewer</option>
+              class="flex gap-2 items-center mt-4">
+          <input type="email" name="project_member[email]" class="input flex-1" placeholder="Email address" required>
+          <select name="project_member[role]" class="input w-36">
+            <option value="administrator">Admin</option>
+            <option value="editor">Editor</option>
+            <option value="viewer" selected>Viewer</option>
           </select>
           <button type="submit" class="btn btn-primary">Add</button>
         </form>
@@ -54,20 +52,20 @@
 
     <!-- Danger Zone -->
     <% if can? :destroy, @project %>
-      <div class="card overflow-x-auto mt-4 border-1 border-error-500 dark:border-error-300">
-        <h2 class="text-xl font-bold mb-6 is-danger">Danger Zone</h2>
-        <div class="flex flex-row items-center gap-2">
-          <div class="flex-1">
-            <p class="text-sm is-danger">Delete this project</p>
-            <p class="text-xs is-danger">Once you delete a project, there is no going back. Please be certain.</p>
+      <div class="pt-6 border-t border-red-200 dark:border-red-900/30">
+        <h2 class="text-sm font-medium mb-4 text-red-600 dark:text-red-400">Danger Zone</h2>
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-red-600 dark:text-red-400">Delete project</p>
+            <p class="text-xs text-stone-400 dark:text-white/40">This action cannot be undone</p>
           </div>
           <% delete_confirmation_message = "Are you absolutely sure? This will permanently delete the project '#{@project.name}' and all its data. This action cannot be undone." %>
-          <%= button_to "Delete Project",
+          <%= button_to "Delete",
                         project_path(@project),
                         method: :delete,
                         "x-data": "{}",
                         "@click.prevent": "showConfirmation(\"#{delete_confirmation_message}\").then(result => { if (result.isConfirmed) $el.closest('form').submit() })",
-                        class: "btn btn-danger text-xs" %>
+                        class: "btn btn-danger" %>
         </div>
       </div>
     <% end %>

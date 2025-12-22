@@ -5,14 +5,19 @@
         $store.notifications.noticeMessage= '<%= notice %>';
         setTimeout(() => $store.notifications.showNotice = <%= notice.present? %>, 100);
         setTimeout(() => $store.notifications.showNotice = false, 5000)"
-      x-transition.duration.500ms
+      x-transition.duration.300ms
       @click="$store.notifications.showNotice = false"
       role="alert"
       aria-live="polite">
-  <div class="notification is-success rounded-lg shadow-lg px-5 py-3 flex items-center gap-2">
-    <span x-text="$store.notifications.noticeMessage"></span>
-    <button @click="$store.notifications.showNotice = false" aria-label="Close notification" class="ml-auto cursor-pointer">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+  <div class="px-4 py-3 rounded flex items-center gap-2 text-sm text-white bg-emerald-600">
+    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+    </svg>
+    <span x-text="$store.notifications.noticeMessage" class="flex-1"></span>
+    <button @click="$store.notifications.showNotice = false" aria-label="Close notification" class="ml-2 cursor-pointer opacity-70 hover:opacity-100">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
     </button>
   </div>
 </div>
@@ -24,14 +29,19 @@
         $store.notifications.alertMessage= '<%= j(alert) %>';
         setTimeout(() => $store.notifications.showAlert = <%= alert.present? %>, 100);
         setTimeout(() => $store.notifications.showAlert = false, 5000);"
-      x-transition.duration.500ms
+      x-transition.duration.300ms
       @click="$store.notifications.showAlert = false"
       role="alert"
       aria-live="polite">
-  <div class="notification is-warning rounded-lg shadow-lg px-5 py-3 flex items-center gap-2">
-    <span x-text="$store.notifications.alertMessage" class="py-0 my-0"></span>
-    <button @click="$store.notifications.showAlert = false" aria-label="Close notification" class="ml-auto cursor-pointer">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+  <div class="px-4 py-3 rounded flex items-center gap-2 text-sm text-white bg-amber-500">
+    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+    </svg>
+    <span x-text="$store.notifications.alertMessage" class="flex-1"></span>
+    <button @click="$store.notifications.showAlert = false" aria-label="Close notification" class="ml-2 cursor-pointer opacity-70 hover:opacity-100">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
     </button>
   </div>
 </div>
@@ -43,14 +53,19 @@
         $store.notifications.errorMessage= '<%= j(error) %>';
         setTimeout(() => $store.notifications.showError = <%= error.present? %>, 100);
         setTimeout(() => $store.notifications.showError = false, 5000)"
-      x-transition.duration.500ms
+      x-transition.duration.300ms
       @click="$store.notifications.showError = false"
       role="alert"
       aria-live="polite">
-  <div class="notification is-error rounded-lg shadow-lg px-5 py-3 flex items-center gap-2">
-    <span x-text="$store.notifications.errorMessage"></span>
-    <button @click="$store.notifications.showError = false" aria-label="Close notification" class="ml-auto cursor-pointer">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+  <div class="px-4 py-3 rounded flex items-center gap-2 text-sm text-white bg-red-500">
+    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <span x-text="$store.notifications.errorMessage" class="flex-1"></span>
+    <button @click="$store.notifications.showError = false" aria-label="Close notification" class="ml-2 cursor-pointer opacity-70 hover:opacity-100">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
     </button>
   </div>
 </div>

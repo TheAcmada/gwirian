@@ -1,6 +1,8 @@
 class Project < ApplicationRecord
   has_many :project_members, dependent: :destroy
   has_many :features, dependent: :destroy
+  has_many :scenarios, through: :features
+  has_many :scenario_executions, through: :scenarios
 
   validates :name, presence: true, length: { maximum: 80 }
   validates :description, length: { maximum: 1000 }

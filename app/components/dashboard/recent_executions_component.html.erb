@@ -1,0 +1,59 @@
+<div class="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 overflow-hidden">
+  <div class="px-5 py-4 border-b border-stone-200 dark:border-stone-800">
+    <h3 class="text-sm font-semibold text-stone-900 dark:text-white flex items-center gap-2">
+      <svg class="w-4 h-4 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <%= t("dashboard.recent_executions.title") %>
+    </h3>
+  </div>
+
+  <% if has_executions? %>
+    <div class="divide-y divide-stone-100 dark:divide-stone-800 max-h-96 overflow-y-auto">
+      <% recent_executions.each do |execution| %>
+        <a href="<%= scenario_link(execution) %>" class="flex items-center gap-3 px-5 py-3 hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors">
+          <%# Status badge %>
+          <div class="flex-shrink-0">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center <%= status_styles(execution.status)[:bg] %>">
+              <svg class="w-4 h-4 <%= status_styles(execution.status)[:text] %>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<%= status_styles(execution.status)[:icon] %>"/>
+              </svg>
+            </div>
+          </div>
+          
+          <%# Content %>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium text-stone-900 dark:text-white truncate">
+              <%= execution.scenario.title %>
+            </div>
+            <div class="text-xs text-stone-500 dark:text-stone-400 truncate">
+              <%= execution.scenario.feature.title %>
+            </div>
+          </div>
+          
+          <%# Meta info %>
+          <div class="flex-shrink-0 text-right">
+            <div class="text-xs text-stone-500 dark:text-stone-400">
+              <%= execution_time_ago(execution) %>
+            </div>
+            <div class="text-xs text-stone-400 dark:text-stone-500">
+              <%= executor_name(execution) %>
+            </div>
+          </div>
+        </a>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="px-5 py-12 text-center">
+      <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-stone-100 dark:bg-stone-800 mb-3">
+        <svg class="w-6 h-6 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <p class="text-sm text-stone-500 dark:text-stone-400">
+        <%= t("dashboard.recent_executions.no_executions") %>
+      </p>
+    </div>
+  <% end %>
+</div>
+

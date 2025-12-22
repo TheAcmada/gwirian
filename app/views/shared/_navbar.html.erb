@@ -1,28 +1,28 @@
-<nav class="bg-white border-b border-zinc-200 dark:bg-gray-800 dark:border-gray-700">
+<nav class="border-b border-stone-200 dark:border-white/10 bg-white dark:bg-[rgb(25,25,25)]">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Main navbar row -->
-    <div class="flex justify-between items-center h-16">
+    <div class="flex justify-between items-center h-11">
       <!-- App name/logo on the left -->
       <div class="flex-shrink-0">
-        <%= link_to root_path, class: "flex items-center space-x-3 text-xl font-bold text-zinc-900 dark:text-white hover:text-accent-600 dark:hover:text-accent-400 transition-colors" do %>
-          <!-- Logo image -->
-          <img src="/logo.svg" alt="Gwirian Logo" class="h-8 w-8 dark:brightness-150 dark:invert" />
-          <!-- App name -->
-          <span>Gwirian</span>
+        <%= link_to root_path, class: "flex items-center space-x-2 text-sm font-medium hover:bg-stone-100 dark:hover:bg-white/5 rounded px-2 py-1 -ml-2 transition-colors" do %>
+          <img src="/logo.svg" alt="Gwirian Logo" class="h-5 w-5 dark:brightness-150 dark:invert" />
+          <span class="text-stone-800 dark:text-white/90">Gwirian</span>
         <% end %>
       </div>
 
       <!-- User dropdown on the right -->
+      <% username = Current.user&.email_address&.split('@')&.first || "User" %>
       <div class="relative" x-data="{ open: false }">
         <button
           @click="open = !open"
-          class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer"
+          class="flex items-center gap-2 px-2 py-1 -mr-2 rounded cursor-pointer hover:bg-stone-100 dark:hover:bg-white/5 transition-colors"
           aria-expanded="false"
           aria-haspopup="true"
         >
-          <div class="h-8 w-8 rounded-full bg-gradient-to-br from-accent-500 to-accent-600 flex items-center justify-center text-white font-medium text-sm shadow-sm">
-            <%= Current.user&.email_address&.first&.upcase || "U" %>
-          </div>
+          <span class="text-sm text-stone-600 dark:text-white/70"><%= username %></span>
+          <span class="flex items-center justify-center w-6 h-6 rounded bg-stone-100 dark:bg-white/10 text-xs font-medium text-stone-600 dark:text-white/80">
+            <%= username.first.upcase %>
+          </span>
         </button>
 
         <!-- Dropdown menu -->
@@ -30,38 +30,33 @@
           x-show="open"
           @click.away="open = false"
           x-transition:enter="transition ease-out duration-100"
-          x-transition:enter-start="transform opacity-0 scale-95"
-          x-transition:enter-end="transform opacity-100 scale-100"
+          x-transition:enter-start="opacity-0 scale-95"
+          x-transition:enter-end="opacity-100 scale-100"
           x-transition:leave="transition ease-in duration-75"
-          x-transition:leave-start="transform opacity-100 scale-100"
-          x-transition:leave-end="transform opacity-0 scale-95"
-          class="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800 dark:ring-gray-600"
+          x-transition:leave-start="opacity-100 scale-100"
+          x-transition:leave-end="opacity-0 scale-95"
+          class="absolute right-0 mt-1 w-56 py-1 z-50 bg-white dark:bg-[rgb(37,37,37)] rounded shadow-lg"
+          style="box-shadow: rgba(15, 15, 15, 0.05) 0px 0px 0px 1px, rgba(15, 15, 15, 0.1) 0px 3px 6px, rgba(15, 15, 15, 0.2) 0px 9px 24px;"
           role="menu"
           aria-orientation="vertical"
-          style="display: none;"
+          x-cloak
         >
           <!-- User info header -->
-          <div class="px-4 py-3 border-b border-zinc-200 dark:border-gray-700">
-            <p class="text-sm font-medium text-zinc-900 dark:text-white">
-              <%= Current.user&.email_address || "User" %>
-            </p>
-            <p class="text-xs text-zinc-500 dark:text-gray-400">
-              Signed in
-            </p>
+          <div class="px-3 py-2 border-b border-stone-100 dark:border-white/10">
+            <p class="text-sm font-medium text-stone-800 dark:text-white/90"><%= username %></p>
+            <p class="text-xs text-stone-400 dark:text-white/40"><%= Current.user&.email_address %></p>
           </div>
 
           <!-- Menu items -->
           <div class="py-1">
             <%= form_with url: session_path, method: :delete, local: true, class: "block" do |f| %>
               <button type="submit"
-                      class="w-full text-left px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                      class="w-full text-left px-3 py-1.5 text-sm text-stone-700 dark:text-white/90 transition-colors cursor-pointer flex items-center hover:bg-stone-100 dark:hover:bg-white/5"
                       role="menuitem">
-                <div class="flex items-center">
-                  <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                  </svg>
-                  Logout
-                </div>
+                <svg class="w-4 h-4 mr-2 text-stone-400 dark:text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                Log out
               </button>
             <% end %>
           </div>
@@ -71,7 +66,7 @@
 
     <!-- Project bar row (only shown when @project is present and persisted) -->
     <% if @project.present? && @project.persisted? %>
-      <div class="border-t border-zinc-200 dark:border-gray-700 py-3">
+      <div class="py-2 border-t border-stone-100 dark:border-white/5">
         <%= render 'projects/project_bar', project: @project %>
       </div>
     <% end %>

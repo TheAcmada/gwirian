@@ -1,0 +1,82 @@
+<% content_for :title, "Select Scenarios - #{@feature.title} - #{@project.name}" %>
+
+<div class="max-w-2xl mx-auto px-4 py-12">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center gap-3 mb-2">
+      <a
+        href="<%= project_feature_path(@project, @feature) %>"
+        class="flex items-center justify-center w-7 h-7 rounded transition-colors text-stone-500 dark:text-white/60 hover:bg-stone-100 dark:hover:bg-white/5 hover:text-stone-800 dark:hover:text-white/90"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </a>
+      <h1 class="text-3xl font-bold tracking-tight text-stone-800 dark:text-white/90" style="letter-spacing: -0.02em;">Select Scenarios</h1>
+    </div>
+    <p class="text-stone-500 dark:text-white/60 ml-10">Choose which scenarios to execute</p>
+  </div>
+
+  <form action="<%= select_scenarios_project_feature_path(@project, @feature) %>" method="post">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+
+    <!-- Selection Controls -->
+    <div class="mb-4 flex items-center gap-2">
+      <button
+        type="button"
+        onclick="document.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = true)"
+        class="btn btn-ghost text-xs"
+      >
+        Select all
+      </button>
+      <span class="text-stone-300 dark:text-white/20">·</span>
+      <button
+        type="button"
+        onclick="document.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false)"
+        class="btn btn-ghost text-xs"
+      >
+        Deselect all
+      </button>
+    </div>
+
+    <!-- Scenarios List -->
+    <div class="space-y-1 mb-6">
+      <% @scenarios.each do |scenario| %>
+        <label class="group flex items-start gap-3 p-3 rounded transition-colors cursor-pointer hover:bg-stone-50 dark:hover:bg-white/5">
+          <input
+            type="checkbox"
+            name="scenario_ids[]"
+            value="<%= scenario.id %>"
+            class="checkbox mt-0.5"
+          />
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium text-stone-800 dark:text-white/90"><%= scenario.title %></div>
+            <% if scenario.current_status != "pending" %>
+              <div class="text-xs mt-1">
+                <span class="inline-flex items-center gap-1">
+                  <% if scenario.current_status == "passed" %>
+                    <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span class="text-emerald-600 dark:text-emerald-400">Passed</span>
+                  <% else %>
+                    <svg class="w-3.5 h-3.5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    <span class="text-red-600 dark:text-red-400">Failed</span>
+                  <% end %>
+                </span>
+              </div>
+            <% end %>
+          </div>
+        </label>
+      <% end %>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-2 pt-4 border-t border-stone-200 dark:border-white/10">
+      <button type="submit" class="btn btn-primary">Continue</button>
+      <a href="<%= project_feature_path(@project, @feature) %>" class="btn btn-ghost">Cancel</a>
+    </div>
+  </form>
+</div>

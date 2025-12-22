@@ -1,0 +1,39 @@
+<svg width="<%= size %>" height="<%= size %>" class="transform -rotate-90">
+  <%# Background circle %>
+  <circle
+    cx="<%= center %>"
+    cy="<%= center %>"
+    r="<%= radius %>"
+    fill="none"
+    stroke-width="<%= stroke_width %>"
+    class="stroke-stone-200 dark:stroke-stone-700"
+  />
+  
+  <%# Progress circle %>
+  <circle
+    cx="<%= center %>"
+    cy="<%= center %>"
+    r="<%= radius %>"
+    fill="none"
+    stroke-width="<%= stroke_width %>"
+    stroke-linecap="round"
+    class="<%= stroke_color %> transition-all duration-500 ease-out"
+    stroke-dasharray="<%= circumference %>"
+    stroke-dashoffset="<%= stroke_dashoffset %>"
+  />
+  
+  <% if show_label %>
+    <%# Percentage text %>
+    <text
+      x="<%= center %>"
+      y="<%= center %>"
+      text-anchor="middle"
+      dominant-baseline="central"
+      class="fill-stone-700 dark:fill-stone-200 font-semibold transform rotate-90 origin-center"
+      style="font-size: <%= font_size %>px;"
+    >
+      <%= percent %>%
+    </text>
+  <% end %>
+</svg>
+

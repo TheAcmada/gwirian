@@ -4,91 +4,97 @@
 [x-cloak] { display: none !important; }
 
 @theme {
-  /* Do not reset the whole palette to avoid regressions.
-     Declare a few base aliases and tokens only. */
-  --font-sans: Inter, ui-sans-serif, system-ui, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  /* Notion-inspired system font stack */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
 
-  /* Neutral aliases */
-  --color-bg: var(--color-zinc-50);
+  /* Neutral aliases - warmer stone palette */
+  --color-bg: var(--color-stone-50);
   --color-surface: var(--color-white);
-  --color-border: var(--color-zinc-200);
-  --color-text: var(--color-zinc-900);
-  --color-muted: var(--color-zinc-600);
+  --color-border: rgba(55, 53, 47, 0.09);
+  --color-border-dark: rgba(255, 255, 255, 0.13);
+  --color-text: rgb(55, 53, 47);
+  --color-text-dark: rgba(255, 255, 255, 0.9);
+  --color-muted: rgb(120, 119, 116);
+  --color-muted-dark: rgba(255, 255, 255, 0.6);
 
-  /* Accent */
-  --color-accent-50: var(--color-indigo-50);
-  --color-accent-100: var(--color-indigo-100);
-  --color-accent-200: var(--color-indigo-200);
-  --color-accent-300: var(--color-indigo-300);
-  --color-accent-400: var(--color-indigo-400);
-  --color-accent-500: var(--color-indigo-500);
-  --color-accent-600: var(--color-indigo-600);
-  --color-accent-700: var(--color-indigo-700);
-  --color-accent-800: var(--color-indigo-800);
-  --color-accent-900: var(--color-indigo-900);
+  /* Notion-style accent - subtle blue */
+  --color-accent-50: #f0f7ff;
+  --color-accent-100: #e0efff;
+  --color-accent-200: #c7e0ff;
+  --color-accent-300: #a3ccff;
+  --color-accent-400: #7ab3ff;
+  --color-accent-500: #2383e2;
+  --color-accent-600: #1a6dc2;
+  --color-accent-700: #155ba3;
+  --color-accent-800: #114a85;
+  --color-accent-900: #0d3a6a;
 
-  /* Success → emerald */
-  --color-success-50: var(--color-emerald-50);
-  --color-success-100: var(--color-emerald-100);
-  --color-success-200: var(--color-emerald-200);
-  --color-success-300: var(--color-emerald-300);
-  --color-success-400: var(--color-emerald-400);
-  --color-success-500: var(--color-emerald-500);
-  --color-success-600: var(--color-emerald-600);
-  --color-success-700: var(--color-emerald-700);
-  --color-success-800: var(--color-emerald-800);
-  --color-success-900: var(--color-emerald-900);
+  /* Success - Notion green */
+  --color-success-50: #eef9ee;
+  --color-success-100: #d4f0d4;
+  --color-success-200: #a8e1a8;
+  --color-success-300: #6fcf6f;
+  --color-success-400: #44b944;
+  --color-success-500: #2e9e2e;
+  --color-success-600: #258025;
+  --color-success-700: #1e661e;
+  --color-success-800: #184f18;
+  --color-success-900: #133d13;
 
-  /* Info → sky */
-  --color-info-50: var(--color-sky-50);
-  --color-info-100: var(--color-sky-100);
-  --color-info-200: var(--color-sky-200);
-  --color-info-300: var(--color-sky-300);
-  --color-info-400: var(--color-sky-400);
-  --color-info-500: var(--color-sky-500);
-  --color-info-600: var(--color-sky-600);
-  --color-info-700: var(--color-sky-700);
-  --color-info-800: var(--color-sky-800);
-  --color-info-900: var(--color-sky-900);
+  /* Warning - Notion orange */
+  --color-warning-50: #fff8f0;
+  --color-warning-100: #ffeddb;
+  --color-warning-200: #ffd9b3;
+  --color-warning-300: #ffc285;
+  --color-warning-400: #ffa64d;
+  --color-warning-500: #eb7d26;
+  --color-warning-600: #c9641b;
+  --color-warning-700: #a54f15;
+  --color-warning-800: #833e11;
+  --color-warning-900: #66300d;
 
-  /* Warning → amber */
-  --color-warning-50: var(--color-amber-50);
-  --color-warning-100: var(--color-amber-100);
-  --color-warning-200: var(--color-amber-200);
-  --color-warning-300: var(--color-amber-300);
-  --color-warning-400: var(--color-amber-400);
-  --color-warning-500: var(--color-amber-500);
-  --color-warning-600: var(--color-amber-600);
-  --color-warning-700: var(--color-amber-700);
-  --color-warning-800: var(--color-amber-800);
-  --color-warning-900: var(--color-amber-900);
+  /* Error - Notion red */
+  --color-error-50: #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-200: #fecaca;
+  --color-error-300: #fca5a5;
+  --color-error-400: #f87171;
+  --color-error-500: #e03e3e;
+  --color-error-600: #c53030;
+  --color-error-700: #9b2c2c;
+  --color-error-800: #822727;
+  --color-error-900: #63171b;
 
-  /* Error → rose */
-  --color-error-50: var(--color-rose-50);
-  --color-error-100: var(--color-rose-100);
-  --color-error-200: var(--color-rose-200);
-  --color-error-300: var(--color-rose-300);
-  --color-error-400: var(--color-rose-400);
-  --color-error-500: var(--color-rose-500);
-  --color-error-600: var(--color-rose-600);
-  --color-error-700: var(--color-rose-700);
-  --color-error-800: var(--color-rose-800);
-  --color-error-900: var(--color-rose-900);
+  /* Info - Notion purple */
+  --color-info-50: #f5f3ff;
+  --color-info-100: #ede9fe;
+  --color-info-200: #ddd6fe;
+  --color-info-300: #c4b5fd;
+  --color-info-400: #a78bfa;
+  --color-info-500: #9065e0;
+  --color-info-600: #7c3aed;
+  --color-info-700: #6d28d9;
+  --color-info-800: #5b21b6;
+  --color-info-900: #4c1d95;
 
-  /* Common radii (for reference) */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  /* Notion-style small radii */
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
 }
 
 @layer components {
+
+  /* ========================================
+   * Base Status Classes
+   * ======================================== */
 
   .is-success {
     @apply bg-success-500 text-white;
   }
 
   .is-warning {
-    @apply bg-yellow-500 text-white;
+    @apply bg-warning-500 text-white;
   }
 
   .is-error {
@@ -96,14 +102,17 @@
   }
 
   .is-danger {
-    @apply text-error-500 dark:text-error-300;
+    @apply text-error-500 dark:text-error-400;
   }
 
   .is-editable {
     @apply outline-none focus:outline-none focus:ring-0 focus:border-none;
   }
 
-  /* Notion-style editable placeholder */
+  /* ========================================
+   * Notion-style Editable Placeholder
+   * ======================================== */
+
   .editable-placeholder {
     min-height: 1.5em;
     display: block;
@@ -112,57 +121,102 @@
 
   .editable-placeholder:empty::before {
     content: attr(data-placeholder);
-    color: var(--color-zinc-400);
-    font-style: italic;
+    color: rgba(55, 53, 47, 0.4);
     pointer-events: none;
   }
 
   .editable-placeholder:focus:empty::before {
-    color: var(--color-zinc-300);
+    color: rgba(55, 53, 47, 0.3);
   }
 
   @media (prefers-color-scheme: dark) {
     .editable-placeholder:empty::before {
-      color: var(--color-gray-500);
+      color: rgba(255, 255, 255, 0.3);
     }
 
     .editable-placeholder:focus:empty::before {
-      color: var(--color-gray-600);
+      color: rgba(255, 255, 255, 0.25);
     }
   }
 
+  /* ========================================
+   * Badges - Notion-style tags
+   * ======================================== */
+
   .badge {
-    @apply inline-flex items-center gap-x-1.5 px-2.5 py-0.5 rounded-md text-xs font-medium ring-1 ring-inset ring-zinc-200 text-zinc-700 bg-zinc-50;
+    @apply inline-flex items-center gap-x-1 px-1.5 py-0.5 rounded text-xs font-medium;
+    background: rgba(227, 226, 224, 0.5);
+    color: rgb(55, 53, 47);
   }
 
-  /* Badge variants & sizes */
-  .badge-neutral { @apply text-zinc-700 bg-zinc-50 ring-zinc-200; }
-  .badge-accent { @apply text-accent-700 bg-accent-50 ring-accent-200; }
-  .badge-success { @apply text-success-700 bg-success-50 ring-success-200; }
-  .badge-warning { @apply text-warning-700 bg-warning-50 ring-warning-200; }
-  .badge-error { @apply text-error-700 bg-error-50 ring-error-200; }
-  .badge-info { @apply text-info-700 bg-info-50 ring-info-200; }
+  @media (prefers-color-scheme: dark) {
+    .badge {
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
 
-  /* Tag-specific badge variants (Notion-style colors) */
-  .badge-tag-1 { @apply text-blue-700 bg-blue-50 ring-blue-200; }
-  .badge-tag-2 { @apply text-purple-700 bg-purple-50 ring-purple-200; }
-  .badge-tag-3 { @apply text-emerald-700 bg-emerald-50 ring-emerald-200; }
-  .badge-tag-4 { @apply text-pink-700 bg-pink-50 ring-pink-200; }
-  .badge-tag-5 { @apply text-orange-700 bg-orange-50 ring-orange-200; }
-  .badge-tag-6 { @apply text-teal-700 bg-teal-50 ring-teal-200; }
-  .badge-tag-7 { @apply text-amber-700 bg-amber-50 ring-amber-200; }
-  .badge-tag-8 { @apply text-slate-700 bg-slate-50 ring-slate-200; }
+  .badge-neutral { @apply bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300; }
+  .badge-accent { @apply bg-accent-100 text-accent-700 dark:bg-accent-900 dark:text-accent-300; }
+  .badge-success { @apply bg-success-100 text-success-700 dark:bg-success-900 dark:text-success-300; }
+  .badge-warning { @apply bg-warning-100 text-warning-700 dark:bg-warning-900 dark:text-warning-300; }
+  .badge-error { @apply bg-error-100 text-error-700 dark:bg-error-900 dark:text-error-300; }
+  .badge-info { @apply bg-info-100 text-info-700 dark:bg-info-900 dark:text-info-300; }
 
-  .badge-sm { @apply px-2 py-0.5 text-[11px] rounded; }
-  .badge-md { @apply px-2.5 py-0.5 text-xs rounded-md; }
+  /* Notion-style colored tags */
+  .badge-tag-1 { background: rgba(211, 229, 239, 0.5); color: rgb(24, 51, 71); }
+  .badge-tag-2 { background: rgba(232, 222, 238, 0.5); color: rgb(65, 36, 84); }
+  .badge-tag-3 { background: rgba(219, 237, 219, 0.5); color: rgb(28, 56, 41); }
+  .badge-tag-4 { background: rgba(245, 224, 233, 0.5); color: rgb(76, 35, 55); }
+  .badge-tag-5 { background: rgba(250, 222, 201, 0.5); color: rgb(73, 41, 14); }
+  .badge-tag-6 { background: rgba(212, 238, 236, 0.5); color: rgb(21, 61, 60); }
+  .badge-tag-7 { background: rgba(253, 236, 200, 0.5); color: rgb(64, 44, 27); }
+  .badge-tag-8 { background: rgba(227, 226, 224, 0.5); color: rgb(50, 48, 44); }
+
+  @media (prefers-color-scheme: dark) {
+    .badge-tag-1 { background: rgba(29, 59, 78, 0.5); color: rgb(162, 206, 232); }
+    .badge-tag-2 { background: rgba(60, 45, 73, 0.5); color: rgb(198, 175, 214); }
+    .badge-tag-3 { background: rgba(36, 61, 48, 0.5); color: rgb(163, 211, 180); }
+    .badge-tag-4 { background: rgba(78, 44, 60, 0.5); color: rgb(223, 175, 195); }
+    .badge-tag-5 { background: rgba(73, 47, 28, 0.5); color: rgb(227, 183, 149); }
+    .badge-tag-6 { background: rgba(32, 61, 60, 0.5); color: rgb(159, 213, 210); }
+    .badge-tag-7 { background: rgba(67, 53, 32, 0.5); color: rgb(231, 207, 151); }
+    .badge-tag-8 { background: rgba(60, 58, 54, 0.5); color: rgb(183, 180, 175); }
+  }
+
+  .badge-sm { @apply px-1 py-0 text-[11px]; }
+  .badge-md { @apply px-1.5 py-0.5 text-xs; }
+
+  /* ========================================
+   * Body and Layout
+   * ======================================== */
 
   .body {
-    @apply min-h-screen bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-gray-900 dark:to-gray-800 dark:text-gray-100;
+    @apply min-h-screen;
+    background: rgb(255, 255, 255);
+    color: rgb(55, 53, 47);
   }
 
-  /* Auth Layout Components */
+  @media (prefers-color-scheme: dark) {
+    .body {
+      background: rgb(25, 25, 25);
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  /* ========================================
+   * Auth Layout Components
+   * ======================================== */
+
   .auth-layout {
-    @apply min-h-screen bg-white dark:bg-gray-900;
+    @apply min-h-screen;
+    background: rgb(255, 255, 255);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .auth-layout {
+      background: rgb(25, 25, 25);
+    }
   }
 
   .auth-form-section {
@@ -178,7 +232,7 @@
   }
 
   .auth-form-card {
-    @apply bg-transparent rounded-xl shadow-lg border border-zinc-200 dark:border-gray-700 p-8 lg:bg-transparent lg:shadow-none lg:border-none lg:p-0;
+    @apply bg-transparent p-8 lg:p-0;
   }
 
   .auth-logo-section {
@@ -186,102 +240,497 @@
   }
 
   .auth-title {
-    @apply text-3xl font-bold text-center text-zinc-900 dark:text-white mb-2;
+    @apply text-3xl font-semibold text-center mb-2;
+    color: rgb(55, 53, 47);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .auth-title {
+      color: rgba(255, 255, 255, 0.9);
+    }
   }
 
   .auth-subtitle {
-    @apply text-zinc-600 dark:text-gray-400 text-center mb-8;
+    @apply text-center mb-8;
+    color: rgb(120, 119, 116);
   }
+
+  @media (prefers-color-scheme: dark) {
+    .auth-subtitle {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  /* ========================================
+   * Buttons - Notion-style flat design
+   * ======================================== */
 
   .btn {
-    @apply sm:w-auto text-center rounded-lg px-3 py-2 inline-block font-medium cursor-pointer text-sm border border-zinc-300 hover:bg-zinc-100 hover:text-zinc-800 focus:ring-3 focus:ring-accent-500 focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-gray-900;
+    @apply inline-flex items-center justify-center text-center px-3 py-1.5 text-sm font-medium cursor-pointer transition-colors duration-75;
+    border-radius: 4px;
+    color: rgb(55, 53, 47);
+    background: rgba(55, 53, 47, 0.08);
   }
 
-  /* Button variants & sizes */
+  .btn:hover {
+    background: rgba(55, 53, 47, 0.16);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .btn {
+      color: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+    }
+  }
+
+  .btn-primary {
+    background: rgb(55, 53, 47);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: rgb(80, 78, 72);
+    color: white;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .btn-primary {
+      background: rgb(255, 255, 255);
+      color: rgb(55, 53, 47);
+    }
+
+    .btn-primary:hover {
+      background: rgb(235, 235, 235);
+      color: rgb(55, 53, 47);
+    }
+  }
+
   .btn-secondary {
-    @apply bg-white text-zinc-800 border border-zinc-300 hover:bg-zinc-50 focus:ring-3 focus:ring-accent-500;
+    background: transparent;
+    color: rgb(55, 53, 47);
+    box-shadow: inset 0 0 0 1px rgba(55, 53, 47, 0.16);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(55, 53, 47, 0.08);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .btn-secondary {
+      color: rgba(255, 255, 255, 0.9);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
   }
 
   .btn-ghost {
-    @apply bg-transparent text-zinc-700 border border-transparent hover:bg-zinc-50 focus:ring-3 focus:ring-accent-500;
+    background: transparent;
+    color: rgb(120, 119, 116);
   }
 
-  .btn-icon { @apply inline-flex items-center justify-center h-10 w-10 rounded-md border border-zinc-300 hover:bg-zinc-100; }
+  .btn-ghost:hover {
+    background: rgba(55, 53, 47, 0.08);
+    color: rgb(55, 53, 47);
+  }
 
-  .btn-sm { @apply h-9 px-2.5 py-1.5 text-sm; }
-  .btn-md { @apply h-10 px-3 py-2 text-sm; }
-  .btn-lg { @apply h-12 px-4 py-2.5 text-base; }
+  @media (prefers-color-scheme: dark) {
+    .btn-ghost {
+      color: rgba(255, 255, 255, 0.6);
+    }
 
-  .btn-loading { @apply pointer-events-none opacity-60; }
-
-  .btn-primary {
-    @apply bg-gradient-to-r from-accent-500 to-accent-600 text-white border-0 hover:from-accent-600 hover:to-accent-700 hover:text-white focus:ring-3 focus:ring-accent-500 dark:bg-gradient-to-r dark:from-accent-500 dark:to-accent-400 dark:hover:from-accent-600 dark:hover:to-accent-500;
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.9);
+    }
   }
 
   .btn-danger {
-    @apply border border-error-600 text-error-600 hover:bg-error-50 hover:text-error-600 focus:ring-3 focus:ring-error-500 focus:outline-none bg-transparent dark:border-error-300 dark:text-error-300 dark:hover:bg-error-300 dark:hover:text-error-900;
+    background: transparent;
+    color: rgb(224, 62, 62);
+    box-shadow: inset 0 0 0 1px rgba(224, 62, 62, 0.5);
   }
 
-  .btn-xs {
-    @apply text-xs px-2 py-1 rounded-md;
+  .btn-danger:hover {
+    background: rgba(224, 62, 62, 0.08);
   }
+
+  @media (prefers-color-scheme: dark) {
+    .btn-danger {
+      color: rgb(255, 115, 115);
+      box-shadow: inset 0 0 0 1px rgba(255, 115, 115, 0.5);
+    }
+
+    .btn-danger:hover {
+      background: rgba(255, 115, 115, 0.08);
+    }
+  }
+
+  .btn-icon {
+    @apply inline-flex items-center justify-center h-7 w-7 p-0;
+    border-radius: 4px;
+    background: transparent;
+  }
+
+  .btn-icon:hover {
+    background: rgba(55, 53, 47, 0.08);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .btn-icon:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  .btn-sm { @apply h-7 px-2 py-1 text-sm; }
+  .btn-md { @apply h-8 px-3 py-1.5 text-sm; }
+  .btn-lg { @apply h-9 px-4 py-2 text-sm; }
+  .btn-xs { @apply text-xs px-2 py-0.5; }
+
+  .btn-loading { @apply pointer-events-none opacity-60; }
 
   .btn-tab {
-    @apply px-3 py-2 border-b-2 border-transparent text-sm font-medium text-zinc-500 hover:text-zinc-700 dark:text-gray-400 dark:hover:text-gray-200 cursor-pointer;
+    @apply px-2 py-1 text-sm font-normal cursor-pointer;
+    color: rgb(120, 119, 116);
+    border-radius: 4px;
+  }
+
+  .btn-tab:hover {
+    background: rgba(55, 53, 47, 0.08);
+    color: rgb(55, 53, 47);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .btn-tab {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-tab:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.9);
+    }
   }
 
   .btn-tab-active {
-    @apply px-3 py-2 border-b-2 border-accent-500 text-accent-600 dark:text-accent-400 text-sm font-medium cursor-pointer;
+    @apply px-2 py-1 text-sm font-medium cursor-pointer;
+    background: rgba(55, 53, 47, 0.08);
+    color: rgb(55, 53, 47);
+    border-radius: 4px;
   }
+
+  @media (prefers-color-scheme: dark) {
+    .btn-tab-active {
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  /* ========================================
+   * Cards - Notion-style minimal
+   * ======================================== */
 
   .card {
-    @apply bg-white rounded-lg shadow-sm p-4 md:p-6 mb-8 border border-zinc-200 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700;
+    @apply p-4;
+    background: rgb(255, 255, 255);
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 1px rgba(55, 53, 47, 0.09);
   }
+
+  .card:hover {
+    background: rgba(55, 53, 47, 0.03);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .card {
+      background: rgb(37, 37, 37);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .card:hover {
+      background: rgb(47, 47, 47);
+    }
+  }
+
+  /* ========================================
+   * Inputs - Notion-style clean
+   * ======================================== */
 
   .input {
-    @apply block w-full h-10 rounded-md border border-zinc-300 px-3 py-2 shadow-sm placeholder-zinc-400 focus:outline-none focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-accent-500 sm:text-sm dark:bg-gray-700 dark:text-gray-50;
+    @apply block w-full h-9 px-2.5 py-1.5 text-sm;
+    background: rgba(242, 241, 238, 0.6);
+    border: none;
+    border-radius: 4px;
+    color: rgb(55, 53, 47);
   }
 
-  .input-invalid { @apply border-error-300 focus:outline-none focus-visible:ring-error-500; }
-  .input-icon-left { @apply pl-10; }
-  .input-icon-right { @apply pr-10; }
-  .input-icon { @apply pointer-events-none absolute inset-y-0 left-3 my-auto h-4 w-4 text-zinc-400; }
+  .input::placeholder {
+    color: rgb(180, 180, 178);
+  }
+
+  .input:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 1px rgb(35, 131, 226), 0 0 0 2px rgba(35, 131, 226, 0.2);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .input {
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .input::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .input:focus {
+      box-shadow: inset 0 0 0 1px rgb(35, 131, 226), 0 0 0 2px rgba(35, 131, 226, 0.3);
+    }
+  }
+
+  .input-invalid {
+    box-shadow: inset 0 0 0 1px rgb(224, 62, 62);
+  }
+
+  .input-invalid:focus {
+    box-shadow: inset 0 0 0 1px rgb(224, 62, 62), 0 0 0 2px rgba(224, 62, 62, 0.2);
+  }
+
+  .input-icon-left { @apply pl-9; }
+  .input-icon-right { @apply pr-9; }
+  .input-icon { @apply pointer-events-none absolute inset-y-0 left-2.5 my-auto h-4 w-4 text-stone-400; }
+
+  /* ========================================
+   * Checkbox - Notion-style
+   * ======================================== */
+
+  .checkbox {
+    @apply appearance-none w-4 h-4 cursor-pointer transition-all duration-75;
+    border-radius: 3px;
+    border: 1.5px solid rgba(55, 53, 47, 0.4);
+    background: transparent;
+  }
+
+  .checkbox:hover {
+    border-color: rgba(55, 53, 47, 0.6);
+    background: rgba(55, 53, 47, 0.04);
+  }
+
+  .checkbox:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(35, 131, 226, 0.3);
+  }
+
+  .checkbox:checked {
+    border-color: rgb(35, 131, 226);
+    background: rgb(35, 131, 226);
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .checkbox:checked:hover {
+    border-color: rgb(0, 117, 211);
+    background-color: rgb(0, 117, 211);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .checkbox {
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .checkbox:hover {
+      border-color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .checkbox:checked {
+      border-color: rgb(35, 131, 226);
+      background: rgb(35, 131, 226);
+    }
+
+    .checkbox:checked:hover {
+      border-color: rgb(60, 150, 235);
+      background-color: rgb(60, 150, 235);
+    }
+  }
+
+  /* ========================================
+   * Labels and Text
+   * ======================================== */
 
   .label {
-    @apply block text-sm font-medium text-zinc-700 mb-1 dark:text-neutral-100;
+    @apply block text-sm font-medium mb-1;
+    color: rgb(55, 53, 47);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .label {
+      color: rgba(255, 255, 255, 0.9);
+    }
   }
 
   .link {
-    @apply text-zinc-700 underline text-sm hover:no-underline dark:text-slate-300;
+    @apply text-sm;
+    color: rgb(120, 119, 116);
+    text-decoration: underline;
+    text-decoration-color: rgba(55, 53, 47, 0.25);
+    text-underline-offset: 2px;
   }
 
+  .link:hover {
+    color: rgb(55, 53, 47);
+    text-decoration-color: rgba(55, 53, 47, 0.5);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .link {
+      color: rgba(255, 255, 255, 0.6);
+      text-decoration-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .link:hover {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration-color: rgba(255, 255, 255, 0.4);
+    }
+  }
+
+  /* ========================================
+   * Menu and Dropdown - Notion-style
+   * ======================================== */
+
   .menu-entry {
-    @apply w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-zinc-800 rounded-lg hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:bg-gray-700 dark:text-gray-200;
+    @apply w-full flex items-center gap-x-2 py-1 px-2 text-sm cursor-pointer;
+    color: rgb(55, 53, 47);
+    border-radius: 4px;
+  }
+
+  .menu-entry:hover {
+    background: rgba(55, 53, 47, 0.08);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .menu-entry {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .menu-entry:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
   }
 
   .menu-entry-active {
-    @apply bg-zinc-100 text-zinc-800 dark:bg-gray-700 dark:text-gray-200;
+    background: rgba(55, 53, 47, 0.08);
   }
 
-  /* Dropdown/Menu */
+  @media (prefers-color-scheme: dark) {
+    .menu-entry-active {
+      background: rgba(255, 255, 255, 0.08);
+    }
+  }
+
   .dropdown { @apply relative inline-block text-left; }
-  .dropdown-menu { @apply absolute z-50 mt-2 min-w-48 rounded-md bg-white py-2 shadow-lg ring-1 ring-zinc-200 focus:outline-none dark:bg-gray-800 dark:ring-gray-600 dark:shadow-xl; }
-  .dropdown-item { @apply flex w-full items-center gap-x-2 px-3 py-2 text-sm text-zinc-800 hover:bg-zinc-50 focus:bg-zinc-50 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:bg-gray-700; }
-  .dropdown-divider { @apply my-2 h-px bg-zinc-100 dark:bg-gray-600; }
+
+  .dropdown-menu {
+    @apply absolute z-50 mt-1 min-w-48 py-1;
+    background: white;
+    border-radius: 4px;
+    box-shadow: rgba(15, 15, 15, 0.05) 0px 0px 0px 1px, rgba(15, 15, 15, 0.1) 0px 3px 6px, rgba(15, 15, 15, 0.2) 0px 9px 24px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .dropdown-menu {
+      background: rgb(37, 37, 37);
+      box-shadow: rgba(15, 15, 15, 0.1) 0px 0px 0px 1px, rgba(15, 15, 15, 0.2) 0px 3px 6px, rgba(15, 15, 15, 0.4) 0px 9px 24px;
+    }
+  }
+
+  .dropdown-item {
+    @apply flex w-full items-center gap-x-2 px-3 py-1.5 text-sm cursor-pointer;
+    color: rgb(55, 53, 47);
+  }
+
+  .dropdown-item:hover {
+    background: rgba(55, 53, 47, 0.08);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .dropdown-item {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .dropdown-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  .dropdown-divider {
+    @apply my-1;
+    height: 1px;
+    background: rgba(55, 53, 47, 0.09);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .dropdown-divider {
+      background: rgba(255, 255, 255, 0.09);
+    }
+  }
+
+  /* ========================================
+   * Tables
+   * ======================================== */
 
   .table {
-    @apply min-w-full bg-white dark:bg-gray-800 rounded-lg shadow-sm text-sm border border-zinc-200 dark:border-gray-700;
+    @apply min-w-full text-sm;
+    background: white;
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 1px rgba(55, 53, 47, 0.09);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .table {
+      background: rgb(37, 37, 37);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
   }
 
   .thead {
-    @apply px-4 py-2 text-left text-xs font-medium text-zinc-500 uppercase dark:text-neutral-400;
+    @apply px-3 py-2 text-left text-xs font-medium uppercase;
+    color: rgb(120, 119, 116);
   }
+
+  @media (prefers-color-scheme: dark) {
+    .thead {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  /* ========================================
+   * Title - Notion-style large headings
+   * ======================================== */
 
   .title {
-    @apply text-2xl font-bold font-sans;
+    @apply text-4xl font-bold;
+    color: rgb(55, 53, 47);
+    letter-spacing: -0.02em;
   }
 
-  /* Notification positioning */
+  @media (prefers-color-scheme: dark) {
+    .title {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  /* ========================================
+   * Notifications
+   * ======================================== */
+
   .notification-container,
   .alert-container,
   .error-container {
@@ -292,7 +741,6 @@
    * Notion-style Drag and Drop
    * ======================================== */
 
-  /* Prevent text selection during drag */
   .is-drag-active {
     user-select: none;
     -webkit-user-select: none;
@@ -303,26 +751,34 @@
     cursor: grabbing !important;
   }
 
-  /* Original item being dragged */
   .is-dragging {
-    @apply opacity-40 bg-zinc-100 dark:bg-gray-700;
+    opacity: 0.4;
+    background: rgba(55, 53, 47, 0.03);
     transition: opacity 0.15s ease, background-color 0.15s ease;
   }
 
-  /* Ghost element that follows cursor */
+  @media (prefers-color-scheme: dark) {
+    .is-dragging {
+      background: rgba(255, 255, 255, 0.03);
+    }
+  }
+
   .drag-ghost {
-    @apply bg-white dark:bg-gray-800 shadow-2xl;
-    border-radius: 12px;
+    background: white;
+    border-radius: 4px;
     opacity: 0.95;
-    transform: rotate(1.5deg) scale(1.02);
-    box-shadow:
-      0 20px 40px -10px rgba(0, 0, 0, 0.15),
-      0 10px 20px -8px rgba(0, 0, 0, 0.1),
-      0 0 0 1px rgba(0, 0, 0, 0.05);
+    transform: rotate(1deg) scale(1.01);
+    box-shadow: rgba(15, 15, 15, 0.1) 0px 0px 0px 1px, rgba(15, 15, 15, 0.1) 0px 2px 4px, rgba(15, 15, 15, 0.2) 0px 8px 16px;
     transition: transform 0.1s ease;
   }
 
-  /* Drop indicator line - before position */
+  @media (prefers-color-scheme: dark) {
+    .drag-ghost {
+      background: rgb(37, 37, 37);
+      box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 0px 1px, rgba(0, 0, 0, 0.2) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 8px 16px;
+    }
+  }
+
   .drop-before {
     position: relative;
   }
@@ -330,30 +786,27 @@
   .drop-before::before {
     content: '';
     position: absolute;
-    top: -6px;
+    top: -2px;
     left: 0;
     right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--color-accent-500), var(--color-accent-400));
-    border-radius: 2px;
+    height: 2px;
+    background: rgb(35, 131, 226);
+    border-radius: 1px;
     z-index: 10;
-    animation: dropIndicatorPulse 1s ease-in-out infinite;
   }
 
   .drop-before::after {
     content: '';
     position: absolute;
-    top: -10px;
-    left: -4px;
-    width: 8px;
-    height: 8px;
-    background: var(--color-accent-500);
+    top: -4px;
+    left: -3px;
+    width: 6px;
+    height: 6px;
+    background: rgb(35, 131, 226);
     border-radius: 50%;
     z-index: 11;
-    box-shadow: 0 0 0 2px white;
   }
 
-  /* Drop indicator line - after position */
   .drop-after {
     position: relative;
   }
@@ -361,82 +814,63 @@
   .drop-after::before {
     content: '';
     position: absolute;
-    bottom: -6px;
+    bottom: -2px;
     left: 0;
     right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--color-accent-500), var(--color-accent-400));
-    border-radius: 2px;
+    height: 2px;
+    background: rgb(35, 131, 226);
+    border-radius: 1px;
     z-index: 10;
-    animation: dropIndicatorPulse 1s ease-in-out infinite;
   }
 
   .drop-after::after {
     content: '';
     position: absolute;
-    bottom: -10px;
-    left: -4px;
-    width: 8px;
-    height: 8px;
-    background: var(--color-accent-500);
+    bottom: -4px;
+    left: -3px;
+    width: 6px;
+    height: 6px;
+    background: rgb(35, 131, 226);
     border-radius: 50%;
     z-index: 11;
-    box-shadow: 0 0 0 2px white;
   }
 
-  @keyframes dropIndicatorPulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-  }
-
-  /* Animation for just-dropped item */
   .just-dropped {
-    animation: dropBounce 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: dropBounce 0.2s ease-out;
   }
 
   @keyframes dropBounce {
-    0% { transform: scale(1.02); }
-    50% { transform: scale(0.98); }
+    0% { transform: scale(1.01); }
     100% { transform: scale(1); }
   }
 
-  /* Drag handle styles */
   .drag-handle {
     @apply opacity-0 cursor-grab active:cursor-grabbing;
-    transition: opacity 0.15s ease, color 0.15s ease;
+    transition: opacity 0.1s ease;
+    color: rgb(180, 180, 178);
   }
 
   .drag-handle:hover {
-    @apply text-zinc-600 dark:text-gray-300;
+    color: rgb(120, 119, 116);
   }
 
-  .drag-handle:active {
-    @apply text-accent-500;
+  @media (prefers-color-scheme: dark) {
+    .drag-handle {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .drag-handle:hover {
+      color: rgba(255, 255, 255, 0.6);
+    }
   }
 
-  /* Show drag handle on parent hover */
   .scenario-item:hover .drag-handle,
   .draggable-item:hover .drag-handle {
     @apply opacity-100;
   }
 
-  /* Keep handle visible during drag */
   .is-dragging .drag-handle {
     @apply opacity-100;
   }
-
-  /* Dark mode adjustments for ghost */
-  @media (prefers-color-scheme: dark) {
-    .drag-ghost {
-      box-shadow:
-        0 20px 40px -10px rgba(0, 0, 0, 0.4),
-        0 10px 20px -8px rgba(0, 0, 0, 0.3),
-        0 0 0 1px rgba(255, 255, 255, 0.1);
-    }
-
-    .drop-before::after,
-    .drop-after::after {
-      box-shadow: 0 0 0 2px var(--color-gray-800);
-    }
-  }
 }
+

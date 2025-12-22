@@ -29,3 +29,39 @@
 
 en:
   hello: "Hello world"
+  
+  dashboard:
+    view_features: "View Features"
+    
+    stats:
+      pass_rate: "Pass Rate"
+      total_scenarios: "Total Scenarios"
+      failed_tests: "Failed Tests"
+      untested: "Untested"
+    
+    failing_tests:
+      title: "Failing Tests"
+      all_passing: "All tests are passing!"
+    
+    feature_coverage:
+      title: "Feature Coverage"
+      scenarios: "scenarios"
+      passed: "passed"
+      failed: "failed"
+      pending: "pending"
+      no_scenarios: "No scenarios yet"
+      no_features: "No features yet"
+    
+    execution_trends:
+      title: "Execution Trends (30 days)"
+      total: "Total"
+      avg_pass_rate: "Avg Pass Rate"
+      no_data: "No execution data yet"
+    
+    recent_executions:
+      title: "Recent Executions"
+      no_executions: "No executions yet"
+    
+    team:
+      title: "Team"
+      no_members: "No team members"

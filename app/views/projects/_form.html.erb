@@ -1,19 +1,21 @@
-<div class="max-w-xl mx-auto mt-10 card">
-  <h1 class="title mb-6"><%= local_assigns[:title] || (project.persisted? ? "Edit project" : "Create a new project") %></h1>
+<div class="max-w-lg mx-auto px-4 py-12">
+  <h1 class="text-4xl font-bold tracking-tight mb-6 text-stone-800 dark:text-white/90" style="letter-spacing: -0.02em;">
+    <%= local_assigns[:title] || (project.persisted? ? "Edit project" : "New project") %>
+  </h1>
   <%= form_with model: project, local: true do |f| %>
     <%= render 'shared/errors', model: project %>
     <div class="mb-4">
-      <%= f.label :name, "Name", class: 'label' %>
+      <%= f.label :name, "Name", class: 'block text-sm font-medium mb-1 text-stone-800 dark:text-white/90' %>
       <%= f.text_field :name, class: 'input', placeholder: "Enter project name", autofocus: true %>
     </div>
     <div class="mb-4">
-      <%= f.label :description, "Description", class: 'label' %>
-      <%= f.text_area :description, class: 'input h-24', placeholder: "Enter project description" %>
-      <p class="mt-1 text-xs text-gray-400">Optional</p>
+      <%= f.label :description, "Description", class: 'block text-sm font-medium mb-1 text-stone-800 dark:text-white/90' %>
+      <%= f.text_area :description, class: 'input h-24', placeholder: "Describe your project" %>
+      <p class="mt-1 text-xs text-stone-400 dark:text-white/40">Optional</p>
     </div>
     <div class="flex justify-end gap-2">
-      <%= link_to "Cancel", projects_path, class: 'btn' %>
-      <%= f.submit local_assigns[:submit_label] || (project.persisted? ? "Update project" : "Create project"), class: 'btn btn-primary' %>
+      <%= link_to "Cancel", projects_path, class: 'btn btn-ghost' %>
+      <%= f.submit local_assigns[:submit_label] || (project.persisted? ? "Save changes" : "Create project"), class: 'btn btn-primary' %>
     </div>
   <% end %>
 </div>

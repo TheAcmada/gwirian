@@ -1,71 +1,71 @@
-    <%= render "shared/desktop_logo" %>
+<%= render "shared/desktop_logo" %>
 
-    <div class="auth-form-container">
-      <div class="auth-form-card">
-        <%= render "shared/mobile_logo" %>
+<div class="auth-form-container">
+  <div class="auth-form-card">
+    <%= render "shared/mobile_logo" %>
 
-        <!-- Title and subtitle -->
-        <h1 class="auth-title">Create Account</h1>
-        <p class="auth-subtitle">Sign up to start managing your tests</p>
+    <!-- Title and subtitle -->
+    <h1 class="text-2xl font-semibold text-center mb-1 text-stone-800 dark:text-white/90">Create account</h1>
+    <p class="text-center mb-6 text-stone-500 dark:text-white/60">Sign up to start managing your tests</p>
 
     <!-- Form -->
     <%= form_with model: @user, url: users_path, method: :post, local: true do |f| %>
-      <div class="space-y-6">
+      <div class="space-y-4">
         <% if @user.errors.any? %>
-          <div class="rounded-lg bg-error-50 dark:bg-error-900/20 p-4 border border-error-200 dark:border-error-800">
-            <ul class="text-error-700 dark:text-error-300 text-sm space-y-1">
+          <div class="rounded p-3 bg-red-50 dark:bg-red-900/20">
+            <ul class="text-sm space-y-1 text-red-600 dark:text-red-400">
               <% @user.errors.full_messages.each do |msg| %>
-                <li>• <%= msg %></li>
+                <li><%= msg %></li>
               <% end %>
             </ul>
           </div>
         <% end %>
 
         <div>
-          <%= f.label :email_address, "Email address", class: "label" %>
+          <%= f.label :email_address, "Email", class: "block text-sm font-medium mb-1 text-stone-800 dark:text-white/90" %>
           <%= f.email_field :email_address,
               required: true,
               autofocus: true,
               class: "input",
-              placeholder: "Enter your email address" %>
+              placeholder: "Enter your email" %>
         </div>
 
         <div>
-          <%= f.label :password, "Password", class: "label" %>
+          <%= f.label :password, "Password", class: "block text-sm font-medium mb-1 text-stone-800 dark:text-white/90" %>
           <%= f.password_field :password,
               required: true,
               class: "input",
-              placeholder: "Create a strong password" %>
-          <p class="text-xs text-zinc-500 dark:text-gray-400 mt-1">
+              placeholder: "Create a password" %>
+          <p class="text-xs mt-1 text-stone-400 dark:text-white/40">
             <%= t('auth.password_requirements') %>
           </p>
         </div>
 
         <div>
-          <%= f.label :password_confirmation, "Password confirmation", class: "label" %>
+          <%= f.label :password_confirmation, "Confirm password", class: "block text-sm font-medium mb-1 text-stone-800 dark:text-white/90" %>
           <%= f.password_field :password_confirmation,
               required: true,
               class: "input",
               placeholder: "Confirm your password" %>
         </div>
 
-        <!-- Honeypot field: hidden from users, visible to bots -->
+        <!-- Honeypot field -->
         <div style="display:none">
           <%= f.label :nickname, "Leave this field blank" %>
           <%= f.text_field :nickname, autocomplete: "off" %>
         </div>
 
         <div>
-          <%= f.submit "Create Account", class: "btn btn-primary w-full py-3 text-base font-medium" %>
+          <%= f.submit "Create account", class: "btn btn-primary w-full" %>
         </div>
       </div>
     <% end %>
 
     <!-- Sign in link -->
     <div class="text-center mt-6">
-      <p class="text-zinc-600 dark:text-gray-400">
+      <p class="text-stone-500 dark:text-white/60">
         Already have an account?
-        <%= link_to "Sign in", new_session_path, class: "link font-medium text-accent-600 dark:text-accent-400" %>
+        <%= link_to "Sign in", new_session_path, class: "link" %>
       </p>
     </div>
   </div>

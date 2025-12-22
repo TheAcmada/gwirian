@@ -1,21 +1,24 @@
 <% content_for :title, "Projects" %>
-<div class="max-w-5xl mx-auto px-4 py-8">
-  <div class="flex items-center justify-between mb-8">
-    <h1 class="title">Projects</h1>
-    <a href="<%= new_project_path %>" class="btn btn-primary">+ New Project</a>
+<div class="max-w-4xl mx-auto px-4 py-12">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-4xl font-bold tracking-tight text-stone-800 dark:text-white/90" style="letter-spacing: -0.02em;">Projects</h1>
+    <a href="<%= new_project_path %>" class="btn btn-primary">New project</a>
   </div>
 
   <% if @projects.any? %>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
       <% @projects.each do |project| %>
-        <%= render 'project_card', project: project %>
+        <%= render Projects::CardComponent.new(project: project) %>
       <% end %>
     </div>
   <% else %>
-    <div class="flex flex-col items-center justify-center py-24">
-      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-dot-icon lucide-folder-dot"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/><circle cx="12" cy="13" r="1"/></svg>
-      <p class="text-lg text-gray-500 dark:text-gray-400 mb-2">No projects yet</p>
-      <a href="<%= new_project_path %>" class="btn btn-primary mt-2">Create your first project</a>
+    <div class="flex flex-col items-center justify-center py-16 text-center">
+      <svg class="w-12 h-12 mb-4 text-stone-300 dark:text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+      </svg>
+      <p class="text-sm mb-1 text-stone-500 dark:text-white/60">No projects yet</p>
+      <p class="text-sm mb-4 text-stone-400 dark:text-white/40">Get started by creating your first project</p>
+      <a href="<%= new_project_path %>" class="btn btn-primary">Create project</a>
     </div>
   <% end %>
 </div>

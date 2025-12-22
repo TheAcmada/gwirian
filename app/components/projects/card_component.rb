@@ -1,21 +1,24 @@
-module Features
+module Projects
   class CardComponent < ApplicationComponent
-    def initialize(feature:, project:)
-      @feature = feature
+    def initialize(project:)
       @project = project
     end
 
     private
 
-    attr_reader :feature, :project
+    attr_reader :project
+
+    def features_count
+      project.features.size
+    end
 
     def scenarios_count
-      feature.scenarios.size
+      project.scenarios.size
     end
 
     def execution_stats
       @execution_stats ||= begin
-        statuses = feature.scenarios.includes(:scenario_executions).map(&:current_status)
+        statuses = project.scenarios.includes(:scenario_executions).map(&:current_status)
         total = statuses.size
         return { passed: 0, failed: 0, pending: 0, total: 0 } if total.zero?
 
@@ -43,8 +46,8 @@ module Features
       100 - passed_percentage - failed_percentage
     end
 
-    def has_scenarios?
-      scenarios_count > 0
+    def has_executions?
+      execution_stats[:total] > 0
     end
   end
 end

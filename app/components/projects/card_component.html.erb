@@ -1,0 +1,83 @@
+<%= link_to project_path(project), class: "block h-full group" do %>
+  <div class="p-4 h-full rounded-lg transition-all duration-150 hover:bg-stone-50 dark:hover:bg-white/5 border border-stone-200 dark:border-white/10 hover:border-stone-300 dark:hover:border-white/20 hover:shadow-sm">
+    <h2 class="text-sm font-semibold mb-1 text-stone-800 dark:text-white/90 group-hover:text-stone-900 dark:group-hover:text-white transition-colors">
+      <%= project.name %>
+    </h2>
+
+    <% if project.description.present? %>
+      <p class="text-sm line-clamp-2 text-stone-500 dark:text-white/60 mb-3">
+        <%= project.description %>
+      </p>
+    <% else %>
+      <p class="text-sm italic text-stone-400 dark:text-white/30 mb-3">
+        No description
+      </p>
+    <% end %>
+
+    <%# Statistics row %>
+    <div class="flex items-center gap-4 text-xs text-stone-500 dark:text-white/50 mb-3">
+      <div class="flex items-center gap-1" title="Features">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" />
+        </svg>
+        <span><%= features_count %></span>
+      </div>
+      <div class="flex items-center gap-1" title="Scenarios">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+        </svg>
+        <span><%= scenarios_count %></span>
+      </div>
+    </div>
+
+    <%# Execution progress bar %>
+    <% if has_executions? %>
+      <div class="space-y-1.5">
+        <div class="h-1.5 w-full bg-stone-100 dark:bg-white/10 rounded-full overflow-hidden flex">
+          <% if passed_percentage > 0 %>
+            <div class="h-full bg-emerald-500" style="width: <%= passed_percentage %>%"></div>
+          <% end %>
+          <% if failed_percentage > 0 %>
+            <div class="h-full bg-red-500" style="width: <%= failed_percentage %>%"></div>
+          <% end %>
+          <% if pending_percentage > 0 %>
+            <div class="h-full bg-stone-300 dark:bg-white/30" style="width: <%= pending_percentage %>%"></div>
+          <% end %>
+        </div>
+
+        <%# Legend %>
+        <div class="flex items-center gap-3 text-xs">
+          <% if execution_stats[:passed] > 0 %>
+            <span class="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              <%= execution_stats[:passed] %>
+            </span>
+          <% end %>
+          <% if execution_stats[:failed] > 0 %>
+            <span class="flex items-center gap-1 text-red-600 dark:text-red-400">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              <%= execution_stats[:failed] %>
+            </span>
+          <% end %>
+          <% if execution_stats[:pending] > 0 %>
+            <span class="flex items-center gap-1 text-stone-500 dark:text-white/50">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              <%= execution_stats[:pending] %>
+            </span>
+          <% end %>
+        </div>
+      </div>
+    <% else %>
+      <div class="text-xs text-stone-400 dark:text-white/30 italic">
+        No executions yet
+      </div>
+    <% end %>
+  </div>
+<% end %>
+

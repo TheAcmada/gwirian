@@ -1,28 +1,28 @@
-    <%= render "shared/desktop_logo" %>
+<%= render "shared/desktop_logo" %>
 
-    <div class="auth-form-container">
-      <div class="auth-form-card">
-        <%= render "shared/mobile_logo" %>
+<div class="auth-form-container">
+  <div class="auth-form-card">
+    <%= render "shared/mobile_logo" %>
 
-        <!-- Title and subtitle -->
-        <h1 class="auth-title">Welcome Back</h1>
-        <p class="auth-subtitle">Enter your email and password to access your account</p>
+    <!-- Title and subtitle -->
+    <h1 class="text-2xl font-semibold text-center mb-1 text-stone-800 dark:text-white/90">Welcome back</h1>
+    <p class="text-center mb-6 text-stone-500 dark:text-white/60">Sign in to continue to Gwirian</p>
 
     <!-- Form -->
     <%= form_with url: session_path, method: :post, local: true do |f| %>
-      <div class="space-y-6">
+      <div class="space-y-4">
         <div>
-          <%= f.label :email_address, "Email address", class: "label" %>
+          <%= f.label :email_address, "Email", class: "block text-sm font-medium mb-1 text-stone-800 dark:text-white/90" %>
           <%= f.email_field :email_address,
               class: "input",
               required: true,
               autofocus: true,
               autocomplete: "email",
-              placeholder: "Enter your email address" %>
+              placeholder: "Enter your email" %>
         </div>
 
         <div>
-          <%= f.label :password, "Password", class: "label" %>
+          <%= f.label :password, "Password", class: "block text-sm font-medium mb-1 text-stone-800 dark:text-white/90" %>
           <%= f.password_field :password,
               class: "input",
               required: true,
@@ -31,20 +31,20 @@
         </div>
 
         <div class="flex justify-end">
-          <%= link_to "Forgot your password?", new_password_path, class: "link" %>
+          <%= link_to "Forgot password?", new_password_path, class: "link" %>
         </div>
 
         <div>
-          <%= f.submit "Sign in", class: "btn btn-primary w-full py-3 text-base font-medium" %>
+          <%= f.submit "Sign in", class: "btn btn-primary w-full" %>
         </div>
       </div>
     <% end %>
 
     <!-- Sign up link -->
     <div class="text-center mt-6">
-      <p class="text-zinc-600 dark:text-gray-400">
-        No account?
-        <%= link_to "Sign up", new_user_path, class: "link font-medium text-accent-600 dark:text-accent-400" %>
+      <p class="text-stone-500 dark:text-white/60">
+        Don't have an account?
+        <%= link_to "Sign up", new_user_path, class: "link" %>
       </p>
     </div>
   </div>

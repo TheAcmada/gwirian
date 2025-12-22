@@ -61,6 +61,10 @@ class Ability
     can [ :update, :destroy ], Feature do |feature|
       feature.project.editor?(user) || feature.project.admin?(user)
     end
+
+    can :execute, Feature do |feature|
+      feature.project.editor?(user) || feature.project.admin?(user)
+    end
   end
 
   def initialize_scenario_ability(user)
@@ -69,6 +73,10 @@ class Ability
     end
 
     can [ :update, :destroy ], Scenario do |scenario|
+      scenario.feature.project.editor?(user) || scenario.feature.project.admin?(user)
+    end
+
+    can :execute, Scenario do |scenario|
       scenario.feature.project.editor?(user) || scenario.feature.project.admin?(user)
     end
   end

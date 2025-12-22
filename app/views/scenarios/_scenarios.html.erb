@@ -1,9 +1,9 @@
-<div id="scenarios-list" class="mb-8">
-  <h2 class="text-xl font-semibold text-zinc-900 dark:text-white mb-4">Scenarios</h2>
+<div id="scenarios-list" class="mb-6">
+  <h2 class="text-sm font-medium mb-3 text-stone-500 dark:text-white/60">Scenarios</h2>
 
   <div
     id="scenarios-container"
-    class="space-y-3"
+    class="space-y-0.5"
     <% if feature.project.editor?(Current.user) || feature.project.admin?(Current.user) %>
       x-data="dragDropList({ reorderUrl: '<%= reorder_project_feature_scenarios_path(project, feature) %>' })"
     <% else %>
@@ -18,20 +18,18 @@
   </div>
 
   <% if feature.project.editor?(Current.user) || feature.project.admin?(Current.user) %>
-    <div class="mt-4">
+    <div class="mt-3">
       <a
         href="<%= project_feature_scenarios_path(project, feature) %>"
         hx-post="<%= project_feature_scenarios_path(project, feature) %>"
         hx-target="#scenarios-container"
         hx-swap="beforeend"
-        class="inline-flex items-center gap-2 text-zinc-600 dark:text-gray-400 hover:text-zinc-900 dark:hover:text-white transition-colors group"
+        class="inline-flex items-center gap-1.5 px-2 py-1 -ml-2 rounded text-sm transition-colors text-stone-500 dark:text-white/60 hover:bg-stone-100 dark:hover:bg-white/5 hover:text-stone-800 dark:hover:text-white/90"
       >
-        <span class="flex items-center justify-center w-6 h-6 rounded-md bg-zinc-100 dark:bg-gray-700 group-hover:bg-accent-100 dark:group-hover:bg-accent-900 transition-colors">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-          </svg>
-        </span>
-        <span class="font-medium">Add Scenario</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        <span>Add scenario</span>
       </a>
     </div>
   <% end %>

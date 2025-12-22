@@ -1,24 +1,24 @@
-    <%= render "shared/desktop_logo" %>
+<%= render "shared/desktop_logo" %>
 
-    <div class="auth-form-container">
-      <div class="auth-form-card">
-        <%= render "shared/mobile_logo" %>
+<div class="auth-form-container">
+  <div class="auth-form-card">
+    <%= render "shared/mobile_logo" %>
 
-        <!-- Title and subtitle -->
-        <h1 class="auth-title">Forgot your password?</h1>
-        <p class="auth-subtitle">Enter your email address and we'll send you reset instructions</p>
+    <!-- Title and subtitle -->
+    <h1 class="text-2xl font-semibold text-center mb-1 text-stone-800 dark:text-white/90">Forgot your password?</h1>
+    <p class="text-center mb-6 text-stone-500 dark:text-white/60">Enter your email and we'll send you reset instructions</p>
 
     <!-- Form -->
     <%= form_with url: passwords_path, method: :post, local: true do |f| %>
-      <div class="space-y-6">
+      <div class="space-y-4">
         <div>
-          <%= f.label :email_address, "Email address", class: "label" %>
+          <%= f.label :email_address, "Email", class: "block text-sm font-medium mb-1 text-stone-800 dark:text-white/90" %>
           <%= f.email_field :email_address,
               class: "input",
               required: true,
               autofocus: true,
               autocomplete: "email",
-              placeholder: "Enter your email address" %>
+              placeholder: "Enter your email" %>
         </div>
 
         <!-- Honeypot field -->
@@ -28,16 +28,16 @@
         </div>
 
         <div>
-          <%= f.submit "Send reset instructions", class: "btn btn-primary w-full py-3 text-base font-medium" %>
+          <%= f.submit "Send reset instructions", class: "btn btn-primary w-full" %>
         </div>
       </div>
     <% end %>
 
     <!-- Back link -->
     <div class="text-center mt-6">
-      <p class="text-zinc-600 dark:text-gray-400">
+      <p class="text-stone-500 dark:text-white/60">
         Remember your password?
-        <%= link_to "Back to sign in", new_session_path, class: "link font-medium text-accent-600 dark:text-accent-400" %>
+        <%= link_to "Back to sign in", new_session_path, class: "link" %>
       </p>
     </div>
   </div>

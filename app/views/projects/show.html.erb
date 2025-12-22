@@ -1,70 +1,88 @@
 <% content_for :title, @project.name %>
-<div class="max-w-4xl mx-auto px-4 py-8">
-  <!-- Project Header -->
+
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <%# Header %>
   <div class="mb-8">
-    <h1 class="title mb-2"><%= @project.name %></h1>
-    <% if @project.description.present? %>
-      <p class="text-lg text-zinc-600 dark:text-gray-300 leading-relaxed"><%= @project.description %></p>
-    <% else %>
-      <p class="text-zinc-500 dark:text-gray-400 italic">No description provided</p>
-    <% end %>
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-bold tracking-tight text-stone-800 dark:text-white" style="letter-spacing: -0.02em;">
+          <%= @project.name %>
+        </h1>
+        <% if @project.description.present? %>
+          <p class="mt-2 text-base text-stone-600 dark:text-stone-300 max-w-2xl">
+            <%= @project.description %>
+          </p>
+        <% end %>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <%= link_to project_features_path(@project), class: "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-stone-700 dark:text-stone-200 bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors" do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          <%= t("dashboard.view_features") %>
+        <% end %>
+        
+      </div>
+    </div>
   </div>
 
-  <!-- Project Details Card -->
-  <div class="card">
-    <h2 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Project Details</h2>
+  <%# KPI Stats Row %>
+  <div class="mb-8">
+    <%= render Dashboard::StatsComponent.new(project: @project) %>
+  </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <h3 class="text-sm font-medium text-zinc-500 dark:text-gray-400 uppercase tracking-wide mb-2">Project Name</h3>
-        <p class="text-zinc-900 dark:text-white"><%= @project.name %></p>
+  <%# Main Grid %>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <%# Failing Tests %>
+    <%= render Dashboard::FailingTestsComponent.new(project: @project) %>
+    
+    <%# Feature Coverage %>
+    <%= render Dashboard::FeatureCoverageComponent.new(project: @project) %>
+  </div>
+
+  <%# Execution Trends (Full Width) %>
+  <div class="mb-8">
+    <%= render Dashboard::ExecutionTrendsComponent.new(project: @project) %>
+  </div>
+
+  <%# Bottom Row %>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <%# Recent Executions %>
+    <%= render Dashboard::RecentExecutionsComponent.new(project: @project) %>
+    
+    <%# Team Members %>
+    <div class="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 overflow-hidden">
+      <div class="px-5 py-4 border-b border-stone-200 dark:border-stone-800">
+        <h3 class="text-sm font-semibold text-stone-900 dark:text-white flex items-center gap-2">
+          <svg class="w-4 h-4 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
+          <%= t("dashboard.team.title") %>
+        </h3>
       </div>
 
-      <div>
-        <h3 class="text-sm font-medium text-zinc-500 dark:text-gray-400 uppercase tracking-wide mb-2">Created</h3>
-        <p class="text-zinc-900 dark:text-white"><%= @project.created_at.strftime("%B %d, %Y") %></p>
-      </div>
-
-      <% if @project.description.present? %>
-        <div class="md:col-span-2">
-          <h3 class="text-sm font-medium text-zinc-500 dark:text-gray-400 uppercase tracking-wide mb-2">Description</h3>
-          <p class="text-zinc-900 dark:text-white leading-relaxed"><%= @project.description %></p>
+      <% if @project.project_members.any? %>
+        <div class="divide-y divide-stone-100 dark:divide-stone-800">
+          <% @project.project_members.each do |member| %>
+            <div class="flex items-center justify-between px-5 py-3">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300">
+                  <%= member.email.first.upcase %>
+                </div>
+                <span class="text-sm text-stone-900 dark:text-white"><%= member.email %></span>
+              </div>
+              <span class="text-xs px-2 py-1 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400">
+                <%= member.role.humanize %>
+              </span>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="px-5 py-8 text-center text-sm text-stone-500 dark:text-stone-400">
+          <%= t("dashboard.team.no_members") %>
         </div>
       <% end %>
     </div>
   </div>
-
-  <!-- Project Members Section (if applicable) -->
-  <% if @project.project_members.any? %>
-    <div class="card mt-6">
-      <h2 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Project Members</h2>
-      <div class="space-y-3">
-        <% @project.project_members.each do |member| %>
-          <div class="flex items-center justify-between py-2 px-3 bg-zinc-50 dark:bg-zinc-800 rounded-lg">
-            <div class="flex items-center">
-              <div class="w-8 h-8 bg-zinc-200 dark:bg-zinc-700 rounded-full flex items-center justify-center mr-3">
-                <span class="text-sm font-medium text-zinc-600 dark:text-gray-300">
-                  <%= member.email.first.upcase %>
-                </span>
-              </div>
-              <div>
-                <p class="text-sm font-medium text-zinc-900 dark:text-white"><%= member.email %></p>
-                <p class="text-xs text-zinc-500 dark:text-gray-400 capitalize"><%= member.role %></p>
-              </div>
-            </div>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-              <%= case member.role
-                  when 'administrator' then 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                  when 'editor' then 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                  when 'viewer' then 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
-                  else 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
-                  end %>">
-              <%= member.role.humanize %>
-            </span>
-          </div>
-        <% end %>
-      </div>
-    </div>
-  <% end %>
-
 </div>
