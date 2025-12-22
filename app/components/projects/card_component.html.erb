@@ -33,29 +33,6 @@
     <%# Execution progress bar %>
     <% if has_executions? %>
       <div class="space-y-1.5">
-        <div class="flex items-center justify-between text-xs">
-          <span class="text-stone-400 dark:text-white/40">Execution status</span>
-          <div class="flex items-center gap-2 text-stone-500 dark:text-white/50">
-            <% if execution_stats[:passed] > 0 %>
-              <span class="flex items-center gap-0.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                <%= execution_stats[:passed] %>
-              </span>
-            <% end %>
-            <% if execution_stats[:failed] > 0 %>
-              <span class="flex items-center gap-0.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                <%= execution_stats[:failed] %>
-              </span>
-            <% end %>
-            <% if execution_stats[:pending] > 0 %>
-              <span class="flex items-center gap-0.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-stone-300 dark:bg-white/30"></span>
-                <%= execution_stats[:pending] %>
-              </span>
-            <% end %>
-          </div>
-        </div>
         <div class="h-1.5 w-full bg-stone-100 dark:bg-white/10 rounded-full overflow-hidden flex">
           <% if passed_percentage > 0 %>
             <div class="h-full bg-emerald-500" style="width: <%= passed_percentage %>%"></div>
@@ -65,6 +42,34 @@
           <% end %>
           <% if pending_percentage > 0 %>
             <div class="h-full bg-stone-300 dark:bg-white/30" style="width: <%= pending_percentage %>%"></div>
+          <% end %>
+        </div>
+
+        <%# Legend %>
+        <div class="flex items-center gap-3 text-xs">
+          <% if execution_stats[:passed] > 0 %>
+            <span class="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              <%= execution_stats[:passed] %>
+            </span>
+          <% end %>
+          <% if execution_stats[:failed] > 0 %>
+            <span class="flex items-center gap-1 text-red-600 dark:text-red-400">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              <%= execution_stats[:failed] %>
+            </span>
+          <% end %>
+          <% if execution_stats[:pending] > 0 %>
+            <span class="flex items-center gap-1 text-stone-500 dark:text-white/50">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              <%= execution_stats[:pending] %>
+            </span>
           <% end %>
         </div>
       </div>
