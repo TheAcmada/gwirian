@@ -1,0 +1,33 @@
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+  <%# Pass Rate %>
+  <%= render Shared::KpiCardComponent.new(
+    value: pass_rate,
+    suffix: "%",
+    label: t("dashboard.stats.pass_rate"),
+    trend: pass_rate_trend,
+    trend_value: pass_rate_trend_value,
+    color: pass_rate_color
+  ) %>
+
+  <%# Total Scenarios %>
+  <%= render Shared::KpiCardComponent.new(
+    value: total_scenarios,
+    label: t("dashboard.stats.total_scenarios"),
+    color: :default
+  ) %>
+
+  <%# Failed Tests %>
+  <%= render Shared::KpiCardComponent.new(
+    value: failed_count,
+    label: t("dashboard.stats.failed_tests"),
+    color: failed_color
+  ) %>
+
+  <%# Untested %>
+  <%= render Shared::KpiCardComponent.new(
+    value: untested_count,
+    label: t("dashboard.stats.untested"),
+    color: untested_color
+  ) %>
+</div>
+

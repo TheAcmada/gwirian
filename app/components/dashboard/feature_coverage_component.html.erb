@@ -1,0 +1,83 @@
+<div class="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 overflow-hidden">
+  <div class="px-5 py-4 border-b border-stone-200 dark:border-stone-800">
+    <h3 class="text-sm font-semibold text-stone-900 dark:text-white flex items-center gap-2">
+      <svg class="w-4 h-4 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+      </svg>
+      <%= t("dashboard.feature_coverage.title") %>
+    </h3>
+  </div>
+
+  <% if has_features? %>
+    <div class="divide-y divide-stone-100 dark:divide-stone-800">
+      <% features_with_stats.each do |fs| %>
+        <a href="<%= feature_link(fs.feature) %>" class="block px-5 py-3 hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors">
+          <div class="flex items-center justify-between gap-4 mb-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <div class="w-2 h-2 rounded-full flex-shrink-0 <%= health_indicator_class(fs.health_status) %>"></div>
+              <span class="text-sm font-medium text-stone-900 dark:text-white truncate">
+                <%= fs.feature.title %>
+              </span>
+            </div>
+            <span class="text-xs text-stone-500 dark:text-stone-400 flex-shrink-0">
+              <%= fs.total %> <%= t("dashboard.feature_coverage.scenarios") %>
+            </span>
+          </div>
+          
+          <%# Stacked progress bar %>
+          <% if fs.total > 0 %>
+            <div class="h-2 flex rounded-full overflow-hidden bg-stone-100 dark:bg-stone-700">
+              <% if fs.pass_percentage > 0 %>
+                <div class="bg-emerald-500 transition-all" style="width: <%= fs.pass_percentage %>%"></div>
+              <% end %>
+              <% if fs.fail_percentage > 0 %>
+                <div class="bg-red-500 transition-all" style="width: <%= fs.fail_percentage %>%"></div>
+              <% end %>
+              <% if fs.pending_percentage > 0 %>
+                <div class="bg-stone-300 dark:bg-stone-500 transition-all" style="width: <%= fs.pending_percentage %>%"></div>
+              <% end %>
+            </div>
+            
+            <%# Legend %>
+            <div class="flex items-center gap-4 mt-2 text-xs text-stone-500 dark:text-stone-400">
+              <% if fs.passed > 0 %>
+                <span class="flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <%= fs.passed %> <%= t("dashboard.feature_coverage.passed") %>
+                </span>
+              <% end %>
+              <% if fs.failed > 0 %>
+                <span class="flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                  <%= fs.failed %> <%= t("dashboard.feature_coverage.failed") %>
+                </span>
+              <% end %>
+              <% if fs.pending > 0 %>
+                <span class="flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-stone-300 dark:bg-stone-500"></span>
+                  <%= fs.pending %> <%= t("dashboard.feature_coverage.pending") %>
+                </span>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="text-xs text-stone-400 dark:text-stone-500 italic">
+              <%= t("dashboard.feature_coverage.no_scenarios") %>
+            </div>
+          <% end %>
+        </a>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="px-5 py-12 text-center">
+      <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-stone-100 dark:bg-stone-800 mb-3">
+        <svg class="w-6 h-6 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+      </div>
+      <p class="text-sm text-stone-500 dark:text-stone-400">
+        <%= t("dashboard.feature_coverage.no_features") %>
+      </p>
+    </div>
+  <% end %>
+</div>
+
