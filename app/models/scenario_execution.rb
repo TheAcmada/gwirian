@@ -24,4 +24,3 @@ class ScenarioExecution < ApplicationRecord
     status == "failed"
   end
 end
-

@@ -10,7 +10,6 @@ class CreateScenarioExecutions < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :scenario_executions, [:scenario_id, :executed_at]
+    add_index :scenario_executions, [ :scenario_id, :executed_at ]
   end
 end
-

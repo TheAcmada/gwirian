@@ -113,10 +113,10 @@
                     }
                   "
                   :disabled="status !== null"
-                  :class="status === 'passed' 
-                    ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 cursor-default' 
-                    : (status === null 
-                      ? 'bg-stone-50 dark:bg-white/5 border-stone-200 dark:border-white/10 text-stone-700 dark:text-white/70 hover:bg-stone-100 dark:hover:bg-white/10 cursor-pointer' 
+                  :class="status === 'passed'
+                    ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 cursor-default'
+                    : (status === null
+                      ? 'bg-stone-50 dark:bg-white/5 border-stone-200 dark:border-white/10 text-stone-700 dark:text-white/70 hover:bg-stone-100 dark:hover:bg-white/10 cursor-pointer'
                       : 'bg-stone-50 dark:bg-white/5 border-stone-200 dark:border-white/10 text-stone-400 dark:text-white/30 cursor-not-allowed')"
                   class="px-3 py-1.5 text-sm font-medium rounded border transition-all"
                 >
@@ -134,10 +134,10 @@
                     }
                   "
                   :disabled="status !== null"
-                  :class="status === 'failed' 
-                    ? 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-800 text-red-700 dark:text-red-300 cursor-default' 
-                    : (status === null 
-                      ? 'bg-stone-50 dark:bg-white/5 border-stone-200 dark:border-white/10 text-stone-700 dark:text-white/70 hover:bg-stone-100 dark:hover:bg-white/10 cursor-pointer' 
+                  :class="status === 'failed'
+                    ? 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-800 text-red-700 dark:text-red-300 cursor-default'
+                    : (status === null
+                      ? 'bg-stone-50 dark:bg-white/5 border-stone-200 dark:border-white/10 text-stone-700 dark:text-white/70 hover:bg-stone-100 dark:hover:bg-white/10 cursor-pointer'
                       : 'bg-stone-50 dark:bg-white/5 border-stone-200 dark:border-white/10 text-stone-400 dark:text-white/30 cursor-not-allowed')"
                   class="px-3 py-1.5 text-sm font-medium rounded border transition-all"
                 >
@@ -174,8 +174,8 @@
       <button
         type="submit"
         :disabled="!allMarked"
-        :class="allMarked 
-          ? 'btn btn-primary' 
+        :class="allMarked
+          ? 'btn btn-primary'
           : 'btn opacity-50 cursor-not-allowed'"
         class="transition-opacity"
       >

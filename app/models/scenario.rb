@@ -17,4 +17,3 @@ class Scenario < ApplicationRecord
     scenario_executions.count
   end
 end
-
