@@ -3,7 +3,6 @@
     title: <%= field_value.to_json %>,
     updateTitle(event) {
       this.title = event.target.innerText.trim();
-      // Small delay to ensure Alpine updates before htmx sends
       setTimeout(() => {
         htmx.trigger(event.target, 'save-title');
       }, 10);
@@ -14,7 +13,8 @@
     <input type="hidden" name="feature[title]" x-bind:value="title">
   </form>
   <h1
-    class="title mb-2 is-editable"
+    class="text-4xl font-bold tracking-tight mb-1 text-stone-800 dark:text-white/90 is-editable"
+    style="letter-spacing: -0.02em;"
     contenteditable="true"
     x-on:blur="updateTitle($event)"
     hx-patch="<%= update_path %>"

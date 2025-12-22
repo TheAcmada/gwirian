@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_23_204120) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_22_115002) do
   create_table "features", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -51,6 +51,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_23_204120) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "scenario_executions", force: :cascade do |t|
+    t.integer "scenario_id", null: false
+    t.integer "user_id", null: false
+    t.string "status", default: "pending", null: false
+    t.text "notes"
+    t.datetime "executed_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["scenario_id", "executed_at"], name: "index_scenario_executions_on_scenario_id_and_executed_at"
+    t.index ["scenario_id"], name: "index_scenario_executions_on_scenario_id"
+    t.index ["user_id"], name: "index_scenario_executions_on_user_id"
   end
 
   create_table "scenarios", force: :cascade do |t|
@@ -125,6 +138,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_23_204120) do
   add_foreign_key "features", "projects"
   add_foreign_key "login_histories", "users"
   add_foreign_key "project_members", "projects"
+  add_foreign_key "scenario_executions", "scenarios"
+  add_foreign_key "scenario_executions", "users"
   add_foreign_key "scenarios", "features"
   add_foreign_key "sessions", "users"
   add_foreign_key "steps", "scenarios"

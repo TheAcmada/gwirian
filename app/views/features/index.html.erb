@@ -1,14 +1,14 @@
 <% content_for :title, "Features - #{@project.name}" %>
-<div class="max-w-4xl mx-auto px-4 py-8">
+<div class="max-w-3xl mx-auto px-4 py-12">
   <!-- Header -->
-  <div class="mb-8">
-    <div class="flex items-center justify-between mb-2">
-      <h1 class="title">Features</h1>
+  <div class="mb-6">
+    <div class="flex items-center justify-between mb-1">
+      <h1 class="text-4xl font-bold tracking-tight text-stone-800 dark:text-white/90" style="letter-spacing: -0.02em;">Features</h1>
       <% if @project.editor?(Current.user) || @project.admin?(Current.user) %>
-        <%= button_to "New Feature", project_features_path(@project), method: :post, class: "btn btn-primary" %>
+        <%= button_to "New feature", project_features_path(@project), method: :post, class: "btn btn-primary" %>
       <% end %>
     </div>
-    <p class="text-lg text-zinc-600 dark:text-gray-300">Manage and track features for <%= @project.name %></p>
+    <p class="text-base text-stone-500 dark:text-white/60">Manage features for <%= @project.name %></p>
   </div>
 
   <!-- Features List -->

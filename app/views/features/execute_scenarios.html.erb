@@ -1,0 +1,188 @@
+<% content_for :title, "Execute Scenarios - #{@feature.title} - #{@project.name}" %>
+
+<div class="max-w-3xl mx-auto px-4 py-12" x-data="{
+  scenarios: <%= @scenarios.map { |s| { id: s.id, status: nil, notes: '' } }.to_json %>,
+  get allMarked() {
+    return this.scenarios.every(s => s.status !== null);
+  },
+  markScenario(scenarioId, status) {
+    const scenario = this.scenarios.find(s => s.id === scenarioId);
+    if (scenario) {
+      scenario.status = status;
+    }
+  }
+}">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center gap-3 mb-2">
+      <a
+        href="<%= select_scenarios_project_feature_path(@project, @feature) %>"
+        class="flex items-center justify-center w-7 h-7 rounded transition-colors text-stone-500 dark:text-white/60 hover:bg-stone-100 dark:hover:bg-white/5 hover:text-stone-800 dark:hover:text-white/90"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </a>
+      <h1 class="text-3xl font-bold tracking-tight text-stone-800 dark:text-white/90" style="letter-spacing: -0.02em;">Execute Scenarios</h1>
+    </div>
+    <p class="text-stone-500 dark:text-white/60 ml-10">Mark each scenario as Pass or Fail</p>
+  </div>
+
+  <form action="<%= execute_scenarios_project_feature_path(@project, @feature) %>" method="post">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+
+    <!-- Scenarios Cards -->
+    <div class="space-y-2 mb-8">
+      <% @scenarios.each do |scenario| %>
+        <div
+          class="group relative p-4 rounded border border-stone-200 dark:border-white/10 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors"
+          x-data="{ scenarioId: <%= scenario.id %>, status: null, notes: '' }"
+          x-init="
+            const saved = scenarios.find(s => s.id === scenarioId);
+            if (saved) {
+              status = saved.status;
+              notes = saved.notes;
+            }
+          "
+        >
+          <div class="flex items-start gap-4">
+            <!-- Status Icon -->
+            <div class="flex-shrink-0 mt-0.5">
+              <template x-if="status === 'passed'">
+                <div class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/30">
+                  <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </div>
+              </template>
+              <template x-if="status === 'failed'">
+                <div class="flex items-center justify-center w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/30">
+                  <svg class="w-4 h-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </div>
+              </template>
+              <template x-if="status === null">
+                <div class="flex items-center justify-center w-6 h-6 rounded-full bg-stone-100 dark:bg-white/10">
+                  <svg class="w-3.5 h-3.5 text-stone-400 dark:text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+              </template>
+            </div>
+
+            <div class="flex-1 min-w-0">
+              <!-- Title -->
+              <h3 class="text-sm font-medium text-stone-800 dark:text-white/90 mb-3"><%= scenario.title %></h3>
+
+              <!-- Given/When/Then -->
+              <% if scenario.given.present? || scenario[:when].present? || scenario[:then].present? %>
+                <div class="space-y-2 mb-4 text-sm">
+                  <% if scenario.given.present? %>
+                    <div class="flex gap-2">
+                      <span class="flex-shrink-0 text-xs font-medium uppercase tracking-wider pt-0.5 w-10 text-emerald-600 dark:text-emerald-400">Given</span>
+                      <span class="flex-1 text-stone-600 dark:text-white/70 leading-relaxed"><%= scenario.given %></span>
+                    </div>
+                  <% end %>
+                  <% if scenario[:when].present? %>
+                    <div class="flex gap-2">
+                      <span class="flex-shrink-0 text-xs font-medium uppercase tracking-wider pt-0.5 w-10 text-blue-600 dark:text-blue-400">When</span>
+                      <span class="flex-1 text-stone-600 dark:text-white/70 leading-relaxed"><%= scenario[:when] %></span>
+                    </div>
+                  <% end %>
+                  <% if scenario[:then].present? %>
+                    <div class="flex gap-2">
+                      <span class="flex-shrink-0 text-xs font-medium uppercase tracking-wider pt-0.5 w-10 text-purple-600 dark:text-purple-400">Then</span>
+                      <span class="flex-1 text-stone-600 dark:text-white/70 leading-relaxed"><%= scenario[:then] %></span>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+
+              <!-- Action Buttons -->
+              <div class="flex items-center gap-2 mb-4">
+                <button
+                  type="button"
+                  @click="
+                    status = 'passed';
+                    const saved = scenarios.find(s => s.id === scenarioId);
+                    if (saved) {
+                      saved.status = 'passed';
+                    } else {
+                      scenarios.push({ id: scenarioId, status: 'passed', notes: notes });
+                    }
+                  "
+                  :disabled="status !== null"
+                  :class="status === 'passed' 
+                    ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 cursor-default' 
+                    : (status === null 
+                      ? 'bg-stone-50 dark:bg-white/5 border-stone-200 dark:border-white/10 text-stone-700 dark:text-white/70 hover:bg-stone-100 dark:hover:bg-white/10 cursor-pointer' 
+                      : 'bg-stone-50 dark:bg-white/5 border-stone-200 dark:border-white/10 text-stone-400 dark:text-white/30 cursor-not-allowed')"
+                  class="px-3 py-1.5 text-sm font-medium rounded border transition-all"
+                >
+                  Pass
+                </button>
+                <button
+                  type="button"
+                  @click="
+                    status = 'failed';
+                    const saved = scenarios.find(s => s.id === scenarioId);
+                    if (saved) {
+                      saved.status = 'failed';
+                    } else {
+                      scenarios.push({ id: scenarioId, status: 'failed', notes: notes });
+                    }
+                  "
+                  :disabled="status !== null"
+                  :class="status === 'failed' 
+                    ? 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-800 text-red-700 dark:text-red-300 cursor-default' 
+                    : (status === null 
+                      ? 'bg-stone-50 dark:bg-white/5 border-stone-200 dark:border-white/10 text-stone-700 dark:text-white/70 hover:bg-stone-100 dark:hover:bg-white/10 cursor-pointer' 
+                      : 'bg-stone-50 dark:bg-white/5 border-stone-200 dark:border-white/10 text-stone-400 dark:text-white/30 cursor-not-allowed')"
+                  class="px-3 py-1.5 text-sm font-medium rounded border transition-all"
+                >
+                  Fail
+                </button>
+              </div>
+
+              <!-- Notes -->
+              <textarea
+                name="executions[<%= scenario.id %>][notes]"
+                :value="notes"
+                @input="
+                  notes = $event.target.value;
+                  const saved = scenarios.find(s => s.id === scenarioId);
+                  if (saved) {
+                    saved.notes = notes;
+                  } else {
+                    scenarios.push({ id: scenarioId, status: status, notes: notes });
+                  }
+                "
+                placeholder="Add notes (optional)..."
+                class="input resize-y min-h-20 h-20"
+              ></textarea>
+
+              <input type="hidden" name="executions[<%= scenario.id %>][status]" :value="status" />
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-2 pt-4 border-t border-stone-200 dark:border-white/10">
+      <button
+        type="submit"
+        :disabled="!allMarked"
+        :class="allMarked 
+          ? 'btn btn-primary' 
+          : 'btn opacity-50 cursor-not-allowed'"
+        class="transition-opacity"
+      >
+        Submit
+      </button>
+      <a href="<%= select_scenarios_project_feature_path(@project, @feature) %>" class="btn btn-ghost">Back</a>
+      <a href="<%= project_feature_path(@project, @feature) %>" class="btn btn-ghost">Cancel</a>
+    </div>
+  </form>
+</div>

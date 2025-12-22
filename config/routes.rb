@@ -6,6 +6,11 @@ Rails.application.routes.draw do
       member do
         post :add_tag
         delete :remove_tag
+        get :start_execution
+        get :select_scenarios
+        post :select_scenarios
+        get :execute_scenarios
+        post :execute_scenarios
       end
       resources :scenarios, only: [ :create, :update, :destroy ] do
         collection do

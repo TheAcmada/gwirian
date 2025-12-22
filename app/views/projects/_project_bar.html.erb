@@ -1,55 +1,29 @@
 <div class="flex items-center justify-between">
-  <!-- Project info on the left -->
-  <div class="flex items-center space-x-4">
-    <!-- Project icon and name -->
-    <div class="flex items-center space-x-2">
-      <svg class="w-5 h-5 text-zinc-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-      </svg>
-      <span class="text-sm font-medium text-zinc-900 dark:text-white"><%= project.name %></span>
-    </div>
+  <!-- Project info with breadcrumb style -->
+  <div class="flex items-center text-sm text-stone-500 dark:text-white/50">
+    <svg class="w-4 h-4 mr-1.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+    </svg>
+    <span class="font-medium text-stone-800 dark:text-white/90"><%= project.name %></span>
   </div>
 
-  <!-- Navigation menu -->
-  <nav class="flex items-center space-x-1">
-    <!-- Dashboard -->
-    <%= link_to project_path(project),
-        class: "inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors #{'bg-zinc-100 text-zinc-900 dark:bg-gray-700 dark:text-white' if controller_name == 'projects' && action_name == 'show'} #{'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700' unless controller_name == 'projects' && action_name == 'show'}" do %>
-      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"></path>
-      </svg>
-      Dashboard
-    <% end %>
+  <!-- Navigation menu - Notion-style text links -->
+  <nav class="flex items-center gap-0.5">
+    <% nav_items = [
+      { path: project_path(project), label: 'Dashboard', active: controller_name == 'projects' && action_name == 'show' },
+      { path: project_features_path(project), label: 'Features', active: controller_name == 'features' },
+      { path: '#', label: 'History', active: false },
+      { path: edit_project_path(project), label: 'Settings', active: controller_name == 'projects' && action_name == 'edit' }
+    ] %>
 
-    <!-- Features -->
-    <%= link_to project_features_path(project),
-        class: "inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors #{'bg-zinc-100 text-zinc-900 dark:bg-gray-700 dark:text-white' if controller_name == 'features'} #{'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700' unless controller_name == 'features'}" do %>
-      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
-      Features
-    <% end %>
-
-    <!-- Tests history -->
-    <%= link_to "#",
-        class: "inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700" do %>
-      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-        <path d="M3 3v5h5"/>
-        <path d="M12 7v5l4 2"/>
-      </svg>
-      Tests history
-    <% end %>
-
-    <!-- Settings -->
-    <%= link_to edit_project_path(project),
-        class: "inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors #{'bg-zinc-100 text-zinc-900 dark:bg-gray-700 dark:text-white' if controller_name == 'projects' && action_name == 'edit'} #{'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700' unless controller_name == 'projects' && action_name == 'edit'}" do %>
-      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-      </svg>
-      Settings
+    <% nav_items.each_with_index do |item, index| %>
+      <% if index > 0 %>
+        <span class="text-stone-300 dark:text-white/20 mx-0.5">/</span>
+      <% end %>
+      <%= link_to item[:path],
+          class: "px-2 py-1 text-sm rounded transition-colors #{item[:active] ? 'font-medium text-stone-800 dark:text-white/90 bg-stone-100 dark:bg-white/10' : 'text-stone-500 dark:text-white/50 hover:bg-stone-100 dark:hover:bg-white/5 hover:text-stone-800 dark:hover:text-white/90'}" do %>
+        <%= item[:label] %>
+      <% end %>
     <% end %>
   </nav>
 </div>

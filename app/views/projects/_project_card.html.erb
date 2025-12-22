@@ -1,8 +1,12 @@
-<a href="<%= project_path(project) %>" class="card mb-0 block h-full flex flex-col">
-  <div class="flex items-center justify-between mb-2">
-    <h2 class="text-lg font-semibold text-zinc-900 dark:text-white"><%= project.name %></h2>
+<a href="<%= project_path(project) %>" class="block h-full group">
+  <div class="p-4 h-full rounded transition-colors duration-75 hover:bg-stone-50 dark:hover:bg-white/5 border border-stone-200 dark:border-white/10">
+    <h2 class="text-sm font-medium mb-1 text-stone-800 dark:text-white/90 group-hover:underline">
+      <%= project.name %>
+    </h2>
+    <% if project.respond_to?(:description) && project.description.present? %>
+      <p class="text-sm line-clamp-2 text-stone-500 dark:text-white/60">
+        <%= project.description %>
+      </p>
+    <% end %>
   </div>
-  <% if project.respond_to?(:description) && project.description.present? %>
-    <p class="text-zinc-600 dark:text-gray-300 text-sm mb-4"><%= project.description %></p>
-  <% end %>
 </a>
