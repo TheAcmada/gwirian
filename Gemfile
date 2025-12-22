@@ -50,6 +50,11 @@ gem "acts_as_list"
 # Use acts_as_taggable_on for tagging support in Rails models
 gem "acts-as-taggable-on"
 
+# Use elasticsearch for search
+gem "elasticsearch"
+gem "elasticsearch-rails"
+gem "elasticsearch-model"
+
 # Use pagy for fast, efficient pagination
 gem "pagy"
 
