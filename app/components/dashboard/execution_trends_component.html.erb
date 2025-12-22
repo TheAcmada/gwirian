@@ -13,8 +13,87 @@
   </div>
 
   <% if has_data? %>
-    <div 
-      x-data="executionTrendsChart(<%= chart_data_json %>)"
+    <div
+      x-data='{
+        chart: null,
+        chartData: <%= raw chart_data_json %>,
+        async initChart() {
+          const echarts = await import("echarts");
+          this.chart = echarts.init(this.$refs.chart);
+          const isDark = document.documentElement.classList.contains("dark");
+          const textColor = isDark ? "#a8a29e" : "#78716c";
+          const gridColor = isDark ? "#44403c" : "#e7e5e4";
+          const option = {
+            tooltip: {
+              trigger: "axis",
+              backgroundColor: isDark ? "#1c1917" : "#ffffff",
+              borderColor: isDark ? "#44403c" : "#e7e5e4",
+              textStyle: { color: isDark ? "#fafaf9" : "#1c1917" }
+            },
+            legend: {
+              data: ["Executions", "Pass Rate %"],
+              textStyle: { color: textColor },
+              bottom: 0
+            },
+            grid: {
+              left: "3%",
+              right: "4%",
+              bottom: "15%",
+              top: "3%",
+              containLabel: true
+            },
+            xAxis: {
+              type: "category",
+              boundaryGap: false,
+              data: this.chartData.dates,
+              axisLine: { lineStyle: { color: gridColor } },
+              axisLabel: { color: textColor, fontSize: 10 }
+            },
+            yAxis: [
+              {
+                type: "value",
+                name: "Executions",
+                nameTextStyle: { color: textColor },
+                axisLine: { lineStyle: { color: gridColor } },
+                axisLabel: { color: textColor },
+                splitLine: { lineStyle: { color: gridColor } }
+              },
+              {
+                type: "value",
+                name: "Pass Rate %",
+                nameTextStyle: { color: textColor },
+                min: 0,
+                max: 100,
+                axisLine: { lineStyle: { color: gridColor } },
+                axisLabel: { color: textColor, formatter: "{value}%" },
+                splitLine: { show: false }
+              }
+            ],
+            series: [
+              {
+                name: "Executions",
+                type: "bar",
+                data: this.chartData.executions,
+                itemStyle: { color: "#a8a29e", borderRadius: [4, 4, 0, 0] }
+              },
+              {
+                name: "Pass Rate %",
+                type: "line",
+                yAxisIndex: 1,
+                data: this.chartData.pass_rates,
+                smooth: true,
+                symbol: "circle",
+                symbolSize: 6,
+                lineStyle: { color: "#10b981", width: 2 },
+                itemStyle: { color: "#10b981" },
+                connectNulls: true
+              }
+            ]
+          };
+          this.chart.setOption(option);
+          window.addEventListener("resize", () => this.chart.resize());
+        }
+      }'
       x-init="initChart()"
       class="p-4"
     >
@@ -33,95 +112,4 @@
     </div>
   <% end %>
 </div>
-
-<script>
-  document.addEventListener('alpine:init', () => {
-    Alpine.data('executionTrendsChart', (chartData) => ({
-      chart: null,
-      chartData: chartData,
-      
-      async initChart() {
-        const echarts = await import('echarts');
-        
-        this.chart = echarts.init(this.$refs.chart);
-        
-        const isDark = document.documentElement.classList.contains('dark');
-        const textColor = isDark ? '#a8a29e' : '#78716c';
-        const gridColor = isDark ? '#44403c' : '#e7e5e4';
-        
-        const option = {
-          tooltip: {
-            trigger: 'axis',
-            backgroundColor: isDark ? '#1c1917' : '#ffffff',
-            borderColor: isDark ? '#44403c' : '#e7e5e4',
-            textStyle: { color: isDark ? '#fafaf9' : '#1c1917' }
-          },
-          legend: {
-            data: ['Executions', 'Pass Rate %'],
-            textStyle: { color: textColor },
-            bottom: 0
-          },
-          grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '15%',
-            top: '3%',
-            containLabel: true
-          },
-          xAxis: {
-            type: 'category',
-            boundaryGap: false,
-            data: this.chartData.dates,
-            axisLine: { lineStyle: { color: gridColor } },
-            axisLabel: { color: textColor, fontSize: 10 }
-          },
-          yAxis: [
-            {
-              type: 'value',
-              name: 'Executions',
-              nameTextStyle: { color: textColor },
-              axisLine: { lineStyle: { color: gridColor } },
-              axisLabel: { color: textColor },
-              splitLine: { lineStyle: { color: gridColor } }
-            },
-            {
-              type: 'value',
-              name: 'Pass Rate %',
-              nameTextStyle: { color: textColor },
-              min: 0,
-              max: 100,
-              axisLine: { lineStyle: { color: gridColor } },
-              axisLabel: { color: textColor, formatter: '{value}%' },
-              splitLine: { show: false }
-            }
-          ],
-          series: [
-            {
-              name: 'Executions',
-              type: 'bar',
-              data: this.chartData.executions,
-              itemStyle: { color: '#a8a29e', borderRadius: [4, 4, 0, 0] }
-            },
-            {
-              name: 'Pass Rate %',
-              type: 'line',
-              yAxisIndex: 1,
-              data: this.chartData.pass_rates,
-              smooth: true,
-              symbol: 'circle',
-              symbolSize: 6,
-              lineStyle: { color: '#10b981', width: 2 },
-              itemStyle: { color: '#10b981' },
-              connectNulls: true
-            }
-          ]
-        };
-        
-        this.chart.setOption(option);
-        
-        window.addEventListener('resize', () => this.chart.resize());
-      }
-    }));
-  });
-</script>
 
