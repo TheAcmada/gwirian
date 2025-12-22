@@ -34,7 +34,7 @@ class ScenarioExecution < ApplicationRecord
       user_email: user&.email_address,
       status: status,
       notes: notes,
-      executed_at: executed_at,
+      executed_at: executed_at&.iso8601,
       project_id: scenario&.feature&.project_id
     }
   end
