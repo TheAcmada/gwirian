@@ -17,6 +17,7 @@ class Feature < ApplicationRecord
       indexes :tags, type: "text", analyzer: "standard" do
         indexes :keyword, type: "keyword"
       end
+      indexes :project_id, type: "integer"
     end
   end
 
@@ -24,7 +25,8 @@ class Feature < ApplicationRecord
     {
       title: title,
       description: description,
-      tags: tag_list
+      tags: tag_list,
+      project_id: project_id
     }
   end
 

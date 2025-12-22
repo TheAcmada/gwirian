@@ -3,7 +3,11 @@ class FeaturesController < ApplicationController
   before_action :set_feature, only: [ :show, :update, :destroy, :add_tag, :remove_tag, :start_execution, :select_scenarios, :execute_scenarios ]
 
   def index
-    @features = @project.features.order(:title)
+    if params[:q].present?
+      @features = Feature.search_by_project(params[:q], @project.id).records.order(:title)
+    else
+      @features = @project.features.order(:title)
+    end
   end
 
   def show

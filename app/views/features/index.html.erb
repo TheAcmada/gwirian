@@ -11,6 +11,46 @@
     <p class="text-base text-stone-500 dark:text-white/60">Manage features for <%= @project.name %></p>
   </div>
 
-  <!-- Features List -->
-  <%= render partial: "features/features", locals: { features: @features, project: @project } %>
+  <!-- Search Bar - Notion-inspired -->
+  <div class="mb-6">
+    <div class="relative" x-data="{ query: '' }" x-init="query = $refs.searchInput.value">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 dark:text-white/40 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      </svg>
+      <input type="text"
+             name="q"
+             x-ref="searchInput"
+             x-model="query"
+             value="<%= params[:q] %>"
+             placeholder="Search features by title, description, or tags..."
+             class="input w-full pl-10 pr-10"
+             autocomplete="off"
+             hx-get="<%= project_features_path(@project) %>"
+             hx-trigger="keyup changed delay:300ms"
+             hx-target="#features-container"
+             hx-select="#features-container"
+             hx-swap="outerHTML"
+             hx-push-url="true" />
+      <button type="button"
+              x-show="query.length > 0"
+              x-cloak
+              @click="query = ''; $refs.searchInput.value = ''; htmx.ajax('GET', '<%= project_features_path(@project) %>', {target: '#features-container', select: '#features-container', swap: 'outerHTML'})"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 dark:text-white/40 dark:hover:text-white/70 transition-colors cursor-pointer"
+              title="Clear search">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Features List with Search Results Info -->
+  <div id="features-container">
+    <% if params[:q].present? %>
+      <p class="mb-4 text-sm text-stone-500 dark:text-white/50">
+        Showing results for "<span class="font-medium text-stone-700 dark:text-white/70"><%= params[:q] %></span>"
+      </p>
+    <% end %>
+    <%= render partial: "features/features", locals: { features: @features, project: @project } %>
+  </div>
 </div>
