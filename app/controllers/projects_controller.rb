@@ -18,11 +18,24 @@ class ProjectsController < ApplicationController
       return
     end
 
-    executions = @project.scenario_executions
-      .includes(scenario: :feature, user: [])
-      .reorder(executed_at: :desc)
-
-    @pagy, @executions = pagy(executions)
+    if params[:q].present?
+      search_results = ScenarioExecution.search_by_project(params[:q], @project.id)
+      ids = search_results.records.map(&:id)
+      if ids.any?
+        executions = @project.scenario_executions
+          .where(id: ids)
+          .includes(scenario: :feature, user: [])
+          .reorder(executed_at: :desc)
+      else
+        executions = ScenarioExecution.none
+      end
+      @pagy, @executions = pagy(executions)
+    else
+      executions = @project.scenario_executions
+        .includes(scenario: :feature, user: [])
+        .reorder(executed_at: :desc)
+      @pagy, @executions = pagy(executions)
+    end
   end
 
   def new
