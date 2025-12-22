@@ -1,5 +1,5 @@
 class ProjectsController < ApplicationController
-  before_action :set_project, only: [ :show, :edit, :update, :destroy, :add_member, :remove_member, :update_member ]
+  before_action :set_project, only: [ :show, :history, :edit, :update, :destroy, :add_member, :remove_member, :update_member ]
 
   def index
     @projects = Current.user.projects
@@ -10,6 +10,19 @@ class ProjectsController < ApplicationController
     unless can? :read, @project
       render_alert("You are not authorized to view this project")
     end
+  end
+
+  def history
+    unless can? :read, @project
+      render_alert("You are not authorized to view this project")
+      return
+    end
+
+    executions = @project.scenario_executions
+      .includes(scenario: :feature, user: [])
+      .reorder(executed_at: :desc)
+
+    @pagy, @executions = pagy(executions)
   end
 
   def new

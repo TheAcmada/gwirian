@@ -50,6 +50,9 @@ gem "acts_as_list"
 # Use acts_as_taggable_on for tagging support in Rails models
 gem "acts-as-taggable-on"
 
+# Use pagy for fast, efficient pagination
+gem "pagy"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"

@@ -20,6 +20,7 @@ Rails.application.routes.draw do
       end
     end
     member do
+      get :history
       post :add_member
       delete :remove_member
       patch :update_member

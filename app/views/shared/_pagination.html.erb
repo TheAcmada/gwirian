@@ -1,0 +1,60 @@
+<%# Notion-style pagination %>
+<nav class="flex items-center justify-between" aria-label="Pagination">
+  <%# Results info %>
+  <div class="text-sm text-stone-500 dark:text-stone-400">
+    Showing <span class="font-medium text-stone-700 dark:text-stone-200"><%= pagy.from %></span>
+    to <span class="font-medium text-stone-700 dark:text-stone-200"><%= pagy.to %></span>
+    of <span class="font-medium text-stone-700 dark:text-stone-200"><%= pagy.count %></span> results
+  </div>
+
+  <%# Page navigation %>
+  <div class="flex items-center gap-1">
+    <%# Previous button %>
+    <% if pagy.prev %>
+      <%= link_to url_for(page: pagy.prev), class: "inline-flex items-center justify-center w-8 h-8 rounded text-sm text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      <% end %>
+    <% else %>
+      <span class="inline-flex items-center justify-center w-8 h-8 rounded text-sm text-stone-300 dark:text-stone-600 cursor-not-allowed">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </span>
+    <% end %>
+
+    <%# Page numbers %>
+    <% pagy.series.each do |item| %>
+      <% if item.is_a?(Integer) %>
+        <% if item == pagy.page %>
+          <span class="inline-flex items-center justify-center min-w-[2rem] h-8 px-2 rounded text-sm font-medium bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-white">
+            <%= item %>
+          </span>
+        <% else %>
+          <%= link_to item, url_for(page: item), class: "inline-flex items-center justify-center min-w-[2rem] h-8 px-2 rounded text-sm text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors" %>
+        <% end %>
+      <% elsif item == :gap %>
+        <span class="inline-flex items-center justify-center min-w-[2rem] h-8 px-2 text-sm text-stone-400 dark:text-stone-500">
+          ...
+        </span>
+      <% end %>
+    <% end %>
+
+    <%# Next button %>
+    <% if pagy.next %>
+      <%= link_to url_for(page: pagy.next), class: "inline-flex items-center justify-center w-8 h-8 rounded text-sm text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      <% end %>
+    <% else %>
+      <span class="inline-flex items-center justify-center w-8 h-8 rounded text-sm text-stone-300 dark:text-stone-600 cursor-not-allowed">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </span>
+    <% end %>
+  </div>
+</nav>
+

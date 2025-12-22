@@ -12,7 +12,7 @@
     <% nav_items = [
       { path: project_path(project), label: 'Dashboard', active: controller_name == 'projects' && action_name == 'show' },
       { path: project_features_path(project), label: 'Features', active: controller_name == 'features' },
-      { path: '#', label: 'History', active: false },
+      { path: history_project_path(project), label: 'History', active: controller_name == 'projects' && action_name == 'history' },
       { path: edit_project_path(project), label: 'Settings', active: controller_name == 'projects' && action_name == 'edit' }
     ] %>
 
