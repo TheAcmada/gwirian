@@ -1,4 +1,4 @@
-# Gwirian
+# Testtiz
 
 A modern BDD (Behavior-Driven Development) feature management platform built with Ruby on Rails 8, styled with Tailwind CSS v4, interactive with Alpine.js, and dynamic with htmx. Containerized for production with Docker and Kamal.
 
@@ -41,8 +41,8 @@ docker-compose up -d
 
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/frocher/gwirian.git
-   cd gwirian
+   git clone https://github.com/frocher/testtiz.git
+   cd testtiz
    ```
 2. **Install dependencies:**
    ```sh
@@ -90,8 +90,8 @@ bin/rails test
 ## Docker & Production
 - Build and run with Docker:
   ```sh
-  docker build -t gwirian .
-  docker run -d -p 80:80 -e RAILS_MASTER_KEY=yourkey --name gwirian gwirian
+  docker build -t testtiz .
+  docker run -d -p 80:80 -e RAILS_MASTER_KEY=yourkey --name testtiz testtiz
   ```
 - Kamal is supported for zero-downtime deploys (see [kamal-deploy.org](https://kamal-deploy.org))
 
