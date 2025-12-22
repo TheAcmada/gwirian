@@ -11,15 +11,17 @@
       </div>
 
       <!-- User dropdown on the right -->
+      <% username = Current.user&.email_address&.split('@')&.first || "User" %>
       <div class="relative" x-data="{ open: false }">
         <button
           @click="open = !open"
-          class="flex items-center justify-center w-6 h-6 rounded cursor-pointer hover:bg-stone-100 dark:hover:bg-white/10 transition-colors"
+          class="flex items-center gap-2 px-2 py-1 -mr-2 rounded cursor-pointer hover:bg-stone-100 dark:hover:bg-white/5 transition-colors"
           aria-expanded="false"
           aria-haspopup="true"
         >
-          <span class="text-xs font-medium text-stone-700 dark:text-white/90">
-            <%= Current.user&.email_address&.first&.upcase || "U" %>
+          <span class="text-sm text-stone-600 dark:text-white/70"><%= username %></span>
+          <span class="flex items-center justify-center w-6 h-6 rounded bg-stone-100 dark:bg-white/10 text-xs font-medium text-stone-600 dark:text-white/80">
+            <%= username.first.upcase %>
           </span>
         </button>
 
@@ -41,9 +43,8 @@
         >
           <!-- User info header -->
           <div class="px-3 py-2 border-b border-stone-100 dark:border-white/10">
-            <p class="text-sm font-medium text-stone-800 dark:text-white/90">
-              <%= Current.user&.email_address || "User" %>
-            </p>
+            <p class="text-sm font-medium text-stone-800 dark:text-white/90"><%= username %></p>
+            <p class="text-xs text-stone-400 dark:text-white/40"><%= Current.user&.email_address %></p>
           </div>
 
           <!-- Menu items -->
