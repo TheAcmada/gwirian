@@ -47,6 +47,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       get "projects", to: "projects#index"
       get "projects/:project_id", to: "projects#show"
+      resources :features, only: [ :index, :show, :create, :update, :destroy ], path: "projects/:project_id/features"
     end
   end
 
