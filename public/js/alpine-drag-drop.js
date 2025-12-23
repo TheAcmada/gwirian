@@ -1,6 +1,6 @@
 /**
  * Alpine.js Drag and Drop Component
- * A Notion-style reorderable list implementation
+ * A reorderable list implementation
  */
 document.addEventListener('alpine:init', () => {
   Alpine.data('dragDropList', (config = {}) => ({
