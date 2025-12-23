@@ -43,6 +43,13 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
+  namespace :api do
+    namespace :v1 do
+      get "projects", to: "projects#index"
+      get "projects/:project_id", to: "projects#show"
+    end
+  end
+
   # Defines the root path route ("/")
   root "projects#index"
 end
