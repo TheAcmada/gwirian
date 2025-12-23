@@ -1,0 +1,40 @@
+<% content_for :title, "Profile" %>
+<div class="max-w-3xl mx-auto px-4 py-12">
+  <!-- Page Header -->
+  <div class="mb-8">
+    <h1 class="text-4xl font-bold tracking-tight mb-2 text-stone-800 dark:text-white/90" style="letter-spacing: -0.02em;">Profile</h1>
+    <p class="text-stone-500 dark:text-white/60">Manage your account settings</p>
+  </div>
+
+  <div class="space-y-8">
+    <!-- Password Section -->
+    <div>
+      <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Password</h2>
+      <%= form_with model: @user, url: update_password_user_path, method: :patch, local: true do |f| %>
+        <%= render 'shared/errors', model: @user %>
+
+        <div class="mb-4">
+          <%= f.label :current_password, "Current password", class: 'block text-sm font-medium mb-1 text-stone-800 dark:text-white/90' %>
+          <%= f.password_field :current_password, autocomplete: "current-password", class: 'input', required: true %>
+        </div>
+
+        <div class="mb-4">
+          <%= f.label :password, "New password", class: 'block text-sm font-medium mb-1 text-stone-800 dark:text-white/90' %>
+          <%= f.password_field :password, autocomplete: "new-password", class: 'input' %>
+          <p class="mt-1 text-xs text-stone-400 dark:text-white/40">Must be at least 12 characters long. Consider using a pass phrase for better security.</p>
+        </div>
+
+        <div class="mb-4">
+          <%= f.label :password_confirmation, "Confirm new password", class: 'block text-sm font-medium mb-1 text-stone-800 dark:text-white/90' %>
+          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: 'input' %>
+        </div>
+
+        <div class="flex justify-end gap-2">
+          <%= link_to "Cancel", root_path, class: 'btn btn-ghost' %>
+          <%= f.submit "Update Password", class: 'btn btn-primary' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+

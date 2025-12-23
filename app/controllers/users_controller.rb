@@ -32,7 +32,7 @@ class UsersController < ApplicationController
     @user = Current.user
 
     if @user.update(user_params)
-      redirect_to edit_user_path, notice: "Your profile has been updated successfully!"
+      redirect_to edit_user_path(@user), notice: "Your profile has been updated successfully!"
     else
       render :edit, status: :unprocessable_entity
     end
@@ -42,13 +42,19 @@ class UsersController < ApplicationController
     @user = Current.user
 
     unless @user.authenticate(params[:user][:current_password])
-      @user.errors.add(:current_password, "Current password incorrect")
+      @user.errors.add(:current_password, "is incorrect")
+      render :edit, status: :unprocessable_entity and return
+      return
+    end
+
+    if params[:user][:password].blank?
+      @user.errors.add(:password, "can't be blank")
       render :edit, status: :unprocessable_entity and return
       return
     end
 
     if @user.update(password_params)
-      redirect_to edit_user_path, notice: "Your password has been updated successfully!"
+      redirect_to edit_user_path(@user), notice: "Your password has been updated successfully!"
     else
       render :edit, status: :unprocessable_entity
     end
