@@ -29,6 +29,8 @@ Rails.application.routes.draw do
   resources :users, except: [ :show ] do
     member do
       patch :update_password
+      post :generate_api_token
+      delete :revoke_api_token
     end
   end
 

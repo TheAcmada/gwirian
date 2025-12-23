@@ -25,7 +25,7 @@ class UsersController < ApplicationController
   end
 
   def edit
-    @user = Current.user
+    @user = Current.user.reload
   end
 
   def update
@@ -64,6 +64,31 @@ class UsersController < ApplicationController
     @user = Current.user
     @user.destroy
     redirect_to root_path, notice: "Your account has been deleted. We're sorry to see you go!"
+  end
+
+  def generate_api_token
+    @user = Current.user
+    expires_in = params[:expires_in].present? ? params[:expires_in].to_i.days : 30.days
+    @user.generate_api_token(expires_in: expires_in)
+    @user.reload
+
+    if request.headers["HX-Request"]
+      render partial: "api_token", locals: { user: @user }
+    else
+      redirect_to edit_user_path, notice: "API token generated successfully"
+    end
+  end
+
+  def revoke_api_token
+    @user = Current.user
+    @user.revoke_api_token
+    @user.reload
+
+    if request.headers["HX-Request"]
+      render partial: "api_token", locals: { user: @user }
+    else
+      redirect_to edit_user_path, notice: "API token revoked successfully"
+    end
   end
 
   private

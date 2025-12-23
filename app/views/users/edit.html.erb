@@ -7,6 +7,12 @@
   </div>
 
   <div class="space-y-8">
+    <!-- API Token Section -->
+    <div>
+      <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">API Token</h2>
+      <%= render 'api_token', user: @user %>
+    </div>
+
     <!-- Password Section -->
     <div>
       <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Password</h2>
@@ -30,7 +36,6 @@
         </div>
 
         <div class="flex justify-end gap-2">
-          <%= link_to "Cancel", root_path, class: 'btn btn-ghost' %>
           <%= f.submit "Update Password", class: 'btn btn-primary' %>
         </div>
       <% end %>
