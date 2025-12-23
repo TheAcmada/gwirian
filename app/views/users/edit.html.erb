@@ -35,6 +35,26 @@
         </div>
       <% end %>
     </div>
+
+    <!-- Danger Zone -->
+    <div class="pt-6 border-t border-red-200 dark:border-red-900/30">
+      <div class="bg-red-50 dark:bg-red-900/10 rounded-lg p-6">
+        <h2 class="text-sm font-medium mb-4 text-red-600 dark:text-red-400">Danger Zone</h2>
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-red-600 dark:text-red-400">Delete account</p>
+            <p class="text-xs text-stone-400 dark:text-white/40">This action cannot be undone</p>
+          </div>
+          <% delete_confirmation_message = "Are you absolutely sure? This will permanently delete your account and all your data. This action cannot be undone." %>
+          <%= button_to "Delete",
+                        user_path(@user),
+                        method: :delete,
+                        "x-data": "{}",
+                        "@click.prevent": "showConfirmation(\"#{delete_confirmation_message}\").then(result => { if (result.isConfirmed) $el.closest('form').submit() })",
+                        class: "btn btn-danger" %>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
