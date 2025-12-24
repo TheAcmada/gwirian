@@ -34,6 +34,7 @@ class Ability
     initialize_project_ability(user)
     initialize_feature_ability(user)
     initialize_scenario_ability(user)
+    initialize_scenario_execution_ability(user)
     initialize_step_ability(user)
   end
 
@@ -72,6 +73,10 @@ class Ability
   end
 
   def initialize_scenario_ability(user)
+    can :read, Scenario do |scenario|
+      scenario.feature.project.member?(user)
+    end
+
     can :create, Scenario do |scenario|
       scenario.feature.project.editor?(user) || scenario.feature.project.admin?(user)
     end
@@ -82,6 +87,16 @@ class Ability
 
     can :execute, Scenario do |scenario|
       scenario.feature.project.editor?(user) || scenario.feature.project.admin?(user)
+    end
+  end
+
+  def initialize_scenario_execution_ability(user)
+    can :read, ScenarioExecution do |execution|
+      execution.scenario.feature.project.member?(user)
+    end
+
+    can [ :create, :update, :destroy ], ScenarioExecution do |execution|
+      execution.scenario.feature.project.editor?(user) || execution.scenario.feature.project.admin?(user)
     end
   end
 
