@@ -1,28 +1,69 @@
 # Gwirian
 
-A modern BDD (Behavior-Driven Development) feature management platform built with Ruby on Rails 8, styled with Tailwind CSS v4, interactive with Alpine.js, and dynamic with htmx. Containerized for production with Docker and Kamal.
+**A modern BDD (Behavior-Driven Development) feature management platform that helps teams collaborate, organize, and track their software features from conception to execution.**
 
-## Core Features
-- **Feature Management:** Create, edit, and manage BDD features for your projects. Features are indexed and searchable (Elasticsearch integration).
-- **Scenario Management:** Define and organize scenarios within features, with support for execution tracking.
-- **Project Management:** Create and manage multiple projects, each with its own features, scenarios, and team members.
-- **Tagging Support:** Tag features and scenarios for better organization and filtering.
-- **Project Membership & Roles:** Invite users to projects with roles (administrator, editor, viewer). Invitation and acceptance flow included.
-- **User Authentication:** Secure registration, login, password reset, and profile management.
-- **Login History:** Track user login history for security auditing.
-- **Modern UI/UX:**
-  - Tailwind CSS v4 for styling
-  - Alpine.js (latest) for interactivity
-  - htmx (latest) for dynamic HTML and partial updates
-  - ViewComponent for reusable UI components
-- **Containerized & Deployable:**
-  - Dockerized for production
+Gwirian empowers development teams to manage their BDD features with ease. Create and organize features, define scenarios, track executions, and collaborate with your team—all in one beautiful, fast, and intuitive platform. Built with modern web technologies for a seamless experience.
+
+## What Gwirian Does
+
+### **Organize Your BDD Workflow**
+Manage all your Behavior-Driven Development features in one place. Create features, define scenarios, and track their execution status across multiple projects. Keep your team aligned with a centralized view of your BDD specifications.
+
+### **Powerful Search & Discovery**
+Find features instantly with full-text search powered by Elasticsearch. Tag your features and scenarios for better organization and quick filtering. Never lose track of important specifications again.
+
+### **Team Collaboration**
+Invite team members to projects with role-based access control (administrator, editor, viewer). Manage project memberships, track who's working on what, and maintain clear ownership of features and scenarios.
+
+### **Execution Tracking**
+Monitor scenario executions to understand which features have been tested and their current status. Keep your team informed about the progress of your BDD specifications.
+
+### **Secure & Auditable**
+Built-in user authentication, password management, and login history tracking ensure your team's work is secure and auditable. Know who accessed what and when.
+
+### **Modern & Fast**
+Experience a lightning-fast interface built with the latest web technologies. Enjoy smooth interactions with Alpine.js, dynamic updates with htmx, and beautiful styling with Tailwind CSS v4—all without page reloads.
+
+## Technical Features
+
+- **Modern Stack:**
+  - Ruby on Rails 8
+  - Tailwind CSS v4
+  - Alpine.js (latest)
+  - htmx (latest)
+  - ViewComponent
+- **Production Ready:**
+  - Dockerized for easy deployment
   - Kamal-ready for zero-downtime deploys
 
 ## Requirements
 - Ruby 3.4
 - Docker (for production/deployment)
 - SQLite3 (default, or your preferred DB)
+
+## Quick Start
+
+Get up and running in minutes:
+
+```sh
+# 1. Clone and install
+git clone https://github.com/frocher/gwirian.git
+cd gwirian
+bundle install
+
+# 2. Start external services (Elasticsearch, Mailhog)
+docker-compose up -d
+
+# 3. Setup database
+bin/rails db:create db:migrate db:seed
+
+# 4. Start the development server
+bin/dev
+```
+
+Visit [http://localhost:3000](http://localhost:3000) and you're ready to go!
+
+> **Note:** Make sure Docker is running for the external services. If you need to reindex Elasticsearch after setup, run `bin/rails elasticsearch:reindex`.
 
 ## External Services (Docker Compose)
 This app depends on external services for full functionality, which can be launched using Docker Compose:
