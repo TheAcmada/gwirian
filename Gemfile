@@ -70,6 +70,7 @@ group :development, :test do
 
   # Use RSpec for testing
   gem "rspec-rails", "~> 8.0.0"
+  gem "rails-controller-testing"
 
   # Use FactoryBot for test data
   gem "factory_bot_rails"

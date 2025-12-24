@@ -5,6 +5,7 @@ class User < ApplicationRecord
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
+  validates :email_address, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }, uniqueness: true
   validate :password_complexity
   validates :api_token, uniqueness: true, allow_nil: true
 
