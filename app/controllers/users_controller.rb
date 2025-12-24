@@ -18,7 +18,7 @@ class UsersController < ApplicationController
     if @user.save
       UserMailer.signup_notification(@user).deliver_later if Rails.application.config.signup.notify_email.present?
       start_new_session_for(@user)
-      redirect_to root_path, notice: "🎉 Welcome to Testtiz! Your account has been created successfully."
+      redirect_to root_path, notice: "🎉 Welcome to Gwirian! Your account has been created successfully."
     else
       render :new, status: :unprocessable_entity
     end

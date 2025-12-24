@@ -40,7 +40,7 @@ RSpec.describe "Users", type: :request do
         post "/users", params: valid_params
         expect(response).to redirect_to(root_path)
         follow_redirect!
-        expect(response.body).to include("Welcome to Testtiz")
+        expect(response.body).to include("Welcome to Gwirian")
       end
 
       it "starts a new session for the user" do
@@ -74,7 +74,7 @@ RSpec.describe "Users", type: :request do
     context "with invalid params" do
       it "does not create a user with duplicate email" do
         # Create an existing user first
-        existing_user = create(:user, email_address: "existing@example.com")
+        create(:user, email_address: "existing@example.com")
         invalid_params = {
           user: {
             email_address: "existing@example.com",
