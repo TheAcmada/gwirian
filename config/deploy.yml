@@ -2,12 +2,12 @@
 service: gwirian
 
 # Name of the container image.
-image: your-user/gwirian
+image: <%= ENV.fetch("DOCKER_REGISTRY_IMAGE") %>
 
 # Deploy to these servers.
 servers:
   web:
-    - 192.168.0.1
+    - <%= ENV.fetch("WEB_SERVER_IP") %>
   # job:
   #   hosts:
   #     - 192.168.0.1
@@ -19,13 +19,13 @@ servers:
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
   ssl: true
-  host: app.example.com
+  host: <%= ENV.fetch("APP_DOMAIN") %>
 
 # Credentials for your image host.
 registry:
   # Specify the registry server, if you're not using Docker Hub
   # server: registry.digitalocean.com / ghcr.io / ...
-  username: your-user
+  username: <%= ENV.fetch("DOCKER_REGISTRY_USERNAME") %>
 
   # Always use an access token rather than real password when possible.
   password:
@@ -35,6 +35,8 @@ registry:
 env:
   secret:
     - RAILS_MASTER_KEY
+    - SMTP_PASSWORD
+    - SIGNUP_NOTIFY_EMAIL
   clear:
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
     # When you start using multiple servers, you should split out job processing to a dedicated machine.
@@ -60,6 +62,7 @@ aliases:
   shell: app exec --interactive --reuse "bash"
   logs: app logs -f
   dbc: app exec --interactive --reuse "bin/rails dbconsole"
+  reindex: app exec --interactive --reuse "bin/rails elasticsearch:reindex"
 
 
 # Use a persistent storage volume for sqlite database files and local Active Storage files.
@@ -75,42 +78,16 @@ asset_path: /rails/public/assets
 
 # Configure the image builder.
 builder:
-  arch: amd64
+  arch: arm64
 
-  # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
-  # remote: ssh://docker@docker-builder-server
-  #
-  # # Pass arguments and secrets to the Docker build process
-  # args:
-  #   RUBY_VERSION: 3.3.2
-  # secrets:
-  #   - GITHUB_TOKEN
-  #   - RAILS_MASTER_KEY
 
-# Use a different ssh user than root
-# ssh:
-#   user: app
-
-# Use accessory services (secrets come from .kamal/secrets).
-# accessories:
-#   db:
-#     image: mysql:8.0
-#     host: 192.168.0.2
-#     # Change to 3306 to expose port to the world instead of just local network.
-#     port: "127.0.0.1:3306:3306"
-#     env:
-#       clear:
-#         MYSQL_ROOT_HOST: '%'
-#       secret:
-#         - MYSQL_ROOT_PASSWORD
-#     files:
-#       - config/mysql/production.cnf:/etc/mysql/my.cnf
-#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
-#     directories:
-#       - data:/var/lib/mysql
-#   redis:
-#     image: redis:7.0
-#     host: 192.168.0.2
-#     port: 6379
-#     directories:
-#       - data:/data
+accessories:
+  search:
+    image: elastic/elasticsearch:8.19.9
+    host: <%= ENV.fetch("WEB_SERVER_IP") %>
+    env:
+      clear:
+        discovery.type: single-node
+        xpack.security.enabled: false
+        # Add memory limits to prevent OOM kills
+        ES_JAVA_OPTS: "-Xms1g -Xmx1g"
