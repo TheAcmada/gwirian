@@ -37,8 +37,8 @@ Experience a lightning-fast interface built with the latest web technologies. En
   - Kamal-ready for zero-downtime deploys
 
 ## Requirements
-- Ruby 3.4
-- Docker (for production/deployment)
+- Ruby 3.4+
+- Docker
 - SQLite3 (default, or your preferred DB)
 
 ## Quick Start
@@ -57,13 +57,15 @@ docker-compose up -d
 # 3. Setup database
 bin/rails db:create db:migrate db:seed
 
-# 4. Start the development server
+# 4. Reindex Elastic search
+bin/rails elasticsearch:reindex
+
+# 5. Start the development server
 bin/dev
 ```
 
-Visit [http://localhost:3000](http://localhost:3000) and you're ready to go!
+Visit [http://localhost:3000](http://localhost:3000) and you're ready to login with the default development login/password: admin@example.com/Password1234!
 
-> **Note:** Make sure Docker is running for the external services. If you need to reindex Elasticsearch after setup, run `bin/rails elasticsearch:reindex`.
 
 ## External Services (Docker Compose)
 This app depends on external services for full functionality, which can be launched using Docker Compose:
@@ -78,27 +80,6 @@ docker-compose up -d
 - Elasticsearch will be available at [http://localhost:9200](http://localhost:9200)
 - Mailhog UI will be available at [http://localhost:8025](http://localhost:8025)
 
-## Setup & Installation
-
-1. **Clone the repository:**
-   ```sh
-   git clone https://github.com/frocher/gwirian.git
-   cd gwirian
-   ```
-2. **Install dependencies:**
-   ```sh
-   bundle install
-   ```
-3. **Set up the database:**
-   ```sh
-   bin/rails db:create db:migrate
-   bin/rails db:seed # optional
-   ```
-4. **Start the development server:**
-   ```sh
-   bin/dev
-   ```
-   - Visit [http://localhost:3000](http://localhost:3000)
 
 ## Elasticsearch
 
@@ -125,7 +106,7 @@ This task will:
 
 ## Testing
 ```sh
-bin/rails test
+bundle exec rspec && bin/rails test
 ```
 
 ## Docker & Production
