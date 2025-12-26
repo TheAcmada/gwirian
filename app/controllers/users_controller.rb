@@ -66,9 +66,9 @@ class UsersController < ApplicationController
 
   def generate_api_token
     @user = Current.user
-    allowed_days = [ 30, 60, 90, 180, 365 ]
     expires_in_days = params[:expires_in].present? ? params[:expires_in].to_i : 30
-    expires_in_days = 30 unless allowed_days.include?(expires_in_days)
+    # Ensure expires_in_days is between 1 and 365 days
+    expires_in_days = [ [ expires_in_days, 1 ].max, 365 ].min
     expires_in = expires_in_days.days
     @user.generate_api_token(expires_in: expires_in)
     @user.reload
