@@ -1,0 +1,26 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Mass Assignment",
+      "warning_code": 70,
+      "fingerprint": "d65ef0d76cc5ca969bc28a55c66151a8e0ffbf7f4c5a4594a38867606d5ec27b",
+      "check_name": "PermitAttributes",
+      "message": "Potentially dangerous key allowed for mass assignment",
+      "file": "app/controllers/projects_controller.rb",
+      "line": 183,
+      "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
+      "code": "params.require(:project_member).permit(:role)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "ProjectsController",
+        "method": "member_update_params"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "Role is validated in ProjectMember model to only accept: administrator, editor, viewer"
+    }
+  ],
+  "updated": "2025-01-27 00:00:00 +0000",
+  "brakeman_version": "7.1.2"
+}
