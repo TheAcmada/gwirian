@@ -3,11 +3,11 @@ class ProjectMembersController < ApplicationController
 
   def accept
     project_member = ProjectMember.find_by(invitation_token: params[:token])
-    if project_member && !project_member.invitation_accepted?
+    if project_member && !project_member.invitation_accepted? && project_member.invitation_token_valid?
       project_member.update(invitation_accepted: true)
       redirect_to root_path, notice: "You have joined the project #{project_member.project.name}"
     else
-      redirect_to root_path, alert: "Invalid invitation"
+      redirect_to root_path, alert: "Invalid or expired invitation"
     end
   end
 

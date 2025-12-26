@@ -7,7 +7,7 @@ class Feature < ApplicationRecord
   has_many :scenario_executions, through: :scenarios
   acts_as_taggable_on :tags
 
-  validates :title, presence: true
+  validates :title, presence: true, length: { maximum: 255 }
   validates :description, length: { maximum: 1000 }, allow_blank: true
 
   settings index: { number_of_shards: 1 } do
@@ -30,18 +30,20 @@ class Feature < ApplicationRecord
     }
   end
 
-  def self.search_by_project(query, project_id)
+  def self.search_by_project(query, project_id, limit: 100)
+    sanitized_query = sanitize_elasticsearch_query(query)
     search({
-      size: 1000,
+      size: [ limit, 1000 ].min, # Cap at 1000 to prevent DoS
       query: {
         bool: {
           must: [
             {
               query_string: {
-                query: query,
+                query: sanitized_query,
                 fields: [ "title^3", "description^2", "tags" ],
                 fuzziness: "AUTO",
-                default_operator: "AND"
+                default_operator: "AND",
+                escape: true
               }
             },
             {
@@ -51,5 +53,21 @@ class Feature < ApplicationRecord
         }
       }
     })
+  end
+
+  private
+
+  def self.sanitize_elasticsearch_query(query)
+    return "" if query.blank?
+    # Escape special characters that could be used for injection
+    # Special chars: + - = && || > < ! ( ) { } [ ] ^ " ~ * ? : \ /
+    sanitized = query.to_s.dup
+    # Remove or escape dangerous characters
+    # Using a simpler approach: escape problematic chars individually
+    dangerous_chars = %w[+ - = & | > < ! ( ) { } [ ] ^ " ~ * ? : \ /].map { |c| Regexp.escape(c) }.join("|")
+    sanitized.gsub!(/#{dangerous_chars}/, " ")
+    # Collapse multiple spaces
+    sanitized.gsub!(/\s+/, " ")
+    sanitized.strip
   end
 end

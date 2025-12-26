@@ -9,6 +9,7 @@ class ScenarioExecution < ApplicationRecord
 
   validates :status, presence: true, inclusion: { in: STATUSES }
   validates :executed_at, presence: true
+  validates :notes, length: { maximum: 5000 }, allow_blank: true
 
   scope :latest_first, -> { order(executed_at: :desc) }
   scope :pending, -> { where(status: "pending") }
@@ -39,18 +40,20 @@ class ScenarioExecution < ApplicationRecord
     }
   end
 
-  def self.search_by_project(query, project_id)
+  def self.search_by_project(query, project_id, limit: 100)
+    sanitized_query = sanitize_elasticsearch_query(query)
     search({
-      size: 1000,
+      size: [ limit, 1000 ].min, # Cap at 1000 to prevent DoS
       query: {
         bool: {
           must: [
             {
               query_string: {
-                query: query,
+                query: sanitized_query,
                 fields: [ "feature_title^3", "scenario_title^2", "user_email", "status", "notes" ],
                 fuzziness: "AUTO",
-                default_operator: "AND"
+                default_operator: "AND",
+                escape: true
               }
             },
             {
@@ -63,6 +66,22 @@ class ScenarioExecution < ApplicationRecord
         { executed_at: { order: "desc" } }
       ]
     })
+  end
+
+  private
+
+  def self.sanitize_elasticsearch_query(query)
+    return "" if query.blank?
+    # Escape special characters that could be used for injection
+    # Special chars: + - = && || > < ! ( ) { } [ ] ^ " ~ * ? : \ /
+    sanitized = query.to_s.dup
+    # Remove or escape dangerous characters
+    # Using a simpler approach: escape problematic chars individually
+    dangerous_chars = %w[+ - = & | > < ! ( ) { } [ ] ^ " ~ * ? : \ /].map { |c| Regexp.escape(c) }.join("|")
+    sanitized.gsub!(/#{dangerous_chars}/, " ")
+    # Collapse multiple spaces
+    sanitized.gsub!(/\s+/, " ")
+    sanitized.strip
   end
 
   def pending?

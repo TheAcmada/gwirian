@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_23_203242) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_26_083503) do
   create_table "features", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -27,6 +27,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_23_203242) do
     t.text "user_agent"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_login_histories_on_created_at"
     t.index ["user_id"], name: "index_login_histories_on_user_id"
   end
 
@@ -40,8 +41,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_23_203242) do
     t.datetime "last_invitation_sent_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "invitation_token_expires_at"
     t.index ["email"], name: "index_project_members_on_email"
     t.index ["invitation_token"], name: "index_project_members_on_invitation_token", unique: true
+    t.index ["invitation_token_expires_at"], name: "index_project_members_on_invitation_token_expires_at"
     t.index ["project_id", "email"], name: "index_project_members_on_project_id_and_email", unique: true
     t.index ["project_id"], name: "index_project_members_on_project_id"
   end
@@ -84,6 +87,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_23_203242) do
     t.string "user_agent"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "expires_at"
+    t.index ["created_at"], name: "index_sessions_on_created_at"
+    t.index ["expires_at"], name: "index_sessions_on_expires_at"
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 

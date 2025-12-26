@@ -3,7 +3,7 @@ class Scenario < ApplicationRecord
   has_many :steps, -> { order(:position) }, dependent: :destroy
   has_many :scenario_executions, dependent: :destroy
   acts_as_list scope: :feature
-  validates :title, presence: true
+  validates :title, presence: true, length: { maximum: 255 }
 
   def latest_execution
     scenario_executions.latest_first.first

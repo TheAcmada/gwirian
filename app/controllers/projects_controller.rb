@@ -100,9 +100,15 @@ class ProjectsController < ApplicationController
       return
     end
 
-    member = @project.project_members.new(email: member_params[:email])
+    member = @project.project_members.new(member_params)
     if @project.admin?(Current.user) && params[:project_member][:role].present?
-      member.role = params[:project_member][:role]
+      # Only allow role assignment if user is admin and role is in permitted list
+      permitted_role = params[:project_member][:role]
+      if %w[administrator editor viewer].include?(permitted_role)
+        member.role = permitted_role
+      else
+        member.role = "viewer"
+      end
     else
       member.role = "viewer"
     end
@@ -144,7 +150,7 @@ class ProjectsController < ApplicationController
       return
     end
 
-    if member&.update(role: params[:project_member][:role])
+    if member&.update(member_update_params)
       if request.headers["HX-Request"]
         render partial: "projects/project_members", locals: { project: @project, notice: "The member has been updated successfully" }
       else
@@ -170,5 +176,9 @@ class ProjectsController < ApplicationController
 
     def member_params
       params.require(:project_member).permit(:email)
+    end
+
+    def member_update_params
+      params.require(:project_member).permit(:role)
     end
 end
