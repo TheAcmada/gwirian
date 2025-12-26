@@ -49,23 +49,23 @@
             <!-- Status Icon -->
             <div class="flex-shrink-0 mt-0.5">
               <template x-if="status === 'passed'">
-                <div class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/30">
-                  <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                <div class="w-6 h-6 rounded-full flex items-center justify-center bg-emerald-100 dark:bg-emerald-900/30">
+                  <svg class="w-4 h-4 text-emerald-700 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                   </svg>
                 </div>
               </template>
               <template x-if="status === 'failed'">
-                <div class="flex items-center justify-center w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/30">
-                  <svg class="w-4 h-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                <div class="w-6 h-6 rounded-full flex items-center justify-center bg-red-100 dark:bg-red-900/30">
+                  <svg class="w-4 h-4 text-red-700 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                   </svg>
                 </div>
               </template>
               <template x-if="status === null">
-                <div class="flex items-center justify-center w-6 h-6 rounded-full bg-stone-100 dark:bg-white/10">
-                  <svg class="w-3.5 h-3.5 text-stone-400 dark:text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                <div class="w-6 h-6 rounded-full flex items-center justify-center bg-stone-100 dark:bg-stone-700">
+                  <svg class="w-4 h-4 text-stone-600 dark:text-stone-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                   </svg>
                 </div>
               </template>

@@ -188,6 +188,86 @@
   .badge-md { @apply px-1.5 py-0.5 text-xs; }
 
   /* ========================================
+   * Status Component
+   * ======================================== */
+
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium;
+  }
+
+  .status-badge-passed {
+    @apply bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400;
+  }
+
+  .status-badge-failed {
+    @apply bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400;
+  }
+
+  .status-badge-pending {
+    @apply bg-stone-100 dark:bg-stone-700/50 text-stone-600 dark:text-stone-300;
+  }
+
+  .status-icon-container {
+    @apply flex-shrink-0 rounded-full flex items-center justify-center;
+  }
+
+  .status-icon-container-sm {
+    @apply w-5 h-5;
+  }
+
+  .status-icon-container-md {
+    @apply w-7 h-7;
+  }
+
+  .status-icon-container-lg {
+    @apply w-10 h-10;
+  }
+
+  .status-icon-passed {
+    @apply bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400;
+  }
+
+  .status-icon-failed {
+    @apply bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400;
+  }
+
+  .status-icon-pending {
+    @apply bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300;
+  }
+
+  .status-icon-svg-sm {
+    @apply w-3.5 h-3.5;
+  }
+
+  .status-icon-svg-md {
+    @apply w-4 h-4;
+  }
+
+  .status-icon-svg-lg {
+    @apply w-5 h-5;
+  }
+
+  .status-icon-svg {
+    @apply fill-none stroke-current;
+  }
+
+  .status-inline {
+    @apply inline-flex items-center gap-1;
+  }
+
+  .status-inline-text-passed {
+    @apply text-emerald-700 dark:text-emerald-400;
+  }
+
+  .status-inline-text-failed {
+    @apply text-red-700 dark:text-red-400;
+  }
+
+  .status-inline-text-pending {
+    @apply text-stone-600 dark:text-stone-300;
+  }
+
+  /* ========================================
    * Body and Layout
    * ======================================== */
 

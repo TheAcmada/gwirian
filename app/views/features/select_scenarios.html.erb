@@ -53,19 +53,7 @@
             <div class="text-sm font-medium text-stone-800 dark:text-white/90"><%= scenario.title %></div>
             <% if scenario.current_status != "pending" %>
               <div class="text-xs mt-1">
-                <span class="inline-flex items-center gap-1">
-                  <% if scenario.current_status == "passed" %>
-                    <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    <span class="text-emerald-600 dark:text-emerald-400">Passed</span>
-                  <% else %>
-                    <svg class="w-3.5 h-3.5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                    <span class="text-red-600 dark:text-red-400">Failed</span>
-                  <% end %>
-                </span>
+                <%= render Shared::StatusComponent.new(status: scenario.current_status, variant: :inline, size: :sm) %>
               </div>
             <% end %>
           </div>

@@ -59,9 +59,7 @@
       </svg>
     </button>
 
-    <div class="flex-shrink-0 <%= status_color %>">
-      <%= raw status_icon %>
-    </div>
+    <%= render Shared::StatusComponent.new(status: current_status, variant: :icon, size: :sm) %>
 
     <div class="flex-1 min-w-0">
       <%= render Scenarios::TitleComponent.new(scenario: scenario, feature: feature, project: project) %>

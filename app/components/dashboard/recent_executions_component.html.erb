@@ -13,14 +13,8 @@
       <% recent_executions.each do |execution| %>
         <a href="<%= scenario_link(execution) %>" class="flex items-center gap-3 px-5 py-3 hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors">
           <%# Status badge %>
-          <div class="flex-shrink-0">
-            <div class="w-7 h-7 rounded-full flex items-center justify-center <%= status_styles(execution.status)[:bg] %>">
-              <svg class="w-4 h-4 <%= status_styles(execution.status)[:text] %>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<%= status_styles(execution.status)[:icon] %>"/>
-              </svg>
-            </div>
-          </div>
-          
+          <%= render Shared::StatusComponent.new(status: execution.status, variant: :icon, size: :md) %>
+
           <%# Content %>
           <div class="flex-1 min-w-0">
             <div class="text-sm font-medium text-stone-900 dark:text-white truncate">
@@ -30,7 +24,7 @@
               <%= execution.scenario.feature.title %>
             </div>
           </div>
-          
+
           <%# Meta info %>
           <div class="flex-shrink-0 text-right">
             <div class="text-xs text-stone-500 dark:text-stone-400">

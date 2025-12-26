@@ -38,9 +38,7 @@
                 </a>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= status_styles(execution.status)[:bg] %> <%= status_styles(execution.status)[:text] %>">
-                  <%= status_styles(execution.status)[:label] %>
-                </span>
+                <%= render Shared::StatusComponent.new(status: execution.status, variant: :badge) %>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="text-sm text-stone-600 dark:text-stone-400">

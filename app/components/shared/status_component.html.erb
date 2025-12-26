@@ -1,0 +1,21 @@
+<% if badge? %>
+  <span class="<%= badge_class %>">
+    <%= status_styles[:label] %>
+  </span>
+<% elsif icon? %>
+  <div class="flex-shrink-0">
+    <div class="<%= icon_container_class %>">
+      <svg class="<%= icon_svg_class %>" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<%= status_styles[:icon] %>"/>
+      </svg>
+    </div>
+  </div>
+<% elsif inline? %>
+  <span class="<%= inline_class %>">
+    <svg class="<%= inline_icon_class %>" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<%= status_styles[:icon] %>"/>
+    </svg>
+    <span class="<%= inline_text_class %>"><%= status_styles[:label] %></span>
+  </span>
+<% end %>
+
