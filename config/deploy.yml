@@ -35,7 +35,7 @@ registry:
 env:
   secret:
     - RAILS_MASTER_KEY
-    - SMTP_PASSWORD
+    - RESEND_API_KEY
     - SIGNUP_NOTIFY_EMAIL
   clear:
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.

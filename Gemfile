@@ -38,17 +38,14 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
-# Use view_component for building reusable UI components
-gem "view_component"
-
-# Use CanCanCan for authorization [https://github.com/CanCanCommunity/cancancan]
-gem "cancancan"
-
 # Use acts_as_list for sortable list support in Rails models
 gem "acts_as_list"
 
 # Use acts_as_taggable_on for tagging support in Rails models
 gem "acts-as-taggable-on"
+
+# Use CanCanCan for authorization [https://github.com/CanCanCommunity/cancancan]
+gem "cancancan"
 
 # Use elasticsearch for search
 gem "elasticsearch"
@@ -57,6 +54,13 @@ gem "elasticsearch-model"
 
 # Use pagy for fast, efficient pagination
 gem "pagy"
+
+# Use Resend to send emails
+gem "resend"
+
+# Use view_component for building reusable UI components
+gem "view_component"
+
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
