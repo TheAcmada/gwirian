@@ -15,5 +15,16 @@
       </span>
     <% end %>
   </div>
+  
+  <% if show_trend_context? %>
+    <div class="text-xs <%= color_classes[:label] %> mt-1">
+      <% if trend_previous_value.present? %>
+        <span>was <%= trend_previous_value %><%= suffix if suffix.present? %></span>
+      <% end %>
+      <% if trend_period_label.present? %>
+        <span><%= trend_previous_value.present? ? ' • ' : '' %><%= trend_period_label %></span>
+      <% end %>
+    </div>
+  <% end %>
 </div>
 

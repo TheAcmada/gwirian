@@ -6,6 +6,8 @@
     label: t("dashboard.stats.pass_rate"),
     trend: pass_rate_trend,
     trend_value: pass_rate_trend_value,
+    trend_previous_value: pass_rate_trend_value.present? ? pass_rate_trend_previous_value : nil,
+    trend_period_label: pass_rate_trend_value.present? ? "vs previous 7 days" : nil,
     color: pass_rate_color
   ) %>
 

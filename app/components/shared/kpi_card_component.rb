@@ -31,18 +31,20 @@ module Shared
       stable: { icon: "→", color: "text-stone-400" }
     }.freeze
 
-    def initialize(value:, label:, trend: nil, trend_value: nil, color: :default, suffix: nil)
+    def initialize(value:, label:, trend: nil, trend_value: nil, color: :default, suffix: nil, trend_previous_value: nil, trend_period_label: nil)
       @value = value
       @label = label
       @trend = trend
       @trend_value = trend_value
       @color = color.to_sym
       @suffix = suffix
+      @trend_previous_value = trend_previous_value
+      @trend_period_label = trend_period_label
     end
 
     private
 
-    attr_reader :value, :label, :trend, :trend_value, :color, :suffix
+    attr_reader :value, :label, :trend, :trend_value, :color, :suffix, :trend_previous_value, :trend_period_label
 
     def color_classes
       COLORS.fetch(color, COLORS[:default])
@@ -55,6 +57,10 @@ module Shared
 
     def show_trend?
       trend.present? && trend_value.present?
+    end
+
+    def show_trend_context?
+      show_trend? && (trend_previous_value.present? || trend_period_label.present?)
     end
   end
 end

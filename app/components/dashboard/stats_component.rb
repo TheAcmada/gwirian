@@ -56,24 +56,49 @@ module Dashboard
     end
 
     # Trend calculations comparing last 7 days to previous 7 days
+    # Now compares scenario pass rates (matching the main metric) instead of execution pass rates
     def pass_rate_trend
-      current = pass_rate_for_period(7.days.ago, Time.current)
-      previous = pass_rate_for_period(14.days.ago, 7.days.ago)
-      calculate_trend(current, previous)
+      calculate_trend(current_period_pass_rate, previous_period_pass_rate)
     end
 
     def pass_rate_trend_value
-      current = pass_rate_for_period(7.days.ago, Time.current)
-      previous = pass_rate_for_period(14.days.ago, 7.days.ago)
-      diff = current - previous
+      diff = current_period_pass_rate - previous_period_pass_rate
       return nil if diff.zero?
       "#{diff > 0 ? '+' : ''}#{diff.round}%"
     end
 
-    def pass_rate_for_period(start_time, end_time)
-      executions = project.scenario_executions.where(executed_at: start_time..end_time)
-      return 0 if executions.empty?
-      (executions.passed.count.to_f / executions.count * 100)
+    def pass_rate_trend_previous_value
+      previous_period_pass_rate
+    end
+
+    def current_period_pass_rate
+      @current_period_pass_rate ||= scenario_pass_rate_for_period(7.days.ago, Time.current)
+    end
+
+    def previous_period_pass_rate
+      @previous_period_pass_rate ||= scenario_pass_rate_for_period(14.days.ago, 7.days.ago)
+    end
+
+    # Calculate scenario pass rate for a specific time period
+    # This matches the main pass_rate calculation by looking at scenario statuses
+    # at the end of the period (latest execution before end_time)
+    def scenario_pass_rate_for_period(start_time, end_time)
+      # Get all scenarios that existed at the end of the period
+      # (scenarios created before or at end_time)
+      period_scenarios = project.scenarios.where("scenarios.created_at <= ?", end_time).includes(:scenario_executions)
+      return 0 if period_scenarios.empty?
+
+      # For each scenario, find the latest execution before end_time
+      # and determine if it was "passed"
+      # Using in-memory filtering to avoid N+1 queries since executions are eager loaded
+      passed_count = period_scenarios.count do |scenario|
+        latest_execution = scenario.scenario_executions
+          .select { |exec| exec.executed_at <= end_time }
+          .max_by(&:executed_at)
+        latest_execution&.status == "passed"
+      end
+
+      (passed_count.to_f / period_scenarios.count * 100).round
     end
 
     def calculate_trend(current, previous)
