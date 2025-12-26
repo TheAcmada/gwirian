@@ -44,13 +44,11 @@ class UsersController < ApplicationController
     unless @user.authenticate(params[:user][:current_password])
       @user.errors.add(:current_password, "is incorrect")
       render :edit, status: :unprocessable_entity and return
-      return
     end
 
     if params[:user][:password].blank?
       @user.errors.add(:password, "can't be blank")
       render :edit, status: :unprocessable_entity and return
-      return
     end
 
     if @user.update(password_params)
@@ -68,7 +66,10 @@ class UsersController < ApplicationController
 
   def generate_api_token
     @user = Current.user
-    expires_in = params[:expires_in].present? ? params[:expires_in].to_i.days : 30.days
+    allowed_days = [ 30, 60, 90, 180, 365 ]
+    expires_in_days = params[:expires_in].present? ? params[:expires_in].to_i : 30
+    expires_in_days = 30 unless allowed_days.include?(expires_in_days)
+    expires_in = expires_in_days.days
     @user.generate_api_token(expires_in: expires_in)
     @user.reload
 

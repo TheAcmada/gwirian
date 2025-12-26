@@ -22,7 +22,7 @@ class PasswordsController < ApplicationController
   end
 
   def update
-    if @user.update(params.permit(:password, :password_confirmation))
+    if @user.update(params.require(:user).permit(:password, :password_confirmation))
       redirect_to new_session_path, notice: "Your password has been reset successfully! You can now log in with your new password."
     else
       redirect_to edit_password_path(params[:token]), alert: "The passwords you entered don't match. Please try again."

@@ -6,7 +6,6 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    @project = Project.find(params[:id])
     unless can? :read, @project
       render_alert("You are not authorized to view this project")
     end

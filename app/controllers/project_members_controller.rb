@@ -13,6 +13,8 @@ class ProjectMembersController < ApplicationController
 
   def resend_invitation
     member = ProjectMember.find(params[:id])
+    authorize! :invite, member
+
     if !member.invitation_accepted?
       member.regenerate_invitation_token
       ProjectInvitationMailer.invite(member).deliver_later

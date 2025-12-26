@@ -59,7 +59,7 @@ class FeaturesController < ApplicationController
     authorize! :update, @feature
 
     tag_name = params[:tag_name]&.strip
-    if tag_name.present?
+    if valid_tag_name?(tag_name)
       @feature.tag_list.add(tag_name)
       @feature.save
     end
@@ -75,7 +75,7 @@ class FeaturesController < ApplicationController
     authorize! :update, @feature
 
     tag_name = params[:tag_name]&.strip
-    if tag_name.present?
+    if valid_tag_name?(tag_name)
       @feature.tag_list.remove(tag_name)
       @feature.save
     end
@@ -99,7 +99,11 @@ class FeaturesController < ApplicationController
       @scenarios = @feature.scenarios.order(:position)
     elsif request.post?
       selected_ids = params[:scenario_ids] || []
-      session[:selected_scenario_ids] = selected_ids.map(&:to_i)
+      scenario_ids = selected_ids.map(&:to_i)
+
+      # Validate that all scenario IDs belong to this feature
+      valid_scenario_ids = @feature.scenarios.where(id: scenario_ids).pluck(:id)
+      session[:selected_scenario_ids] = valid_scenario_ids
       redirect_to execute_scenarios_project_feature_path(@project, @feature)
     end
   end
@@ -112,15 +116,22 @@ class FeaturesController < ApplicationController
       @scenarios = @feature.scenarios.where(id: selected_ids).order(:position)
       @scenarios = @scenarios.to_a.sort_by { |s| selected_ids.index(s.id) }
     elsif request.post?
-      executions_data = params[:executions] || {}
+      executions_data = execution_params
       executed_count = 0
 
-      executions_data.each do |scenario_id, execution_params|
+      # Validate that all scenario IDs belong to this feature
+      scenario_ids = executions_data.keys.map(&:to_i)
+      valid_scenario_ids = @feature.scenarios.where(id: scenario_ids).pluck(:id).map(&:to_s)
+
+      executions_data.each do |scenario_id, execution_data|
+        # Skip if scenario doesn't belong to this feature
+        next unless valid_scenario_ids.include?(scenario_id.to_s)
+
         scenario = @feature.scenarios.find_by(id: scenario_id)
         next unless scenario
 
-        status = execution_params[:status]
-        notes = execution_params[:notes]
+        status = execution_data[:status]
+        notes = execution_data[:notes]
         next unless status.present? && %w[passed failed].include?(status)
 
         ScenarioExecution.create!(
@@ -150,5 +161,29 @@ class FeaturesController < ApplicationController
 
   def feature_params
     params.require(:feature).permit(:title, :description, :tag_list)
+  end
+
+  def execution_params
+    return {} unless params[:executions].is_a?(ActionController::Parameters) || params[:executions].is_a?(Hash)
+
+    permitted = {}
+    params[:executions].each do |scenario_id, execution_data|
+      next unless scenario_id.present?
+
+      if execution_data.is_a?(ActionController::Parameters) || execution_data.is_a?(Hash)
+        permitted[scenario_id] = {
+          status: execution_data[:status],
+          notes: execution_data[:notes]
+        }
+      end
+    end
+    permitted
+  end
+
+  def valid_tag_name?(tag_name)
+    return false if tag_name.blank?
+    return false if tag_name.length > 50
+    # Reject tags with control characters or only whitespace
+    tag_name.match?(/\A[^\x00-\x1F\x7F]+\z/) && tag_name.present?
   end
 end

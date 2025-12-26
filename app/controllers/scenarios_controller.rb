@@ -66,7 +66,18 @@ class ScenariosController < ApplicationController
     test_scenario = @feature.scenarios.first || @feature.scenarios.new
     authorize! :update, test_scenario
 
-    params[:order].each_with_index do |id, idx|
+    order = params[:order]
+    return head :bad_request unless order.is_a?(Array) && order.present?
+
+    # Validate that all IDs belong to this feature
+    scenario_ids = order.map(&:to_i)
+    valid_scenario_ids = @feature.scenarios.where(id: scenario_ids).pluck(:id)
+
+    # Only reorder scenarios that belong to this feature
+    valid_order = order.select { |id| valid_scenario_ids.include?(id.to_i) }
+    return head :bad_request if valid_order.empty?
+
+    valid_order.each_with_index do |id, idx|
       @feature.scenarios.where(id: id).update_all(position: idx + 1)
     end
     head :ok
