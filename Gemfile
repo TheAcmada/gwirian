@@ -52,6 +52,9 @@ gem "elasticsearch"
 gem "elasticsearch-rails"
 gem "elasticsearch-model"
 
+# Use MCP for AI-powered development
+gem "mcp"
+
 # Use pagy for fast, efficient pagination
 gem "pagy"
 
