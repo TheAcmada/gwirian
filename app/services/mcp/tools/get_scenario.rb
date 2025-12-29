@@ -45,6 +45,9 @@ module Mcp
           end
 
           result = scenario.as_json(only: [ :id, :title, :position, :created_at, :updated_at, :feature_id ])
+          result["given"] = scenario.given
+          result["when"] = scenario.when
+          result["then"] = scenario.then
           result["executions"] = executions
 
           success_result(result)
