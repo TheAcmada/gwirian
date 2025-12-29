@@ -81,6 +81,10 @@ docker-compose up -d
 - Mailhog UI will be available at [http://localhost:8025](http://localhost:8025)
 
 
+## MCP Server
+
+Gwirian includes a **Model Context Protocol (MCP) server** that allows AI assistants and other tools to interact with your BDD features, scenarios, and executions programmatically. For configuration and usage instructions, see the [MCP Client Configuration Guide](docs/MCP_CLIENT_CONFIGURATION.md).
+
 ## Elasticsearch
 
 ### Reindexing
