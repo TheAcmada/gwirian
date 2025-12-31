@@ -57,8 +57,19 @@ Rails.application.configure do
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
 
-  # Use resend to send emails in production
-  config.action_mailer.delivery_method = :resend
+  if ENV["RESEND_API_KEY"].present?
+    # Use resend to send emails in production
+    config.action_mailer.delivery_method = :resend
+  else
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      user_name: ENV["SMTP_USERNAME"],
+      password: ENV["SMTP_PASSWORD"],
+      address: ENV["SMTP_HOST"],
+      port: ENV["SMTP_PORT"],
+      enable_starttls_auto: false
+    }
+  end
 
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "app.gwirian.com" }
