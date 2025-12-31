@@ -61,6 +61,10 @@ gem "pagy"
 # Use Resend to send emails
 gem "resend"
 
+# Use Sentry for error tracking
+gem "sentry-ruby"
+gem "sentry-rails"
+
 # Use view_component for building reusable UI components
 gem "view_component"
 
