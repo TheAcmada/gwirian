@@ -82,7 +82,7 @@ GEM
       public_suffix (>= 2.0.2, < 8.0)
     ast (2.4.3)
     base64 (0.3.0)
-    bcrypt (3.1.20)
+    bcrypt (3.1.21)
     bcrypt_pbkdf (1.1.2)
     bcrypt_pbkdf (1.1.2-x86_64-darwin)
     benchmark (0.5.0)
@@ -106,7 +106,6 @@ GEM
     concurrent-ruby (1.3.6)
     connection_pool (3.0.2)
     crass (1.0.6)
-    csv (3.3.5)
     date (3.5.1)
     debug (1.11.1)
       irb (~> 1.10)
@@ -150,10 +149,6 @@ GEM
       activesupport (>= 6.1)
     hashie (5.1.0)
       logger
-    httparty (0.24.0)
-      csv
-      mini_mime (>= 1.0.0)
-      multi_xml (>= 0.5.2)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
     importmap-rails (2.2.2)
@@ -206,8 +201,6 @@ GEM
       prism (~> 1.5)
     msgpack (1.8.0)
     multi_json (1.19.1)
-    multi_xml (0.8.0)
-      bigdecimal (>= 3.1, < 5)
     net-http (0.9.1)
       uri (>= 0.11.1)
     net-imap (0.6.2)
@@ -316,8 +309,6 @@ GEM
     regexp_parser (2.11.3)
     reline (0.6.3)
       io-console (~> 0.5)
-    resend (1.0.0)
-      httparty (>= 0.21.0)
     rexml (3.4.4)
     rspec-core (3.13.6)
       rspec-support (~> 3.13.0)
@@ -489,7 +480,6 @@ DEPENDENCIES
   puma (>= 5.0)
   rails (~> 8.0.2)
   rails-controller-testing
-  resend
   rspec-rails (~> 8.0.0)
   rubocop-rails-omakase
   selenium-webdriver

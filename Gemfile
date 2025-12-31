@@ -58,9 +58,6 @@ gem "mcp"
 # Use pagy for fast, efficient pagination
 gem "pagy"
 
-# Use Resend to send emails
-gem "resend"
-
 # Use Sentry for error tracking
 gem "sentry-ruby"
 gem "sentry-rails"

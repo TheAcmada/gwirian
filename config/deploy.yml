@@ -13,10 +13,11 @@ servers:
   #     - 192.168.0.1
   #   cmd: bin/jobs
 
+# How you connect to your server
+ssh:
+  user: root  # If you use a different username to SSH to your server, specify it here
+
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
-# Remove this section when using multiple web servers and ensure you terminate SSL at your load balancer.
-#
-# Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
   ssl: true
   host: <%= ENV.fetch("APP_DOMAIN") %>
@@ -35,25 +36,14 @@ registry:
 env:
   secret:
     - RAILS_MASTER_KEY
-    - RESEND_API_KEY
     - SIGNUP_NOTIFY_EMAIL
+    - SMTP_USERNAME
+    - SMTP_PASSWORD
   clear:
-    # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
-    # When you start using multiple servers, you should split out job processing to a dedicated machine.
+    BASE_URL: https://app.gwirian.com # The public URL of your Gwirian instance
+    MAILER_FROM_ADDRESS: <%= ENV.fetch("MAILER_FROM_ADDRESS", "support@example.com") %> # The email address that Gwirian will send emails from
+    SMTP_HOST: <%= ENV.fetch("SMTP_HOST", "mail.example.com") %>
     SOLID_QUEUE_IN_PUMA: true
-
-    # Set number of processes dedicated to Solid Queue (default: 1)
-    # JOB_CONCURRENCY: 3
-
-    # Set number of cores available to the application on each server (default: 1).
-    # WEB_CONCURRENCY: 2
-
-    # Match this to any external database server to configure Active Record correctly
-    # Use gwirian-db for a db accessory server on same machine via local kamal docker network.
-    # DB_HOST: 192.168.0.2
-
-    # Log everything from Rails
-    # RAILS_LOG_LEVEL: debug
 
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
 # "bin/kamal logs -r job" will tail logs from the first server in the job section.

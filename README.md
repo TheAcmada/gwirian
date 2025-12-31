@@ -83,7 +83,7 @@ docker-compose up -d
 
 ## MCP Server
 
-Gwirian includes a **Model Context Protocol (MCP) server** that allows AI assistants and other tools to interact with your BDD features, scenarios, and executions programmatically. For configuration and usage instructions, see the [MCP Client Configuration Guide](docs/MCP_CLIENT_CONFIGURATION.md).
+Gwirian includes a **Model Context Protocol (MCP) server** that allows AI assistants and other tools to interact with your BDD features, scenarios, and executions programmatically. For configuration and usage instructions, see the [MCP Client Configuration Guide](docs/mcp.md).
 
 ## Elasticsearch
 
@@ -113,13 +113,11 @@ This task will:
 bundle exec rspec && bin/rails test
 ```
 
-## Docker & Production
-- Build and run with Docker:
-  ```sh
-  docker build -t gwirian .
-  docker run -d -p 80:80 -e RAILS_MASTER_KEY=yourkey --name gwirian gwirian
-  ```
-- Kamal is supported for zero-downtime deploys (see [kamal-deploy.org](https://kamal-deploy.org))
+## Running your own Gwirian instance
+
+Kamal is used for zero-downtime deploys (see [kamal-deploy.org](https://kamal-deploy.org)).
+You can find a complete walkthrough in our [Kamal deployment guide](docs/kamal-deployment.md).
+
 
 ## Configuration
 - Environment variables: see `.env.example` (create `.env` as needed)
@@ -134,6 +132,4 @@ bundle exec rspec && bin/rails test
 - [ViewComponent Docs](https://viewcomponent.org/)
 - [Kamal Deploy](https://kamal-deploy.org)
 
----
 
-Feel free to update this README with more specific information about your project, features, or deployment setup!
