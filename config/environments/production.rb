@@ -63,7 +63,6 @@ Rails.application.configure do
     password: ENV["SMTP_PASSWORD"],
     address: ENV["SMTP_HOST"],
     port: ENV["SMTP_PORT"] || 25,
-    enable_starttls_auto: false,
     authentication: :plain
   }
 
