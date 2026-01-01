@@ -1,0 +1,7 @@
+# This Gemfile extends the base Gemfile with SaaS-specific dependencies
+eval_gemfile "Gemfile"
+
+gem "gwirian-saas", path: "saas"
+
+gem "sentry-ruby"
+gem "sentry-rails"
