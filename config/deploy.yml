@@ -36,6 +36,7 @@ registry:
 env:
   secret:
     - RAILS_MASTER_KEY
+    - SENTRY_DSN
     - SIGNUP_NOTIFY_EMAIL
     - SMTP_USERNAME
     - SMTP_PASSWORD
