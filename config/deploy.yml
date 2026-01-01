@@ -43,6 +43,7 @@ env:
     BASE_URL: https://app.gwirian.com # The public URL of your Gwirian instance
     MAILER_FROM_ADDRESS: <%= ENV.fetch("MAILER_FROM_ADDRESS", "support@example.com") %> # The email address that Gwirian will send emails from
     SMTP_HOST: <%= ENV.fetch("SMTP_HOST", "mail.example.com") %>
+    SMTP_PORT: <%= ENV.fetch("SMTP_PORT", "1025") %>
     SOLID_QUEUE_IN_PUMA: true
 
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
