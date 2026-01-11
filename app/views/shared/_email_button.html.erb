@@ -1,0 +1,18 @@
+<%# 
+  Usage: render partial: 'shared/email_button', locals: { url: '...', text: '...' }
+  Optional: style (default: primary), align (default: center)
+-%>
+<% 
+  style ||= 'primary'
+  align ||= 'center'
+  
+  button_styles = {
+    'primary' => 'background: #4f46e5; color: #ffffff;',
+    'secondary' => 'background: #64748b; color: #ffffff;'
+  }
+  
+  button_style = button_styles[style] || button_styles['primary']
+-%>
+<div style="text-align: <%= align %>; margin: 32px 0;">
+  <a href="<%= url %>" style="display: inline-block; padding: 14px 32px; <%= button_style %> text-decoration: none; font-weight: 600; border-radius: 6px; font-size: 1rem;"><%= text %></a>
+</div>

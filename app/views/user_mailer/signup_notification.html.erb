@@ -1,6 +1,34 @@
-<h1>New User Signup</h1>
-<p>A new user has signed up:</p>
-<ul>
-  <li><strong>Email:</strong> <%= @user.email_address %></li>
-  <li><strong>Signup time:</strong> <%= @user.created_at.strftime('%Y-%m-%d %H:%M:%S') %></li>
-</ul>
+<div style="max-width: 480px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #e5e7eb; padding: 32px 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <%= render partial: 'shared/email_header' %>
+
+  <div style="text-align: center; margin-bottom: 24px;">
+    <h1 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0;">New User Signup</h1>
+  </div>
+
+  <p style="font-size: 1.1rem; color: #334155; margin-bottom: 16px;">Hello!</p>
+
+  <p style="color: #334155; margin-bottom: 24px;">A new user has signed up for Gwirian:</p>
+
+  <div style="background: #f8fafc; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td style="padding: 8px 0; color: #334155;">
+          <strong style="color: #1e293b;">Email:</strong>
+        </td>
+        <td style="padding: 8px 0; color: #334155; text-align: right;">
+          <%= @user.email_address %>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 8px 0; color: #334155;">
+          <strong style="color: #1e293b;">Signup time:</strong>
+        </td>
+        <td style="padding: 8px 0; color: #334155; text-align: right;">
+          <%= @user.created_at.strftime('%Y-%m-%d %H:%M:%S') %>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <%= render partial: 'shared/email_footer' %>
+</div>

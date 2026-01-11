@@ -1,16 +1,19 @@
-<div style="max-width:480px;margin:0 auto;background:#fff;border-radius:8px;box-shadow:0 2px 8px #e5e7eb;padding:32px 24px;font-family:sans-serif;">
-  <div style="text-align:center;margin-bottom:24px;">
-    <h1 style="font-size:1.5rem;font-weight:700;color:#1e293b;margin:0;">You're invited to join a workspace</h1>
+<div style="max-width: 480px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #e5e7eb; padding: 32px 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <%= render partial: 'shared/email_header' %>
+
+  <div style="text-align: center; margin-bottom: 24px;">
+    <h1 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0;">You're invited to join a workspace</h1>
   </div>
-  <p style="font-size:1.1rem;color:#334155;margin-bottom:16px;">Hello!</p>
-  <p style="color:#334155;margin-bottom:16px;">You have been invited to join the workspace "<strong><%= @workspace.name %></strong>".</p>
-  <p style="color:#334155;margin-bottom:16px;">Log in to your account to access the workspace and start collaborating.</p>
-  <div style="text-align:center;margin:32px 0;">
-    <a href="<%= root_url %>" style="display:inline-block;padding:14px 32px;background:#4f46e5;color:#fff;text-decoration:none;font-weight:600;border-radius:6px;font-size:1rem;">Go to Gwirian</a>
-  </div>
-  <p style="color:#64748b;font-size:0.95rem;margin-bottom:0;">If you don't want to join this workspace, you can safely ignore this email.</p>
-  <hr style="margin:32px 0 16px 0;border:none;border-top:1px solid #e5e7eb;">
-  <div style="text-align:center;color:#94a3b8;font-size:0.85rem;">
-    © <%= Time.current.year %> Gwirian. All rights reserved.
-  </div>
+
+  <p style="font-size: 1.1rem; color: #334155; margin-bottom: 16px;">Hello!</p>
+
+  <p style="color: #334155; margin-bottom: 16px;">You have been invited to join the workspace "<strong><%= @workspace.name %></strong>".</p>
+
+  <p style="color: #334155; margin-bottom: 16px;">Log in to your account to access the workspace and start collaborating.</p>
+
+  <%= render partial: 'shared/email_button', locals: { url: root_url, text: 'Go to Gwirian' } %>
+
+  <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 0;">If you don't want to join this workspace, you can safely ignore this email.</p>
+
+  <%= render partial: 'shared/email_footer' %>
 </div>
