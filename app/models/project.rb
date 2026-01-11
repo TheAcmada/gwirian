@@ -1,4 +1,5 @@
 class Project < ApplicationRecord
+  belongs_to :workspace
   has_many :project_members, dependent: :destroy
   has_many :features, dependent: :destroy
   has_many :scenarios, through: :features

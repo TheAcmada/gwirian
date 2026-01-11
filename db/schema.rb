@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_26_083503) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_11_131233) do
   create_table "features", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -54,6 +54,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_26_083503) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "workspace_id", null: false
+    t.index ["workspace_id"], name: "index_projects_on_workspace_id"
   end
 
   create_table "scenario_executions", force: :cascade do |t|
@@ -144,13 +146,37 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_26_083503) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  create_table "workspace_members", force: :cascade do |t|
+    t.integer "workspace_id", null: false
+    t.integer "user_id", null: false
+    t.string "role", default: "viewer", null: false
+    t.string "status", default: "invited", null: false
+    t.datetime "last_invitation_sent_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_workspace_members_on_status"
+    t.index ["user_id"], name: "index_workspace_members_on_user_id"
+    t.index ["workspace_id", "user_id"], name: "index_workspace_members_on_workspace_id_and_user_id", unique: true
+    t.index ["workspace_id"], name: "index_workspace_members_on_workspace_id"
+  end
+
+  create_table "workspaces", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   add_foreign_key "features", "projects"
   add_foreign_key "login_histories", "users"
   add_foreign_key "project_members", "projects"
+  add_foreign_key "projects", "workspaces"
   add_foreign_key "scenario_executions", "scenarios"
   add_foreign_key "scenario_executions", "users"
   add_foreign_key "scenarios", "features"
   add_foreign_key "sessions", "users"
   add_foreign_key "steps", "scenarios"
   add_foreign_key "taggings", "tags"
+  add_foreign_key "workspace_members", "users"
+  add_foreign_key "workspace_members", "workspaces"
 end
