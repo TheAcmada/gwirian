@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_11_135451) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_11_193811) do
   create_table "features", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -165,6 +165,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_11_135451) do
     t.datetime "last_invitation_sent_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "last_accessed_at"
     t.index ["status"], name: "index_workspace_members_on_status"
     t.index ["user_id"], name: "index_workspace_members_on_user_id"
     t.index ["workspace_id", "user_id"], name: "index_workspace_members_on_workspace_id_and_user_id", unique: true
@@ -176,6 +177,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_11_135451) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "slug", null: false
+    t.index ["slug"], name: "index_workspaces_on_slug", unique: true
   end
 
   add_foreign_key "features", "projects"

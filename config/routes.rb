@@ -1,9 +1,34 @@
 Rails.application.routes.draw do
+  # Public routes (no workspace required)
   resource :session do
     scope module: :sessions do
       resource :magic_link, only: [ :show, :create ]
     end
   end
+
+  get "up" => "rails/health#show", as: :rails_health_check
+
+  # MCP (Model Context Protocol) endpoint
+  post "mcp" => "mcp#handle"
+
+  # Invitation acceptance (outside workspace scope)
+  get "project_members/accept/:token", to: "project_members#accept", as: :accept_invitation
+  post "project_members/:id/resend_invitation", to: "project_members#resend_invitation", as: :resend_invitation_project_member
+
+  # API routes (outside workspace scope for now)
+  namespace :api do
+    namespace :v1 do
+      get "projects", to: "projects#index"
+      get "projects/:project_id", to: "projects#show"
+      resources :features, only: [ :index, :show, :create, :update, :destroy ], path: "projects/:project_id/features" do
+        resources :scenarios, only: [ :index, :show, :create, :update, :destroy ] do
+          resources :scenario_executions, only: [ :index, :show, :create, :update, :destroy ]
+        end
+      end
+    end
+  end
+
+  # Workspace-scoped routes (middleware extracts slug and sets Current.workspace)
   resources :projects do
     resources :features, only: [ :index, :show, :create, :update, :destroy ] do
       member do
@@ -29,6 +54,7 @@ Rails.application.routes.draw do
       patch :update_member
     end
   end
+
   resources :users, except: [ :show ] do
     member do
       post :generate_api_token
@@ -36,31 +62,10 @@ Rails.application.routes.draw do
     end
   end
 
-  get "project_members/accept/:token", to: "project_members#accept", as: :accept_invitation
-  post "project_members/:id/resend_invitation", to: "project_members#resend_invitation", as: :resend_invitation_project_member
-
-  get "up" => "rails/health#show", as: :rails_health_check
-
-  # MCP (Model Context Protocol) endpoint
-  post "mcp" => "mcp#handle"
-
-
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  namespace :api do
-    namespace :v1 do
-      get "projects", to: "projects#index"
-      get "projects/:project_id", to: "projects#show"
-      resources :features, only: [ :index, :show, :create, :update, :destroy ], path: "projects/:project_id/features" do
-        resources :scenarios, only: [ :index, :show, :create, :update, :destroy ] do
-          resources :scenario_executions, only: [ :index, :show, :create, :update, :destroy ]
-        end
-      end
-    end
-  end
-
-  # Defines the root path route ("/")
-  root "projects#index"
+  # Root redirects to workspace selector or first workspace
+  root "workspaces#index"
 end

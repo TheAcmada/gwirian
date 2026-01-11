@@ -2,6 +2,8 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :login_histories, dependent: :destroy
   has_many :magic_links, dependent: :destroy
+  has_many :workspace_members, dependent: :destroy
+  has_many :workspaces, through: :workspace_members
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 

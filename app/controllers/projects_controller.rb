@@ -1,8 +1,9 @@
 class ProjectsController < ApplicationController
+  before_action :require_workspace
   before_action :set_project, only: [ :show, :history, :edit, :update, :destroy, :add_member, :remove_member, :update_member ]
 
   def index
-    @projects = Current.user.projects
+    @projects = workspace_projects.order(:name)
   end
 
   def show
@@ -47,7 +48,7 @@ class ProjectsController < ApplicationController
       return
     end
 
-    @project = Project.new(project_params)
+    @project = Current.workspace.projects.new(project_params)
     if @project.save
       @project.project_members.create!(email: Current.user.email_address, role: "administrator", invitation_accepted: true)
       redirect_to project_path(@project), notice: "The project has been created successfully"
@@ -161,23 +162,24 @@ class ProjectsController < ApplicationController
   end
 
   private
-    def render_alert(message)
-      redirect_to projects_path, alert: message
-    end
 
-    def set_project
-      @project = Current.user.projects.find(params[:id])
-    end
+  def render_alert(message)
+    redirect_to projects_path, alert: message
+  end
 
-    def project_params
-      params.require(:project).permit(:name, :description)
-    end
+  def set_project
+    @project = workspace_projects.order(:name).find(params[:id])
+  end
 
-    def member_params
-      params.require(:project_member).permit(:email)
-    end
+  def project_params
+    params.require(:project).permit(:name, :description)
+  end
 
-    def member_update_params
-      params.require(:project_member).permit(:role)
-    end
+  def member_params
+    params.require(:project_member).permit(:email)
+  end
+
+  def member_update_params
+    params.require(:project_member).permit(:role)
+  end
 end

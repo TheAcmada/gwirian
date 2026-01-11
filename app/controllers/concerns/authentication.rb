@@ -44,7 +44,27 @@ module Authentication
     end
 
     def after_authentication_url
-      session.delete(:return_to_after_authenticating) || root_url
+      return_to = session.delete(:return_to_after_authenticating)
+      return return_to if return_to.present?
+
+      # Find user's default workspace
+      workspace = default_workspace_for_user
+      return root_url unless workspace
+
+      "#{root_url}#{workspace.slug}/projects"
+    end
+
+    def default_workspace_for_user
+      return nil unless Current.user
+
+      # Find last accessed workspace
+      last_accessed = Current.user.workspace_members
+                                  .where.not(last_accessed_at: nil)
+                                  .order(last_accessed_at: :desc)
+                                  .first&.workspace
+
+      # Fall back to first workspace
+      last_accessed || Current.user.workspaces.first
     end
 
     def start_new_session_for(user)
