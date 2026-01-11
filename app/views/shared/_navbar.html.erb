@@ -26,6 +26,7 @@
         </button>
 
         <!-- Dropdown menu -->
+        <% user_workspaces = Current.user&.workspace_members&.current_member&.includes(:workspace) || [] %>
         <div
           x-show="open"
           @click.away="open = false"
@@ -35,8 +36,9 @@
           x-transition:leave="transition ease-in duration-75"
           x-transition:leave-start="opacity-100 scale-100"
           x-transition:leave-end="opacity-0 scale-95"
-          class="absolute right-0 mt-1 w-56 py-1 z-50 bg-white dark:bg-[rgb(37,37,37)] rounded shadow-lg"
-          style="box-shadow: rgba(15, 15, 15, 0.05) 0px 0px 0px 1px, rgba(15, 15, 15, 0.1) 0px 3px 6px, rgba(15, 15, 15, 0.2) 0px 9px 24px;"
+          class="absolute right-0 mt-1 py-1 z-50 bg-white dark:bg-[rgb(37,37,37)] rounded shadow-lg"
+          style="width: 300px; box-shadow: rgba(15, 15, 15, 0.05) 0px 0px 0px 1px, rgba(15, 15, 15, 0.1) 0px 3px 6px, rgba(15, 15, 15, 0.2) 0px 9px 24px;"
+          x-data="{ showWorkspaces: false }"
           role="menu"
           aria-orientation="vertical"
           x-cloak
@@ -47,7 +49,78 @@
             <p class="text-xs text-stone-400 dark:text-white/40"><%= Current.user&.email_address %></p>
           <% end %>
 
-          <!-- Menu items -->
+          <!-- Switch workspace (click to toggle) -->
+          <div class="py-1 border-b border-stone-100 dark:border-white/10">
+            <button
+              type="button"
+              @click="showWorkspaces = !showWorkspaces"
+              class="w-full text-left px-3 py-1.5 text-sm transition-colors cursor-pointer flex items-center justify-between hover:bg-stone-100 dark:hover:bg-white/5"
+              :class="{ 'bg-stone-100 dark:bg-white/5': showWorkspaces }"
+              role="menuitem"
+              aria-haspopup="true"
+              :aria-expanded="showWorkspaces"
+            >
+              <span class="flex items-center">
+                <svg class="w-4 h-4 mr-2 text-stone-400 dark:text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                </svg>
+                Switch workspace
+              </span>
+              <svg
+                class="w-4 h-4 text-stone-400 dark:text-white/50 transition-transform duration-200"
+                :class="{ 'rotate-90': showWorkspaces }"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+
+            <!-- Inline workspace list (folds/unfolds) -->
+            <div
+              x-show="showWorkspaces"
+              x-transition:enter="transition ease-out duration-100"
+              x-transition:enter-start="opacity-0"
+              x-transition:enter-end="opacity-100"
+              x-transition:leave="transition ease-in duration-75"
+              x-transition:leave-start="opacity-100"
+              x-transition:leave-end="opacity-0"
+              class="border-t border-stone-100 dark:border-white/10 mt-1"
+            >
+              <!-- Workspace list -->
+              <div class="py-1 max-h-64 overflow-y-auto">
+                <% if user_workspaces.any? %>
+                  <% user_workspaces.each_with_index do |membership, index| %>
+                    <% workspace = membership.workspace %>
+                    <% is_current = workspace == Current.workspace %>
+                    <% truncated_name = workspace.name.length > 20 ? "#{workspace.name[0...20]}..." : workspace.name %>
+                    <%= link_to "/#{workspace.slug}/projects",
+                        class: "flex items-center px-3 py-1.5 text-sm transition-colors #{is_current ? 'text-stone-900 dark:text-white' : 'text-stone-700 dark:text-white/90'} hover:bg-stone-100 dark:hover:bg-white/5" do %>
+                      <span class="flex-1"><%= index + 1 %>. <%= truncated_name %></span>
+                      <% if is_current %>
+                        <svg class="w-4 h-4 ml-2 text-teal-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                      <% end %>
+                    <% end %>
+                  <% end %>
+                <% else %>
+                  <p class="px-3 py-2 text-sm text-stone-400 dark:text-white/40 italic">No workspaces yet</p>
+                <% end %>
+              </div>
+
+              <!-- Create or join workspace link -->
+              <div class="border-t border-stone-100 dark:border-white/10 py-1">
+                <%= link_to new_workspace_path,
+                    class: "flex items-center px-3 py-1.5 text-sm text-stone-700 dark:text-white/90 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors" do %>
+                  <span>Create or join a workspace</span>
+                <% end %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Log out -->
           <div class="py-1">
             <%= form_with url: session_path, method: :delete, local: true, class: "block" do |f| %>
               <button type="submit"

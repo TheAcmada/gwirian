@@ -1,7 +1,6 @@
 <% content_for :title, "No Workspaces" %>
 <div class="max-w-6xl mx-auto px-4 py-8">
   <div class="max-w-2xl mx-auto space-y-8">
-    <!-- Header -->
     <div class="text-center">
       <svg class="w-12 h-12 mx-auto mb-4 text-stone-300 dark:text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
@@ -10,100 +9,6 @@
       <p class="text-sm text-stone-500 dark:text-white/60">Create a new workspace or accept an invitation to get started.</p>
     </div>
 
-    <!-- Create Workspace Section -->
-    <div class="bg-white dark:bg-stone-800 rounded-lg border border-stone-200 dark:border-stone-700 p-6">
-      <h2 class="text-lg font-semibold mb-4 text-stone-800 dark:text-white/90">Create a new workspace</h2>
-      <%= form_with model: Workspace.new, url: workspaces_path, local: true, class: "space-y-4" do |f| %>
-
-        <div>
-          <%= f.label :name, "Workspace name", class: "block text-sm font-medium mb-1 text-stone-800 dark:text-white/90" %>
-          <%= f.text_field :name,
-              required: true,
-              autofocus: true,
-              class: "input",
-              placeholder: "Enter workspace name" %>
-        </div>
-
-        <div>
-          <%= f.label :slug, "Workspace URL slug", class: "block text-sm font-medium mb-1 text-stone-800 dark:text-white/90" %>
-          <div class="flex items-center gap-2">
-            <span class="text-sm text-stone-500 dark:text-white/60">/</span>
-            <%= f.text_field :slug,
-                class: "input flex-1",
-                placeholder: "workspace-slug",
-                pattern: "[a-z0-9]+(?:-[a-z0-9]+)*",
-                title: "Lowercase letters, numbers, and hyphens only" %>
-          </div>
-          <p class="text-xs text-stone-400 dark:text-white/40 mt-1">Optional. Leave blank to auto-generate from workspace name.</p>
-        </div>
-
-        <div>
-          <%= f.label :description, "Description (optional)", class: "block text-sm font-medium mb-1 text-stone-800 dark:text-white/90" %>
-          <%= f.text_area :description,
-              rows: 3,
-              class: "input",
-              placeholder: "Enter a description for your workspace" %>
-        </div>
-
-        <div>
-          <%= f.submit "Create workspace", class: "btn btn-primary w-full" %>
-        </div>
-      <% end %>
-    </div>
-
-    <!-- Pending Invitations Section -->
-    <% if @pending_invitations.any? %>
-      <div class="bg-white dark:bg-stone-800 rounded-lg border border-stone-200 dark:border-stone-700 p-6">
-        <h2 class="text-lg font-semibold mb-4 text-stone-800 dark:text-white/90">Pending invitations</h2>
-        <div class="space-y-3">
-          <% @pending_invitations.each do |workspace_member| %>
-            <% workspace = workspace_member.workspace %>
-            <div class="flex items-center justify-between p-4 bg-stone-50 dark:bg-stone-900/50 rounded-lg border border-stone-200 dark:border-stone-700">
-              <div class="flex-1">
-                <h3 class="font-medium text-stone-800 dark:text-white/90"><%= workspace.name %></h3>
-                <% if workspace.description.present? %>
-                  <p class="text-sm text-stone-500 dark:text-white/60 mt-1"><%= workspace.description %></p>
-                <% end %>
-                <p class="text-xs text-stone-400 dark:text-white/40 mt-1">Role: <%= workspace_member.role.humanize %></p>
-              </div>
-              <%= button_to "Accept", accept_workspace_invitation_path(workspace_member),
-                  method: :patch,
-                  class: "btn btn-primary ml-4" %>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-
-    <!-- Left Workspaces Section -->
-    <% if @left_workspaces.any? %>
-      <div class="bg-white dark:bg-stone-800 rounded-lg border border-stone-200 dark:border-stone-700 p-6">
-        <h2 class="text-lg font-semibold mb-4 text-stone-800 dark:text-white/90">Workspaces you've left</h2>
-        <div class="space-y-3">
-          <% @left_workspaces.each do |workspace_member| %>
-            <% workspace = workspace_member.workspace %>
-            <div class="flex items-center justify-between p-4 bg-stone-50 dark:bg-stone-900/50 rounded-lg border border-stone-200 dark:border-stone-700">
-              <div class="flex-1">
-                <h3 class="font-medium text-stone-800 dark:text-white/90"><%= workspace.name %></h3>
-                <% if workspace.description.present? %>
-                  <p class="text-sm text-stone-500 dark:text-white/60 mt-1"><%= workspace.description %></p>
-                <% end %>
-                <p class="text-xs text-stone-400 dark:text-white/40 mt-1">Role: <%= workspace_member.role.humanize %></p>
-              </div>
-              <%= button_to "Rejoin", rejoin_workspace_path(workspace_member),
-                  method: :patch,
-                  class: "btn btn-primary ml-4" %>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-
-    <!-- Empty state if no options -->
-    <% if @pending_invitations.empty? && @left_workspaces.empty? %>
-      <div class="text-center py-8">
-        <p class="text-sm text-stone-500 dark:text-white/60">You don't have any pending invitations or workspaces to rejoin.</p>
-      </div>
-    <% end %>
+    <%= render Workspaces::OptionsComponent.new %>
   </div>
 </div>

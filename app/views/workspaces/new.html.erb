@@ -1,58 +1,11 @@
-<% content_for :title, "Create Workspace" %>
+<% content_for :title, "Create or Join Workspace" %>
 <div class="max-w-6xl mx-auto px-4 py-8">
-  <div class="max-w-2xl mx-auto">
-    <div class="mb-6">
-      <h1 class="text-2xl font-semibold mb-2 text-stone-800 dark:text-white/90">Create a new workspace</h1>
-      <p class="text-sm text-stone-500 dark:text-white/60">Get started by creating your first workspace.</p>
+  <div class="max-w-2xl mx-auto space-y-8">
+    <div class="text-center">
+      <h1 class="text-2xl font-semibold mb-2 text-stone-800 dark:text-white/90">Create or join a workspace</h1>
+      <p class="text-sm text-stone-500 dark:text-white/60">Create a new workspace or accept an invitation to join one.</p>
     </div>
 
-    <div class="bg-white dark:bg-stone-800 rounded-lg border border-stone-200 dark:border-stone-700 p-6">
-      <%= form_with model: @workspace, url: workspaces_path, local: true, class: "space-y-4" do |f| %>
-        <% if @workspace.errors.any? %>
-          <div class="rounded p-3 bg-red-50 dark:bg-red-900/20">
-            <ul class="text-sm space-y-1 text-red-600 dark:text-red-400">
-              <% @workspace.errors.full_messages.each do |msg| %>
-                <li><%= msg %></li>
-              <% end %>
-            </ul>
-          </div>
-        <% end %>
-
-        <div>
-          <%= f.label :name, "Workspace name", class: "block text-sm font-medium mb-1 text-stone-800 dark:text-white/90" %>
-          <%= f.text_field :name,
-              required: true,
-              autofocus: true,
-              class: "input",
-              placeholder: "Enter workspace name" %>
-        </div>
-
-        <div>
-          <%= f.label :slug, "Workspace URL slug", class: "block text-sm font-medium mb-1 text-stone-800 dark:text-white/90" %>
-          <div class="flex items-center gap-2">
-            <span class="text-sm text-stone-500 dark:text-white/60">/</span>
-            <%= f.text_field :slug,
-                class: "input flex-1",
-                placeholder: "workspace-slug",
-                pattern: "[a-z0-9]+(?:-[a-z0-9]+)*",
-                title: "Lowercase letters, numbers, and hyphens only" %>
-          </div>
-          <p class="text-xs text-stone-400 dark:text-white/40 mt-1">Optional. Leave blank to auto-generate from workspace name.</p>
-        </div>
-
-        <div>
-          <%= f.label :description, "Description (optional)", class: "block text-sm font-medium mb-1 text-stone-800 dark:text-white/90" %>
-          <%= f.text_area :description,
-              rows: 3,
-              class: "input",
-              placeholder: "Enter a description for your workspace" %>
-        </div>
-
-        <div class="flex gap-3">
-          <%= f.submit "Create workspace", class: "btn btn-primary" %>
-          <%= link_to "Cancel", root_path, class: "btn btn-secondary" %>
-        </div>
-      <% end %>
-    </div>
+    <%= render Workspaces::OptionsComponent.new(workspace: @workspace) %>
   </div>
 </div>
