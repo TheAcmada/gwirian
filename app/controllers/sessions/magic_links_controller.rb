@@ -19,7 +19,7 @@ class Sessions::MagicLinksController < ApplicationController
 
   def ensure_that_email_address_pending_authentication_exists
     unless email_address_pending_authentication.present?
-      redirect_to new_session_path, alert: t("auth.enter_email")
+      redirect_to new_session_url(script_name: nil), alert: t("auth.enter_email")
     end
   end
 
@@ -44,7 +44,7 @@ class Sessions::MagicLinksController < ApplicationController
 
   def email_address_mismatch
     clear_pending_authentication_token
-    redirect_to new_session_path, alert: t("auth.something_went_wrong")
+    redirect_to new_session_url(script_name: nil), alert: t("auth.something_went_wrong")
   end
 
   def invalid_code
