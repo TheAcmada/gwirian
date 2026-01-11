@@ -10,6 +10,9 @@ class WorkspaceMember < ApplicationRecord
   scope :administrators, -> { where(role: "administrator") }
   scope :editors, -> { where(role: "editor") }
   scope :viewers, -> { where(role: "viewer") }
+  scope :invited, -> { where(status: "invited") }
+  scope :left_workspace, -> { where(status: "left_workspace") }
+  scope :current_member, -> { where(status: "current_member") }
 
   def send_invitation_email
     WorkspaceInvitationMailer.invite(self).deliver_later
@@ -25,5 +28,17 @@ class WorkspaceMember < ApplicationRecord
 
   def invited?
     status == "invited"
+  end
+
+  def accept_invitation!
+    return false unless invited?
+    update!(status: "current_member")
+    true
+  end
+
+  def rejoin!
+    return false unless left_workspace?
+    update!(status: "current_member")
+    true
   end
 end

@@ -8,6 +8,8 @@ module WorkspaceSlug
       /rails
       /assets
       /project_members
+      /workspaces
+      /workspace_members
     ].freeze
 
     def initialize(app)

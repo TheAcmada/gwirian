@@ -38,4 +38,12 @@ class User < ApplicationRecord
   def revoke_api_token
     update!(api_token: nil, api_token_expires_at: nil)
   end
+
+  def pending_workspace_invitations
+    workspace_members.invited.includes(:workspace)
+  end
+
+  def left_workspaces
+    workspace_members.left_workspace.includes(:workspace)
+  end
 end

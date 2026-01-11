@@ -5,6 +5,8 @@ class Workspace < ApplicationRecord
   has_many :workspace_members, dependent: :destroy
   has_many :users, through: :workspace_members
 
+  normalizes :slug, with: ->(s) { s&.strip&.downcase }
+
   validates :name, presence: true, length: { maximum: 80 }
   validates :description, length: { maximum: 1000 }
   validates :slug, presence: true,

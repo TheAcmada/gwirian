@@ -11,6 +11,13 @@ Rails.application.routes.draw do
   # MCP (Model Context Protocol) endpoint
   post "mcp" => "mcp#handle"
 
+  # Workspace management (outside workspace scope)
+  resources :workspaces, only: [:index, :new, :create]
+
+  # Workspace member actions (outside workspace scope)
+  patch "workspace_members/:id/accept", to: "workspace_members#accept", as: :accept_workspace_invitation
+  patch "workspace_members/:id/rejoin", to: "workspace_members#rejoin", as: :rejoin_workspace
+
   # Invitation acceptance (outside workspace scope)
   get "project_members/accept/:token", to: "project_members#accept", as: :accept_invitation
   post "project_members/:id/resend_invitation", to: "project_members#resend_invitation", as: :resend_invitation_project_member
