@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_11_131233) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_11_135451) do
   create_table "features", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -29,6 +29,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_11_131233) do
     t.datetime "updated_at", null: false
     t.index ["created_at"], name: "index_login_histories_on_created_at"
     t.index ["user_id"], name: "index_login_histories_on_user_id"
+  end
+
+  create_table "magic_links", force: :cascade do |t|
+    t.string "code", null: false
+    t.integer "user_id", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_magic_links_on_code", unique: true
+    t.index ["expires_at"], name: "index_magic_links_on_expires_at"
+    t.index ["user_id"], name: "index_magic_links_on_user_id"
   end
 
   create_table "project_members", force: :cascade do |t|
@@ -137,7 +148,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_11_131233) do
 
   create_table "users", force: :cascade do |t|
     t.string "email_address", null: false
-    t.string "password_digest", null: false
+    t.string "password_digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "api_token"
@@ -169,6 +180,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_11_131233) do
 
   add_foreign_key "features", "projects"
   add_foreign_key "login_histories", "users"
+  add_foreign_key "magic_links", "users"
   add_foreign_key "project_members", "projects"
   add_foreign_key "projects", "workspaces"
   add_foreign_key "scenario_executions", "scenarios"

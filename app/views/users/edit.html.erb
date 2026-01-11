@@ -7,38 +7,19 @@
   </div>
 
   <div class="space-y-8">
+    <!-- Email Section -->
+    <div>
+      <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Email</h2>
+      <div class="bg-stone-50 dark:bg-white/5 rounded-lg p-4">
+        <p class="text-stone-800 dark:text-white/90"><%= @user.email_address %></p>
+        <p class="text-xs text-stone-400 dark:text-white/40 mt-1">You sign in using a verification code sent to this email</p>
+      </div>
+    </div>
+
     <!-- API Token Section -->
     <div>
       <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">API Token</h2>
       <%= render 'api_token', user: @user %>
-    </div>
-
-    <!-- Password Section -->
-    <div>
-      <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Password</h2>
-      <%= form_with model: @user, url: update_password_user_path, method: :patch, local: true do |f| %>
-        <%= render 'shared/errors', model: @user %>
-
-        <div class="mb-4">
-          <%= f.label :current_password, "Current password", class: 'block text-sm font-medium mb-1 text-stone-800 dark:text-white/90' %>
-          <%= f.password_field :current_password, autocomplete: "current-password", class: 'input', required: true %>
-        </div>
-
-        <div class="mb-4">
-          <%= f.label :password, "New password", class: 'block text-sm font-medium mb-1 text-stone-800 dark:text-white/90' %>
-          <%= f.password_field :password, autocomplete: "new-password", class: 'input' %>
-          <p class="mt-1 text-xs text-stone-400 dark:text-white/40">Must be at least 12 characters long. Consider using a pass phrase for better security.</p>
-        </div>
-
-        <div class="mb-4">
-          <%= f.label :password_confirmation, "Confirm new password", class: 'block text-sm font-medium mb-1 text-stone-800 dark:text-white/90' %>
-          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: 'input' %>
-        </div>
-
-        <div class="flex justify-end gap-2">
-          <%= f.submit "Update Password", class: 'btn btn-primary' %>
-        </div>
-      <% end %>
     </div>
 
     <!-- Danger Zone -->
@@ -62,4 +43,3 @@
     </div>
   </div>
 </div>
-

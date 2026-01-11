@@ -1,7 +1,6 @@
 FactoryBot.define do
   factory :user do
     sequence(:email_address) { |n| "user#{n}@example.com" }
-    password { "password123456" } # 12+ characters to meet validation
 
     trait :with_api_token do
       after(:create) do |user|

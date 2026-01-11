@@ -30,6 +30,13 @@
 en:
   hello: "Hello world"
   
+  auth:
+    try_again_later: "Try again later."
+    enter_email: "Enter your email address to sign in."
+    something_went_wrong: "Something went wrong. Please try again."
+    invalid_code: "Invalid or expired code. Please try again."
+    check_email: "Check your email for a verification code."
+  
   dashboard:
     view_features: "View Features"
     

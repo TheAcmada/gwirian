@@ -1,5 +1,6 @@
 module Authentication
   extend ActiveSupport::Concern
+  include Authentication::ViaMagicLink
 
   included do
     before_action :require_authentication

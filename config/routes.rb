@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
-  resource :session
-  resources :passwords, param: :token
+  resource :session do
+    scope module: :sessions do
+      resource :magic_link, only: [ :show, :create ]
+    end
+  end
   resources :projects do
     resources :features, only: [ :index, :show, :create, :update, :destroy ] do
       member do
@@ -28,7 +31,6 @@ Rails.application.routes.draw do
   end
   resources :users, except: [ :show ] do
     member do
-      patch :update_password
       post :generate_api_token
       delete :revoke_api_token
     end

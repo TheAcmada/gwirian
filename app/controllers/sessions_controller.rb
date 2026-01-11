@@ -7,17 +7,22 @@ class SessionsController < ApplicationController
   end
 
   def create
-    if user = User.authenticate_by(params.permit(:email_address, :password))
-      start_new_session_for user
-      user.login_histories.create(ip_address: request.remote_ip, user_agent: request.user_agent)
-      redirect_to after_authentication_url
+    if user = User.find_by(email_address: email_address)
+      redirect_to_session_magic_link(user.send_magic_link)
     else
-      redirect_to new_session_path, alert: "Invalid email or password. Please check your credentials and try again."
+      # For security, show the same flow even if user doesn't exist
+      redirect_to_fake_session_magic_link(email_address)
     end
   end
 
   def destroy
     terminate_session
     redirect_to new_session_path, notice: "You have been logged out successfully. See you next time!"
+  end
+
+  private
+
+  def email_address
+    params.expect(:email_address)
   end
 end

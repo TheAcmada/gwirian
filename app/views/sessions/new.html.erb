@@ -6,7 +6,7 @@
 
     <!-- Title and subtitle -->
     <h1 class="text-2xl font-semibold text-center mb-1 text-stone-800 dark:text-white/90">Welcome back</h1>
-    <p class="text-center mb-6 text-stone-500 dark:text-white/60">Sign in to continue to Gwirian</p>
+    <p class="text-center mb-6 text-stone-500 dark:text-white/60">Enter your email and we'll send you a code</p>
 
     <!-- Form -->
     <%= form_with url: session_path, method: :post, local: true do |f| %>
@@ -22,20 +22,7 @@
         </div>
 
         <div>
-          <%= f.label :password, "Password", class: "block text-sm font-medium mb-1 text-stone-800 dark:text-white/90" %>
-          <%= f.password_field :password,
-              class: "input",
-              required: true,
-              autocomplete: "current-password",
-              placeholder: "Enter your password" %>
-        </div>
-
-        <div class="flex justify-end">
-          <%= link_to "Forgot password?", new_password_path, class: "link" %>
-        </div>
-
-        <div>
-          <%= f.submit "Sign in", class: "btn btn-primary w-full" %>
+          <%= f.submit "Get code", class: "btn btn-primary w-full" %>
         </div>
       </div>
     <% end %>

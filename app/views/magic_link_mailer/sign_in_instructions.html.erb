@@ -1,0 +1,8 @@
+<h1>Gwirian verification code</h1>
+<p>Please enter this 6-character verification code on the Gwirian sign-in page:</p>
+
+<p style="font-size: 24px; font-weight: bold; letter-spacing: 2px;"><%= @magic_link.code %></p>
+
+<p>This code will work for <%= distance_of_time_in_words(MagicLink::EXPIRATION_TIME) %>.</p>
+
+<p>If you didn't request this code, you can safely ignore this email.</p>
