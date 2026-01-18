@@ -1,8 +1,10 @@
 require "rails_helper"
 
 RSpec.describe "Api::V1::Features", type: :request do
-  let(:user) { create(:user, :with_api_token) }
-  let(:project) { create(:project) }
+  let(:workspace) { create(:workspace) }
+  let(:user) { create(:user) }
+  let!(:workspace_member) { create(:workspace_member, :with_api_token, user: user, workspace: workspace) }
+  let(:project) { create(:project, workspace: workspace) }
 
   describe "GET /api/v1/projects/:project_id/features" do
     context "without authentication" do
@@ -22,10 +24,12 @@ RSpec.describe "Api::V1::Features", type: :request do
     end
 
     context "with expired token" do
-      let(:expired_user) { create(:user, :with_expired_api_token) }
+      let(:expired_workspace) { create(:workspace) }
+      let(:expired_user) { create(:user) }
+      let!(:expired_workspace_member) { create(:workspace_member, :with_expired_api_token, user: expired_user, workspace: expired_workspace) }
 
       it "returns unauthorized" do
-        get "/api/v1/projects/#{project.id}/features", headers: api_headers(expired_user.api_token)
+        get "/api/v1/projects/#{project.id}/features", headers: api_headers(expired_workspace_member.api_token)
         expect(response).to have_http_status(:unauthorized)
         expect(json_response["error"]).to eq("Unauthorized")
       end
@@ -38,21 +42,21 @@ RSpec.describe "Api::V1::Features", type: :request do
       let!(:feature3) { create(:feature, project: project, title: "Feature C") }
 
       it "returns features for project" do
-        get "/api/v1/projects/#{project.id}/features", headers: api_headers(user.api_token)
+        get "/api/v1/projects/#{project.id}/features", headers: api_headers(workspace_member.api_token)
         expect(response).to have_http_status(:ok)
         expect(json_response).to be_an(Array)
         expect(json_response.length).to eq(3)
       end
 
       it "returns features ordered by title" do
-        get "/api/v1/projects/#{project.id}/features", headers: api_headers(user.api_token)
+        get "/api/v1/projects/#{project.id}/features", headers: api_headers(workspace_member.api_token)
         expect(response).to have_http_status(:ok)
         titles = json_response.map { |f| f["title"] }
         expect(titles).to eq([ "Feature A", "Feature B", "Feature C" ])
       end
 
       it "returns correct JSON structure" do
-        get "/api/v1/projects/#{project.id}/features", headers: api_headers(user.api_token)
+        get "/api/v1/projects/#{project.id}/features", headers: api_headers(workspace_member.api_token)
         expect(response).to have_http_status(:ok)
         feature = json_response.first
         expect(feature).to have_key("id")
@@ -65,19 +69,21 @@ RSpec.describe "Api::V1::Features", type: :request do
 
       context "when project does not exist" do
         it "returns 404" do
-          get "/api/v1/projects/99999/features", headers: api_headers(user.api_token)
+          get "/api/v1/projects/99999/features", headers: api_headers(workspace_member.api_token)
           expect(response).to have_http_status(:not_found)
           expect(json_response["error"]).to eq("Project not found")
         end
       end
 
       context "when user is not a member of the project" do
-        let(:other_user) { create(:user, :with_api_token) }
-        let(:other_project) { create(:project) }
+        let(:other_workspace) { create(:workspace) }
+        let(:other_user) { create(:user) }
+        let!(:other_workspace_member) { create(:workspace_member, :with_api_token, user: other_user, workspace: other_workspace) }
+        let(:other_project) { create(:project, workspace: other_workspace) }
         let!(:other_feature) { create(:feature, project: other_project) }
 
         it "returns 404" do
-          get "/api/v1/projects/#{other_project.id}/features", headers: api_headers(other_user.api_token)
+          get "/api/v1/projects/#{other_project.id}/features", headers: api_headers(other_workspace_member.api_token)
           expect(response).to have_http_status(:not_found)
           expect(json_response["error"]).to eq("Project not found")
         end
@@ -99,7 +105,7 @@ RSpec.describe "Api::V1::Features", type: :request do
 
     context "with valid authentication" do
       it "returns feature details" do
-        get "/api/v1/projects/#{project.id}/features/#{feature.id}", headers: api_headers(user.api_token)
+        get "/api/v1/projects/#{project.id}/features/#{feature.id}", headers: api_headers(workspace_member.api_token)
         expect(response).to have_http_status(:ok)
         expect(json_response["id"]).to eq(feature.id)
         expect(json_response["title"]).to eq("Test Feature")
@@ -108,7 +114,7 @@ RSpec.describe "Api::V1::Features", type: :request do
       end
 
       it "returns correct JSON structure" do
-        get "/api/v1/projects/#{project.id}/features/#{feature.id}", headers: api_headers(user.api_token)
+        get "/api/v1/projects/#{project.id}/features/#{feature.id}", headers: api_headers(workspace_member.api_token)
         expect(response).to have_http_status(:ok)
         expect(json_response).to have_key("id")
         expect(json_response).to have_key("title")
@@ -120,7 +126,7 @@ RSpec.describe "Api::V1::Features", type: :request do
 
       context "when feature does not exist" do
         it "returns 404" do
-          get "/api/v1/projects/#{project.id}/features/99999", headers: api_headers(user.api_token)
+          get "/api/v1/projects/#{project.id}/features/99999", headers: api_headers(workspace_member.api_token)
           expect(response).to have_http_status(:not_found)
           expect(json_response["error"]).to eq("Feature not found")
         end
@@ -132,7 +138,7 @@ RSpec.describe "Api::V1::Features", type: :request do
         let!(:other_member) { create(:project_member, project: other_project, email: user.email_address, ) }
 
         it "returns 404" do
-          get "/api/v1/projects/#{project.id}/features/#{other_feature.id}", headers: api_headers(user.api_token)
+          get "/api/v1/projects/#{project.id}/features/#{other_feature.id}", headers: api_headers(workspace_member.api_token)
           expect(response).to have_http_status(:not_found)
           expect(json_response["error"]).to eq("Feature not found")
         end
@@ -164,7 +170,7 @@ RSpec.describe "Api::V1::Features", type: :request do
         let!(:viewer_member) { create(:project_member, project: project, email: user.email_address, role: "viewer", ) }
 
         it "returns 403 forbidden" do
-          post "/api/v1/projects/#{project.id}/features", params: valid_params, headers: api_headers(user.api_token)
+          post "/api/v1/projects/#{project.id}/features", params: valid_params, headers: api_headers(workspace_member.api_token)
           expect(response).to have_http_status(:forbidden)
           expect(json_response["error"]).to eq("Access denied")
         end
@@ -175,13 +181,13 @@ RSpec.describe "Api::V1::Features", type: :request do
 
         it "successfully creates feature with valid params" do
           expect {
-            post "/api/v1/projects/#{project.id}/features", params: valid_params, headers: api_headers(user.api_token)
+            post "/api/v1/projects/#{project.id}/features", params: valid_params, headers: api_headers(workspace_member.api_token)
           }.to change(Feature, :count).by(1)
           expect(response).to have_http_status(:created)
         end
 
         it "returns 201 with created feature" do
-          post "/api/v1/projects/#{project.id}/features", params: valid_params, headers: api_headers(user.api_token)
+          post "/api/v1/projects/#{project.id}/features", params: valid_params, headers: api_headers(workspace_member.api_token)
           expect(response).to have_http_status(:created)
           expect(json_response["title"]).to eq("New Feature")
           expect(json_response["description"]).to eq("New Feature Description")
@@ -189,7 +195,7 @@ RSpec.describe "Api::V1::Features", type: :request do
         end
 
         it "handles tag_list parameter" do
-          post "/api/v1/projects/#{project.id}/features", params: valid_params, headers: api_headers(user.api_token)
+          post "/api/v1/projects/#{project.id}/features", params: valid_params, headers: api_headers(workspace_member.api_token)
           expect(response).to have_http_status(:created)
           feature = Feature.find(json_response["id"])
           expect(feature.tag_list).to contain_exactly("tag1", "tag2")
@@ -198,7 +204,7 @@ RSpec.describe "Api::V1::Features", type: :request do
         context "with validation errors" do
           it "fails with missing title" do
             invalid_params = { feature: { description: "Description only" } }
-            post "/api/v1/projects/#{project.id}/features", params: invalid_params, headers: api_headers(user.api_token)
+            post "/api/v1/projects/#{project.id}/features", params: invalid_params, headers: api_headers(workspace_member.api_token)
             expect(response).to have_http_status(:unprocessable_entity)
             expect(json_response["errors"]).to be_present
             expect(json_response["errors"]).to include("Title can't be blank")
@@ -207,7 +213,7 @@ RSpec.describe "Api::V1::Features", type: :request do
           it "fails with too long description" do
             long_description = "a" * 1001
             invalid_params = { feature: { title: "Title", description: long_description } }
-            post "/api/v1/projects/#{project.id}/features", params: invalid_params, headers: api_headers(user.api_token)
+            post "/api/v1/projects/#{project.id}/features", params: invalid_params, headers: api_headers(workspace_member.api_token)
             expect(response).to have_http_status(:unprocessable_entity)
             expect(json_response["errors"]).to be_present
           end
@@ -215,7 +221,7 @@ RSpec.describe "Api::V1::Features", type: :request do
 
         context "when project does not exist" do
           it "returns 404" do
-            post "/api/v1/projects/99999/features", params: valid_params, headers: api_headers(user.api_token)
+            post "/api/v1/projects/99999/features", params: valid_params, headers: api_headers(workspace_member.api_token)
             expect(response).to have_http_status(:not_found)
             expect(json_response["error"]).to eq("Project not found")
           end
@@ -227,7 +233,7 @@ RSpec.describe "Api::V1::Features", type: :request do
 
         it "successfully creates feature" do
           expect {
-            post "/api/v1/projects/#{project.id}/features", params: valid_params, headers: api_headers(user.api_token)
+            post "/api/v1/projects/#{project.id}/features", params: valid_params, headers: api_headers(workspace_member.api_token)
           }.to change(Feature, :count).by(1)
           expect(response).to have_http_status(:created)
         end
@@ -260,7 +266,7 @@ RSpec.describe "Api::V1::Features", type: :request do
         let!(:viewer_member) { create(:project_member, project: project, email: user.email_address, role: "viewer", ) }
 
         it "returns 403 forbidden" do
-          patch "/api/v1/projects/#{project.id}/features/#{feature.id}", params: update_params, headers: api_headers(user.api_token)
+          patch "/api/v1/projects/#{project.id}/features/#{feature.id}", params: update_params, headers: api_headers(workspace_member.api_token)
           expect(response).to have_http_status(:forbidden)
           expect(json_response["error"]).to eq("Access denied")
         end
@@ -270,7 +276,7 @@ RSpec.describe "Api::V1::Features", type: :request do
         let!(:editor_member) { create(:project_member, project: project, email: user.email_address, role: "editor", ) }
 
         it "successfully updates feature with valid params" do
-          patch "/api/v1/projects/#{project.id}/features/#{feature.id}", params: update_params, headers: api_headers(user.api_token)
+          patch "/api/v1/projects/#{project.id}/features/#{feature.id}", params: update_params, headers: api_headers(workspace_member.api_token)
           expect(response).to have_http_status(:ok)
           feature.reload
           expect(feature.title).to eq("Updated Title")
@@ -278,14 +284,14 @@ RSpec.describe "Api::V1::Features", type: :request do
         end
 
         it "returns updated feature JSON" do
-          patch "/api/v1/projects/#{project.id}/features/#{feature.id}", params: update_params, headers: api_headers(user.api_token)
+          patch "/api/v1/projects/#{project.id}/features/#{feature.id}", params: update_params, headers: api_headers(workspace_member.api_token)
           expect(response).to have_http_status(:ok)
           expect(json_response["title"]).to eq("Updated Title")
           expect(json_response["description"]).to eq("Updated Description")
         end
 
         it "handles tag_list parameter" do
-          patch "/api/v1/projects/#{project.id}/features/#{feature.id}", params: update_params, headers: api_headers(user.api_token)
+          patch "/api/v1/projects/#{project.id}/features/#{feature.id}", params: update_params, headers: api_headers(workspace_member.api_token)
           expect(response).to have_http_status(:ok)
           feature.reload
           expect(feature.tag_list).to contain_exactly("updated_tag1", "updated_tag2")
@@ -294,7 +300,7 @@ RSpec.describe "Api::V1::Features", type: :request do
         context "with validation errors" do
           it "fails with missing title" do
             invalid_params = { feature: { title: "" } }
-            patch "/api/v1/projects/#{project.id}/features/#{feature.id}", params: invalid_params, headers: api_headers(user.api_token)
+            patch "/api/v1/projects/#{project.id}/features/#{feature.id}", params: invalid_params, headers: api_headers(workspace_member.api_token)
             expect(response).to have_http_status(:unprocessable_entity)
             expect(json_response["errors"]).to be_present
             expect(json_response["errors"]).to include("Title can't be blank")
@@ -303,7 +309,7 @@ RSpec.describe "Api::V1::Features", type: :request do
 
         context "when feature does not exist" do
           it "returns 404" do
-            patch "/api/v1/projects/#{project.id}/features/99999", params: update_params, headers: api_headers(user.api_token)
+            patch "/api/v1/projects/#{project.id}/features/99999", params: update_params, headers: api_headers(workspace_member.api_token)
             expect(response).to have_http_status(:not_found)
             expect(json_response["error"]).to eq("Feature not found")
           end
@@ -314,7 +320,7 @@ RSpec.describe "Api::V1::Features", type: :request do
         let!(:admin_member) { create(:project_member, project: project, email: user.email_address, role: "administrator", ) }
 
         it "successfully updates feature" do
-          patch "/api/v1/projects/#{project.id}/features/#{feature.id}", params: update_params, headers: api_headers(user.api_token)
+          patch "/api/v1/projects/#{project.id}/features/#{feature.id}", params: update_params, headers: api_headers(workspace_member.api_token)
           expect(response).to have_http_status(:ok)
           feature.reload
           expect(feature.title).to eq("Updated Title")
@@ -339,7 +345,7 @@ RSpec.describe "Api::V1::Features", type: :request do
         let!(:viewer_member) { create(:project_member, project: project, email: user.email_address, role: "viewer", ) }
 
         it "returns 403 forbidden" do
-          delete "/api/v1/projects/#{project.id}/features/#{feature.id}", headers: api_headers(user.api_token)
+          delete "/api/v1/projects/#{project.id}/features/#{feature.id}", headers: api_headers(workspace_member.api_token)
           expect(response).to have_http_status(:forbidden)
           expect(json_response["error"]).to eq("Access denied")
         end
@@ -350,26 +356,26 @@ RSpec.describe "Api::V1::Features", type: :request do
 
         it "successfully deletes feature" do
           expect {
-            delete "/api/v1/projects/#{project.id}/features/#{feature.id}", headers: api_headers(user.api_token)
+            delete "/api/v1/projects/#{project.id}/features/#{feature.id}", headers: api_headers(workspace_member.api_token)
           }.to change(Feature, :count).by(-1)
           expect(response).to have_http_status(:ok)
         end
 
         it "returns success message" do
-          delete "/api/v1/projects/#{project.id}/features/#{feature.id}", headers: api_headers(user.api_token)
+          delete "/api/v1/projects/#{project.id}/features/#{feature.id}", headers: api_headers(workspace_member.api_token)
           expect(response).to have_http_status(:ok)
           expect(json_response["message"]).to eq("Feature deleted successfully")
         end
 
         it "feature is actually deleted from database" do
           feature_id = feature.id
-          delete "/api/v1/projects/#{project.id}/features/#{feature.id}", headers: api_headers(user.api_token)
+          delete "/api/v1/projects/#{project.id}/features/#{feature.id}", headers: api_headers(workspace_member.api_token)
           expect(Feature.find_by(id: feature_id)).to be_nil
         end
 
         context "when feature does not exist" do
           it "returns 404" do
-            delete "/api/v1/projects/#{project.id}/features/99999", headers: api_headers(user.api_token)
+            delete "/api/v1/projects/#{project.id}/features/99999", headers: api_headers(workspace_member.api_token)
             expect(response).to have_http_status(:not_found)
             expect(json_response["error"]).to eq("Feature not found")
           end
@@ -381,7 +387,7 @@ RSpec.describe "Api::V1::Features", type: :request do
 
         it "successfully deletes feature" do
           expect {
-            delete "/api/v1/projects/#{project.id}/features/#{feature.id}", headers: api_headers(user.api_token)
+            delete "/api/v1/projects/#{project.id}/features/#{feature.id}", headers: api_headers(workspace_member.api_token)
           }.to change(Feature, :count).by(-1)
           expect(response).to have_http_status(:ok)
         end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_18_153924) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_18_164931) do
   create_table "features", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -144,9 +144,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_18_153924) do
     t.string "password_digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "api_token"
-    t.datetime "api_token_expires_at"
-    t.index ["api_token"], name: "index_users_on_api_token", unique: true
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
@@ -159,6 +156,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_18_153924) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "last_accessed_at"
+    t.string "api_token"
+    t.datetime "api_token_expires_at"
+    t.index ["api_token"], name: "index_workspace_members_on_api_token", unique: true
     t.index ["status"], name: "index_workspace_members_on_status"
     t.index ["user_id"], name: "index_workspace_members_on_user_id"
     t.index ["workspace_id", "user_id"], name: "index_workspace_members_on_workspace_id_and_user_id", unique: true

@@ -17,10 +17,23 @@
     </div>
 
     <!-- API Token Section -->
-    <div>
-      <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">API Token</h2>
-      <%= render 'api_token', user: @user %>
-    </div>
+    <% if Current.workspace %>
+      <% current_workspace_member = @user.workspace_members.find_by(workspace: Current.workspace) %>
+      <% if current_workspace_member %>
+        <div>
+          <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">API Token</h2>
+          <p class="text-xs text-stone-400 dark:text-white/40 mb-4">API token for <strong><%= Current.workspace.name %></strong> workspace</p>
+          <%= render WorkspaceMembers::ApiTokenComponent.new(workspace_member: current_workspace_member) %>
+        </div>
+      <% end %>
+    <% else %>
+      <div>
+        <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">API Token</h2>
+        <div class="bg-stone-50 dark:bg-white/5 rounded-lg p-4">
+          <p class="text-sm text-stone-600 dark:text-white/60">Please select a workspace to manage your API token.</p>
+        </div>
+      </div>
+    <% end %>
 
     <!-- Danger Zone -->
     <div class="pt-6 border-t border-red-200 dark:border-red-900/30">

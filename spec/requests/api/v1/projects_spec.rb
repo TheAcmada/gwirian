@@ -19,26 +19,30 @@ RSpec.describe "Api::V1::Projects", type: :request do
     end
 
     context "with expired token" do
-      let(:user) { create(:user, :with_expired_api_token) }
+      let(:workspace) { create(:workspace) }
+      let(:user) { create(:user) }
+      let!(:workspace_member) { create(:workspace_member, :with_expired_api_token, user: user, workspace: workspace) }
 
       it "returns unauthorized" do
-        get "/api/v1/projects", headers: api_headers(user.api_token)
+        get "/api/v1/projects", headers: api_headers(workspace_member.api_token)
         expect(response).to have_http_status(:unauthorized)
         expect(json_response["error"]).to eq("Unauthorized")
       end
     end
 
     context "with valid authentication" do
-      let(:user) { create(:user, :with_api_token) }
-      let!(:project1) { create(:project, name: "Project 1") }
-      let!(:project2) { create(:project, name: "Project 2") }
-      let!(:other_project) { create(:project, name: "Other Project") }
+      let(:workspace) { create(:workspace) }
+      let(:user) { create(:user) }
+      let!(:workspace_member) { create(:workspace_member, :with_api_token, user: user, workspace: workspace) }
+      let!(:project1) { create(:project, name: "Project 1", workspace: workspace) }
+      let!(:project2) { create(:project, name: "Project 2", workspace: workspace) }
+      let!(:other_project) { create(:project, name: "Other Project", workspace: workspace) }
       let!(:member1) { create(:project_member, project: project1, email: user.email_address, ) }
       let!(:member2) { create(:project_member, project: project2, email: user.email_address, ) }
       let!(:other_member) { create(:project_member, project: other_project, email: "other@example.com", ) }
 
       it "returns only projects where user is a member" do
-        get "/api/v1/projects", headers: api_headers(user.api_token)
+        get "/api/v1/projects", headers: api_headers(workspace_member.api_token)
         expect(response).to have_http_status(:ok)
         expect(json_response).to be_an(Array)
         expect(json_response.length).to eq(2)
@@ -47,7 +51,7 @@ RSpec.describe "Api::V1::Projects", type: :request do
       end
 
       it "returns correct JSON structure" do
-        get "/api/v1/projects", headers: api_headers(user.api_token)
+        get "/api/v1/projects", headers: api_headers(workspace_member.api_token)
         expect(response).to have_http_status(:ok)
         project = json_response.first
         expect(project).to have_key("id")
@@ -59,17 +63,19 @@ RSpec.describe "Api::V1::Projects", type: :request do
       end
 
       it "excludes projects where user is not a member" do
-        get "/api/v1/projects", headers: api_headers(user.api_token)
+        get "/api/v1/projects", headers: api_headers(workspace_member.api_token)
         expect(response).to have_http_status(:ok)
         project_ids = json_response.map { |p| p["id"] }
         expect(project_ids).not_to include(other_project.id)
       end
 
       context "when user has no projects" do
-        let(:user_without_projects) { create(:user, :with_api_token) }
+        let(:workspace_without_projects) { create(:workspace) }
+        let(:user_without_projects) { create(:user) }
+        let!(:workspace_member_without_projects) { create(:workspace_member, :with_api_token, user: user_without_projects, workspace: workspace_without_projects) }
 
         it "returns empty array" do
-          get "/api/v1/projects", headers: api_headers(user_without_projects.api_token)
+          get "/api/v1/projects", headers: api_headers(workspace_member_without_projects.api_token)
           expect(response).to have_http_status(:ok)
           expect(json_response).to eq([])
         end
@@ -78,8 +84,10 @@ RSpec.describe "Api::V1::Projects", type: :request do
   end
 
   describe "GET /api/v1/projects/:project_id" do
-    let(:user) { create(:user, :with_api_token) }
-    let(:project) { create(:project, name: "Test Project", description: "Test Description") }
+    let(:workspace) { create(:workspace) }
+    let(:user) { create(:user) }
+    let!(:workspace_member) { create(:workspace_member, :with_api_token, user: user, workspace: workspace) }
+    let(:project) { create(:project, name: "Test Project", description: "Test Description", workspace: workspace) }
     let!(:member) { create(:project_member, project: project, email: user.email_address, ) }
 
     context "without authentication" do
@@ -100,7 +108,7 @@ RSpec.describe "Api::V1::Projects", type: :request do
 
     context "with valid authentication" do
       it "returns project details for member" do
-        get "/api/v1/projects/#{project.id}", headers: api_headers(user.api_token)
+        get "/api/v1/projects/#{project.id}", headers: api_headers(workspace_member.api_token)
         expect(response).to have_http_status(:ok)
         expect(json_response["id"]).to eq(project.id)
         expect(json_response["name"]).to eq("Test Project")
@@ -108,7 +116,7 @@ RSpec.describe "Api::V1::Projects", type: :request do
       end
 
       it "returns correct JSON structure" do
-        get "/api/v1/projects/#{project.id}", headers: api_headers(user.api_token)
+        get "/api/v1/projects/#{project.id}", headers: api_headers(workspace_member.api_token)
         expect(response).to have_http_status(:ok)
         expect(json_response).to have_key("id")
         expect(json_response).to have_key("name")
@@ -120,18 +128,20 @@ RSpec.describe "Api::V1::Projects", type: :request do
 
       context "when project does not exist" do
         it "returns 404" do
-          get "/api/v1/projects/99999", headers: api_headers(user.api_token)
+          get "/api/v1/projects/99999", headers: api_headers(workspace_member.api_token)
           expect(response).to have_http_status(:not_found)
           expect(json_response["error"]).to eq("Project not found")
         end
       end
 
       context "when user is not a member of the project" do
-        let(:other_user) { create(:user, :with_api_token) }
-        let(:other_project) { create(:project) }
+        let(:other_workspace) { create(:workspace) }
+        let(:other_user) { create(:user) }
+        let!(:other_workspace_member) { create(:workspace_member, :with_api_token, user: other_user, workspace: other_workspace) }
+        let(:other_project) { create(:project, workspace: other_workspace) }
 
         it "returns 404" do
-          get "/api/v1/projects/#{other_project.id}", headers: api_headers(other_user.api_token)
+          get "/api/v1/projects/#{other_project.id}", headers: api_headers(other_workspace_member.api_token)
           expect(response).to have_http_status(:not_found)
           expect(json_response["error"]).to eq("Project not found")
         end

@@ -17,6 +17,8 @@ Rails.application.routes.draw do
   # Workspace member actions (outside workspace scope)
   patch "workspace_members/:id/accept", to: "workspace_members#accept", as: :accept_workspace_invitation
   patch "workspace_members/:id/rejoin", to: "workspace_members#rejoin", as: :rejoin_workspace
+  post "workspace_members/:id/generate_api_token", to: "workspace_members#generate_api_token", as: :generate_api_token_workspace_member
+  delete "workspace_members/:id/revoke_api_token", to: "workspace_members#revoke_api_token", as: :revoke_api_token_workspace_member
 
   # API routes (outside workspace scope for now)
   namespace :api do
@@ -61,15 +63,12 @@ Rails.application.routes.draw do
   resources :workspace_members, only: [ :index, :create, :update, :destroy ] do
     member do
       post :resend_invitation
-    end
-  end
-
-  resources :users, except: [ :show ] do
-    member do
       post :generate_api_token
       delete :revoke_api_token
     end
   end
+
+  resources :users, except: [ :show ]
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

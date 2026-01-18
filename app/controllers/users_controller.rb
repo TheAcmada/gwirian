@@ -49,34 +49,6 @@ class UsersController < ApplicationController
     redirect_to root_path, notice: "Your account has been deleted. We're sorry to see you go!"
   end
 
-  def generate_api_token
-    @user = Current.user
-    expires_in_days = params[:expires_in].present? ? params[:expires_in].to_i : 30
-    # Ensure expires_in_days is between 1 and 365 days
-    expires_in_days = [ [ expires_in_days, 1 ].max, 365 ].min
-    expires_in = expires_in_days.days
-    @user.generate_api_token(expires_in: expires_in)
-    @user.reload
-
-    if request.headers["HX-Request"]
-      render partial: "api_token", locals: { user: @user }
-    else
-      redirect_to edit_user_path, notice: "API token generated successfully"
-    end
-  end
-
-  def revoke_api_token
-    @user = Current.user
-    @user.revoke_api_token
-    @user.reload
-
-    if request.headers["HX-Request"]
-      render partial: "api_token", locals: { user: @user }
-    else
-      redirect_to edit_user_path, notice: "API token revoked successfully"
-    end
-  end
-
   private
 
   def spam_detected?

@@ -8,7 +8,6 @@ class User < ApplicationRecord
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
   validates :email_address, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }, uniqueness: true
-  validates :api_token, uniqueness: true, allow_nil: true
 
   def projects
     Project.joins(:project_members)
@@ -20,23 +19,6 @@ class User < ApplicationRecord
     magic_links.create!.tap do |magic_link|
       MagicLinkMailer.sign_in_instructions(magic_link).deliver_later
     end
-  end
-
-  def generate_api_token(expires_in: 30.days)
-    loop do
-      self.api_token = SecureRandom.urlsafe_base64(32)
-      break unless User.exists?(api_token: api_token)
-    end
-    self.api_token_expires_at = Time.current + expires_in
-    save!
-  end
-
-  def api_token_valid?
-    api_token.present? && api_token_expires_at.present? && api_token_expires_at > Time.current
-  end
-
-  def revoke_api_token
-    update!(api_token: nil, api_token_expires_at: nil)
   end
 
   def pending_workspace_invitations

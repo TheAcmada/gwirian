@@ -140,7 +140,67 @@ class WorkspaceMembersController < ApplicationController
     end
   end
 
+  def generate_api_token
+    workspace_member = find_workspace_member_for_current_user
+    unless workspace_member
+      if request.headers["HX-Request"]
+        render html: "<div class='alert alert-danger'>You must be a member of this workspace to generate an API token</div>".html_safe
+      else
+        redirect_path = Current.workspace ? workspace_members_path : edit_user_path
+        redirect_to redirect_path, alert: "You must be a member of this workspace to generate an API token"
+      end
+      return
+    end
+
+    expires_in_days = params[:expires_in].present? ? params[:expires_in].to_i : 30
+    expires_in_days = [[expires_in_days, 1].max, 365].min
+    expires_in = expires_in_days.days
+    workspace_member.generate_api_token(expires_in: expires_in)
+    workspace_member.reload
+
+    if request.headers["HX-Request"]
+      render WorkspaceMembers::ApiTokenComponent.new(workspace_member: workspace_member), layout: false
+    else
+      redirect_path = Current.workspace ? workspace_members_path : edit_user_path
+      redirect_to redirect_path, notice: "API token generated successfully"
+    end
+  end
+
+  def revoke_api_token
+    workspace_member = find_workspace_member_for_current_user
+    unless workspace_member
+      if request.headers["HX-Request"]
+        render html: "<div class='alert alert-danger'>You must be a member of this workspace to revoke an API token</div>".html_safe
+      else
+        redirect_path = Current.workspace ? workspace_members_path : edit_user_path
+        redirect_to redirect_path, alert: "You must be a member of this workspace to revoke an API token"
+      end
+      return
+    end
+
+    workspace_member.revoke_api_token
+    workspace_member.reload
+
+    if request.headers["HX-Request"]
+      render WorkspaceMembers::ApiTokenComponent.new(workspace_member: workspace_member), layout: false
+    else
+      redirect_path = Current.workspace ? workspace_members_path : edit_user_path
+      redirect_to redirect_path, notice: "API token revoked successfully"
+    end
+  end
+
   private
+
+  def find_workspace_member_for_current_user
+    if Current.workspace
+      # Called from workspace-scoped context
+      Current.workspace.workspace_members.find_by(user: Current.user)
+    elsif params[:id]
+      # Called from profile page with workspace_member ID
+      workspace_member = WorkspaceMember.find_by(id: params[:id], user: Current.user)
+      workspace_member if workspace_member&.current_member?
+    end
+  end
 
   def render_alert(message)
     if request.headers["HX-Request"]

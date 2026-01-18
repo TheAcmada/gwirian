@@ -6,9 +6,10 @@ This guide explains how to configure an MCP client to connect to the Gwirian MCP
 
 1. **Get Your API Token**
    - Log in to your Gwirian account
-   - Navigate to your user settings
-   - Generate an API token (if you don't have one)
+   - Navigate to your workspace settings (or workspace members page)
+   - Generate an API token for the workspace (if you don't have one)
    - Copy the API token - you'll need it for client configuration
+   - **Important**: API tokens are workspace-scoped. Each workspace has its own API token, and the token determines which workspace context the MCP tools will operate in. You can have different tokens for different workspaces.
 
 2. **Server URL**
    - Development: `http://localhost:3000/mcp`
@@ -53,11 +54,13 @@ To configure the Gwirian MCP server in Cursor, add it to your Cursor MCP setting
 }
 ```
 
-**Note**: Make sure to replace `YOUR_API_TOKEN_HERE` with your actual API token from your Gwirian account settings.
+**Note**: Make sure to replace `YOUR_API_TOKEN_HERE` with your actual API token from your workspace settings. Remember that API tokens are workspace-scoped, so the token you use will determine which workspace the MCP tools access.
 
 ## Authentication
 
-The MCP server uses API token authentication. Include the token in the `Authorization` header:
+The MCP server uses workspace-scoped API token authentication. The API token is associated with a specific workspace membership, and all MCP tool operations will be performed within that workspace's context.
+
+Include the token in the `Authorization` header:
 
 ```
 Authorization: Bearer YOUR_API_TOKEN_HERE
@@ -69,12 +72,14 @@ Alternatively, you can pass it as a query parameter (though header is preferred)
 ?api_token=YOUR_API_TOKEN_HERE
 ```
 
+**Workspace Context**: When you authenticate with an API token, the MCP server automatically sets the workspace context based on the workspace associated with that token. All project operations will be scoped to that workspace. If you need to access multiple workspaces, you'll need to use different API tokens for each workspace.
+
 ## Available Tools
 
-Once connected, you can use the following tools:
+Once connected, you can use the following tools. All operations are scoped to the workspace associated with your API token:
 
 ### Projects (Read-only)
-- `list_projects` - List all accessible projects
+- `list_projects` - List all accessible projects in the workspace
 - `get_project` - Get project details with executions and team members
 
 ### Features (Full CRUD)
@@ -159,6 +164,8 @@ curl -X POST http://localhost:3000/mcp \
 - Ensure your API token is valid and not expired
 - Check that the token is included in the `Authorization` header with the `Bearer ` prefix
 - Verify the token hasn't been revoked
+- Confirm that the API token belongs to a valid workspace membership
+- If you're a member of multiple workspaces, make sure you're using the correct token for the workspace you want to access
 
 ### Connection Errors
 - Verify the server URL is correct

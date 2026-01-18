@@ -7,6 +7,17 @@
   </div>
 
   <div class="space-y-8">
+    <!-- API Token Section -->
+    <% if Current.user %>
+      <% current_member = @workspace.workspace_members.find_by(user: Current.user) %>
+      <% if current_member %>
+        <div>
+          <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">API Token</h2>
+          <%= render WorkspaceMembers::ApiTokenComponent.new(workspace_member: current_member) %>
+        </div>
+      <% end %>
+    <% end %>
+
     <!-- Workspace Members Management -->
     <div>
       <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Team Members</h2>
