@@ -1,0 +1,30 @@
+<% content_for :title, "Workspace Members" %>
+<div class="max-w-3xl mx-auto px-4 py-12">
+  <!-- Page Header -->
+  <div class="mb-8">
+    <h1 class="text-4xl font-bold tracking-tight mb-2 text-stone-800 dark:text-white/90" style="letter-spacing: -0.02em;">Workspace Members</h1>
+    <p class="text-stone-500 dark:text-white/60">Manage workspace team members and invitations</p>
+  </div>
+
+  <div class="space-y-8">
+    <!-- Workspace Members Management -->
+    <div>
+      <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Team Members</h2>
+      <%= render WorkspaceMembers::ListComponent.new(workspace: @workspace, current_user: Current.user) %>
+      <% if can? :create, WorkspaceMember %>
+        <form hx-post="<%= workspace_members_path %>"
+              hx-target="#workspace-members-<%= @workspace.id %>"
+              hx-swap="outerHTML"
+              class="flex gap-2 items-center mt-4">
+          <input type="email" name="workspace_member[email]" class="input flex-1" placeholder="Email address" required>
+          <select name="workspace_member[role]" class="input w-36">
+            <option value="administrator">Admin</option>
+            <option value="editor">Editor</option>
+            <option value="viewer" selected>Viewer</option>
+          </select>
+          <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+      <% end %>
+    </div>
+  </div>
+</div>

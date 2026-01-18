@@ -49,6 +49,16 @@
             <p class="text-xs text-stone-400 dark:text-white/40"><%= Current.user&.email_address %></p>
           <% end %>
 
+          <!-- Invite and manage members -->
+          <% if Current.workspace && Current.workspace.admin?(Current.user) %>
+            <%= link_to workspace_members_path, class: "block px-3 py-1.5 text-sm text-stone-700 dark:text-white/90 transition-colors cursor-pointer flex items-center hover:bg-stone-100 dark:hover:bg-white/5 border-b border-stone-100 dark:border-white/10" do %>
+              <svg class="w-4 h-4 mr-2 text-stone-400 dark:text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+              </svg>
+              Invite and manage members
+            <% end %>
+          <% end %>
+
           <!-- Switch workspace (click to toggle) -->
           <div class="py-1 border-b border-stone-100 dark:border-white/10">
             <button
@@ -112,9 +122,15 @@
 
               <!-- Create or join workspace link -->
               <div class="border-t border-stone-100 dark:border-white/10 py-1">
+                <% pending_count = Current.user&.pending_workspace_invitations&.count || 0 %>
                 <%= link_to new_workspace_path,
-                    class: "flex items-center px-3 py-1.5 text-sm text-stone-700 dark:text-white/90 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors" do %>
+                    class: "flex items-center justify-between px-3 py-1.5 text-sm text-stone-700 dark:text-white/90 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors" do %>
                   <span>Create or join a workspace</span>
+                  <% if pending_count > 0 %>
+                    <span class="ml-2 px-1.5 py-0.5 text-xs font-medium rounded bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
+                      <%= pending_count %>
+                    </span>
+                  <% end %>
                 <% end %>
               </div>
             </div>

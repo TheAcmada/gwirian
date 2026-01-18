@@ -20,6 +20,44 @@ class Workspace < ApplicationRecord
     slug
   end
 
+  # Returns the user's role in the workspace, or nil if not a member
+  # This method is optimized to make a single query
+  # @param [User] user
+  # @return [String, nil] One of: "administrator", "editor", "viewer", or nil
+  def user_role(user)
+    return nil unless user
+    @_user_roles ||= {}
+    return @_user_roles[user.id] if @_user_roles.key?(user.id)
+
+    member = workspace_members.current_member.find_by(user_id: user.id)
+    role = member&.role
+    @_user_roles[user.id] = role
+    role
+  end
+
+  # Returns true if the user is an administrator of the workspace
+  # @param [User] user
+  # @return [Boolean]
+  def admin?(user)
+    user_role(user) == "administrator"
+  end
+
+  # Returns true if the user is an editor of the workspace
+  # @param [User] user
+  # @return [Boolean]
+  def editor?(user)
+    role = user_role(user)
+    role == "editor" || role == "administrator"
+  end
+
+  # Returns true if the user is a viewer of the workspace
+  # @param [User] user
+  # @return [Boolean]
+  def viewer?(user)
+    role = user_role(user)
+    %w[viewer editor administrator].include?(role)
+  end
+
   private
 
   def generate_slug

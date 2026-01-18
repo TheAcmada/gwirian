@@ -36,10 +36,13 @@ class Ability
     initialize_scenario_ability(user)
     initialize_scenario_execution_ability(user)
     initialize_step_ability(user)
+    initialize_workspace_ability(user)
   end
 
   def initialize_project_ability(user)
-    can :create, Project
+    if Current.workspace && (Current.workspace.editor?(user) || Current.workspace.admin?(user))
+      can :create, Project
+    end
 
     can :read, Project do |project|
       project.member?(user)
@@ -107,6 +110,18 @@ class Ability
 
     can [ :update, :destroy ], Step do |step|
       step.scenario.feature.project.editor?(user) || step.scenario.feature.project.admin?(user)
+    end
+  end
+
+  def initialize_workspace_ability(user)
+    return unless Current.workspace
+
+    can [ :index, :create ], WorkspaceMember do
+      Current.workspace.admin?(user)
+    end
+
+    can [ :update, :destroy, :resend_invitation ], WorkspaceMember do |member|
+      Current.workspace.admin?(user) && member.user_id != user.id
     end
   end
 end

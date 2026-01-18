@@ -62,6 +62,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :workspace_members, only: [ :index, :create, :update, :destroy ] do
+    member do
+      post :resend_invitation
+    end
+  end
+
   resources :users, except: [ :show ] do
     member do
       post :generate_api_token

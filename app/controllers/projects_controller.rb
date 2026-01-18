@@ -39,6 +39,10 @@ class ProjectsController < ApplicationController
   end
 
   def new
+    unless can? :create, Project
+      redirect_to projects_path, alert: "You are not authorized to create a project"
+      return
+    end
     @project = Project.new
   end
 

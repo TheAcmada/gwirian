@@ -1,4 +1,125 @@
 class WorkspaceMembersController < ApplicationController
+  before_action :require_workspace, only: [ :index, :create, :update, :destroy, :resend_invitation ]
+
+  def index
+    unless can? :index, WorkspaceMember
+      redirect_to projects_path, alert: "You are not authorized to manage workspace members"
+      return
+    end
+
+    @workspace = Current.workspace
+  end
+
+  def create
+    unless can? :create, WorkspaceMember
+      render_alert("You are not authorized to invite members to this workspace")
+      return
+    end
+
+    email = workspace_member_params[:email]&.strip&.downcase
+    unless email.present?
+      render_alert("Email is required")
+      return
+    end
+
+    # Check if member already exists
+    user = User.find_by(email_address: email)
+    if user && Current.workspace.workspace_members.exists?(user_id: user.id)
+      alert = "This user is already a member of the workspace"
+      if request.headers["HX-Request"]
+        render_component(alert: alert)
+      else
+        redirect_to workspace_members_path, alert: alert
+      end
+      return
+    end
+
+    # Find or create user
+    user ||= User.find_or_create_by!(email_address: email)
+
+    # Create workspace member
+    role = workspace_member_params[:role].presence || "viewer"
+    role = "viewer" unless %w[administrator editor viewer].include?(role)
+
+    workspace_member = Current.workspace.workspace_members.build(
+      user: user,
+      role: role,
+      status: "invited"
+    )
+
+    if workspace_member.save
+      workspace_member.send_invitation_email
+      notice = "Invitation sent to #{email}"
+      if request.headers["HX-Request"]
+        render_component(notice: notice)
+      else
+        redirect_to workspace_members_path, notice: notice
+      end
+    else
+      render_alert(workspace_member.errors.full_messages.to_sentence)
+    end
+  end
+
+  def update
+    workspace_member = Current.workspace.workspace_members.find_by(id: params[:id])
+    unless workspace_member && can?(:update, workspace_member)
+      render_alert("You are not authorized to update this member")
+      return
+    end
+
+    if workspace_member.update(workspace_member_update_params)
+      notice = "Member role updated successfully"
+      if request.headers["HX-Request"]
+        render_tbody(notice: notice)
+      else
+        redirect_to workspace_members_path, notice: notice
+      end
+    else
+      render_alert("Could not update the member")
+    end
+  end
+
+  def destroy
+    workspace_member = Current.workspace.workspace_members.find_by(id: params[:id])
+    unless workspace_member && can?(:destroy, workspace_member)
+      render_alert("You are not authorized to remove this member")
+      return
+    end
+
+    if workspace_member.destroy
+      notice = "Member removed successfully"
+      if request.headers["HX-Request"]
+        render_tbody(notice: notice)
+      else
+        redirect_to workspace_members_path, notice: notice
+      end
+    else
+      render_alert("Could not remove the member")
+    end
+  end
+
+  def resend_invitation
+    workspace_member = Current.workspace.workspace_members.find_by(id: params[:id])
+    unless workspace_member && can?(:resend_invitation, workspace_member)
+      render_alert("You are not authorized to resend invitations")
+      return
+    end
+
+    unless workspace_member.invited?
+      render_alert("This member has already accepted the invitation")
+      return
+    end
+
+    workspace_member.update(last_invitation_sent_at: Time.current)
+    workspace_member.send_invitation_email
+    notice = "Invitation resent to #{workspace_member.user.email_address}"
+    if request.headers["HX-Request"]
+      render_tbody(notice: notice)
+    else
+      redirect_to workspace_members_path, notice: notice
+    end
+  end
+
   def accept
     workspace_member = WorkspaceMember.find_by(id: params[:id], user: Current.user)
 
@@ -21,7 +142,41 @@ class WorkspaceMembersController < ApplicationController
 
   private
 
+  def render_alert(message)
+    if request.headers["HX-Request"]
+      render_component(alert: message)
+    else
+      redirect_to workspace_members_path, alert: message
+    end
+  end
+
+  def render_component(notice: nil, alert: nil)
+    component = WorkspaceMembers::ListComponent.new(workspace: Current.workspace, current_user: Current.user, notice: notice, alert: alert)
+    render component, layout: false
+  end
+
+  def render_tbody(notice: nil)
+    component = WorkspaceMembers::ListComponent.new(workspace: Current.workspace, current_user: Current.user)
+    html = render_to_string(partial: "workspace_members/tbody", locals: { 
+      workspace: Current.workspace, 
+      members: component.members, 
+      component: component 
+    })
+    if notice.present?
+      html += render_to_string(partial: "shared/flash_notice", locals: { notice: notice })
+    end
+    render html: html.html_safe
+  end
+
   def workspace_projects_path(workspace)
     "/#{workspace.slug}/projects"
+  end
+
+  def workspace_member_params
+    params.require(:workspace_member).permit(:email, :role)
+  end
+
+  def workspace_member_update_params
+    params.require(:workspace_member).permit(:role)
   end
 end

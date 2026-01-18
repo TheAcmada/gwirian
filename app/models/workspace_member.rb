@@ -6,7 +6,7 @@ class WorkspaceMember < ApplicationRecord
   validates :status, presence: true, inclusion: { in: %w[invited current_member left_workspace] }
   validates :user_id, uniqueness: { scope: :workspace_id }
 
-  scope :by_email, -> { order(:email) }
+  scope :by_email, -> { joins(:user).order("users.email_address") }
   scope :administrators, -> { where(role: "administrator") }
   scope :editors, -> { where(role: "editor") }
   scope :viewers, -> { where(role: "viewer") }
