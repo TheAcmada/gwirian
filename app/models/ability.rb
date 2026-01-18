@@ -52,7 +52,7 @@ class Ability
       project.admin?(user)
     end
 
-    can [ :remove, :update, :invite ], ProjectMember do |member|
+    can [ :remove, :update ], ProjectMember do |member|
       member.project.admin?(user) && member.email != user.email_address
     end
   end

@@ -12,7 +12,7 @@ class User < ApplicationRecord
 
   def projects
     Project.joins(:project_members)
-        .where(project_members: { email: email_address, invitation_accepted: true })
+        .where(project_members: { email: email_address })
         .order(:name)
   end
 

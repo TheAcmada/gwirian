@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_11_193811) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_18_153924) do
   create_table "features", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -46,16 +46,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_11_193811) do
     t.integer "project_id", null: false
     t.string "email", null: false
     t.string "role", default: "guest", null: false
-    t.boolean "invitation_accepted", default: false, null: false
-    t.string "project_members"
-    t.string "invitation_token"
-    t.datetime "last_invitation_sent_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.datetime "invitation_token_expires_at"
     t.index ["email"], name: "index_project_members_on_email"
-    t.index ["invitation_token"], name: "index_project_members_on_invitation_token", unique: true
-    t.index ["invitation_token_expires_at"], name: "index_project_members_on_invitation_token_expires_at"
     t.index ["project_id", "email"], name: "index_project_members_on_project_id_and_email", unique: true
     t.index ["project_id"], name: "index_project_members_on_project_id"
   end

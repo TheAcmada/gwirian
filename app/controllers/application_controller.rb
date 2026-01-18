@@ -51,7 +51,7 @@ class ApplicationController < ActionController::Base
 
     Current.workspace.projects
       .joins(:project_members)
-      .where(project_members: { email: Current.user.email_address, invitation_accepted: true })
+      .where(project_members: { email: Current.user.email_address })
       .distinct
   end
   helper_method :workspace_projects

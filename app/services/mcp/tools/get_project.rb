@@ -66,8 +66,7 @@ module Mcp
           team_members = project.project_members.map do |member|
             {
               email: member.email,
-              role: member.role,
-              invitation_accepted: member.invitation_accepted
+              role: member.role
             }
           end
 

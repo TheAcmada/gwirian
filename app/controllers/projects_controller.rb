@@ -54,7 +54,7 @@ class ProjectsController < ApplicationController
 
     @project = Current.workspace.projects.new(project_params)
     if @project.save
-      @project.project_members.create!(email: Current.user.email_address, role: "administrator", invitation_accepted: true)
+      @project.project_members.create!(email: Current.user.email_address, role: "administrator")
       redirect_to project_path(@project), notice: "The project has been created successfully"
     else
       render :new, status: :unprocessable_entity
@@ -93,8 +93,22 @@ class ProjectsController < ApplicationController
       return
     end
 
+    email = member_params[:email]&.strip&.downcase
+
+    # Check if the email belongs to a current workspace member
+    user = User.find_by(email_address: email)
+    unless user && Current.workspace.workspace_members.current_member.exists?(user_id: user.id)
+      alert = "This user is not a member of the workspace"
+      if request.headers["HX-Request"]
+        render partial: "projects/project_members", locals: { project: @project, alert: alert }
+      else
+        redirect_to projects_path, alert: alert
+      end
+      return
+    end
+
     # Check if the email is already in the project
-    if @project.project_members.exists?(email: member_params[:email])
+    if @project.project_members.exists?(email: email)
       alert = "The member is already in the project"
       if request.headers["HX-Request"]
         render partial: "projects/project_members", locals: { project: @project, alert: alert }

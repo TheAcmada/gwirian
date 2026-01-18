@@ -27,7 +27,6 @@ end
 # Add admin as project administrator
 ProjectMember.find_or_create_by!(project: project1, email: admin_user.email_address) do |pm|
   pm.role = "administrator"
-  pm.invitation_accepted = true
 end
 
 # Project 2: Content Management System
@@ -38,7 +37,6 @@ end
 # Add admin as project administrator
 ProjectMember.find_or_create_by!(project: project2, email: admin_user.email_address) do |pm|
   pm.role = "administrator"
-  pm.invitation_accepted = true
 end
 
 # Project 3: Mobile Banking App
@@ -49,7 +47,6 @@ end
 # Add admin as project administrator
 ProjectMember.find_or_create_by!(project: project3, email: admin_user.email_address) do |pm|
   pm.role = "administrator"
-  pm.invitation_accepted = true
 end
 
 puts "Creating features..."
@@ -149,7 +146,6 @@ end
 # Add admin as project administrator
 ProjectMember.find_or_create_by!(project: project4, email: admin_user.email_address) do |pm|
   pm.role = "administrator"
-  pm.invitation_accepted = true
 end
 
 # Features for Task Management System
