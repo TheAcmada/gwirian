@@ -87,9 +87,9 @@
       <%# Compact metrics %>
       <div class="flex items-center justify-between text-xs text-stone-500 dark:text-white/50">
         <div class="flex items-center gap-3">
-          <span><span class="font-medium text-stone-700 dark:text-white/70"><%= features_count %></span> features</span>
-          <span><span class="font-medium text-stone-700 dark:text-white/70"><%= scenarios_count %></span> scenarios</span>
-          <span><span class="font-medium text-stone-700 dark:text-white/70"><%= members_count %></span> members</span>
+          <span><span class="font-medium text-stone-700 dark:text-white/70"><%= features_count %></span> <%= "feature".pluralize(features_count) %></span>
+          <span><span class="font-medium text-stone-700 dark:text-white/70"><%= scenarios_count %></span> <%= "scenario".pluralize(scenarios_count) %></span>
+          <span><span class="font-medium text-stone-700 dark:text-white/70"><%= members_count %></span> <%= "member".pluralize(members_count) %></span>
         </div>
         <% if has_executions? %>
           <div class="flex items-center gap-2">
