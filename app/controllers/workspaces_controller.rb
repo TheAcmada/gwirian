@@ -39,27 +39,34 @@ class WorkspacesController < ApplicationController
     end
   end
 
+  def destroy
+    workspace = Workspace.find_by!(slug: params[:id])
+    unless can?(:destroy, workspace)
+      redirect_to root_path, alert: "You are not authorized to delete this workspace"
+      return
+    end
+
+    workspace_name = workspace.name
+    workspace.destroy
+    redirect_to_default_workspace_or_root(notice: "Workspace '#{workspace_name}' has been deleted.")
+  end
+
   private
 
   def workspace_params
     params.require(:workspace).permit(:name, :description, :slug)
   end
 
-  def default_workspace_for_user
-    return nil unless Current.user
-
-    # Find last accessed workspace (only current members)
-    last_accessed = Current.user.workspace_members
-                                .current_member
-                                .where.not(last_accessed_at: nil)
-                                .order(last_accessed_at: :desc)
-                                .first&.workspace
-
-    # Fall back to first current member workspace
-    last_accessed || Current.user.workspace_members.current_member.first&.workspace
-  end
-
   def workspace_projects_path(workspace)
     "/#{workspace.slug}/projects"
+  end
+
+  def redirect_to_default_workspace_or_root(notice:)
+    workspace = default_workspace_for_user
+    if workspace
+      redirect_to workspace_projects_path(workspace), notice: notice
+    else
+      redirect_to root_path, notice: notice
+    end
   end
 end

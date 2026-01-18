@@ -140,6 +140,27 @@ class WorkspaceMembersController < ApplicationController
     end
   end
 
+  def leave
+    workspace_member = WorkspaceMember.find_by(id: params[:id], user: Current.user)
+    unless workspace_member&.current_member?
+      redirect_to root_path, alert: "Unable to leave workspace."
+      return
+    end
+
+    if workspace_member.workspace.admin?(Current.user) && workspace_member.workspace.remaining_admin_count_after(Current.user).zero?
+      redirect_to edit_user_path(Current.user), alert: "You are the last administrator of this workspace. Delete the workspace instead."
+      return
+    end
+
+    unless can?(:leave, workspace_member)
+      redirect_to root_path, alert: "Unable to leave workspace."
+      return
+    end
+
+    workspace_member.leave!
+    redirect_to_default_workspace_or_root(notice: "You have left #{workspace_member.workspace.name}.")
+  end
+
   def generate_api_token
     workspace_member = find_workspace_member_for_current_user
     unless workspace_member
@@ -230,6 +251,15 @@ class WorkspaceMembersController < ApplicationController
 
   def workspace_projects_path(workspace)
     "/#{workspace.slug}/projects"
+  end
+
+  def redirect_to_default_workspace_or_root(notice:)
+    workspace = default_workspace_for_user
+    if workspace
+      redirect_to workspace_projects_path(workspace), notice: notice
+    else
+      redirect_to root_path, notice: notice
+    end
   end
 
   def workspace_member_params

@@ -35,24 +35,51 @@
       </div>
     <% end %>
 
-    <!-- Danger Zone -->
-    <div class="pt-6 border-t border-red-200 dark:border-red-900/30">
-      <div class="bg-red-50 dark:bg-red-900/10 rounded-lg p-6">
-        <h2 class="text-sm font-medium mb-4 text-red-600 dark:text-red-400">Danger Zone</h2>
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-red-600 dark:text-red-400">Delete account</p>
-            <p class="text-xs text-stone-400 dark:text-white/40">This action cannot be undone</p>
+    <!-- Workspace Access -->
+    <% if Current.workspace %>
+      <% current_workspace_member = @user.workspace_members.find_by(workspace: Current.workspace) %>
+      <% if current_workspace_member&.current_member? %>
+        <% is_last_admin = Current.workspace.admin?(@user) && Current.workspace.remaining_admin_count_after(@user).zero? %>
+        <div class="pt-6 border-t border-red-200 dark:border-red-900/30">
+          <div class="bg-red-50 dark:bg-red-900/10 rounded-lg p-6">
+            <h2 class="text-sm font-medium mb-4 text-red-600 dark:text-red-400">Workspace access</h2>
+            <p class="text-xs text-stone-500 dark:text-white/60 mb-4">
+              Manage your access to the <strong><%= Current.workspace.name %></strong> workspace.
+              You can leave if at least one administrator will remain. If you are the last administrator, you can delete the workspace instead.
+            </p>
+
+            <% if is_last_admin %>
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-medium text-red-600 dark:text-red-400">Delete workspace</p>
+                  <p class="text-xs text-stone-400 dark:text-white/40">This action cannot be undone</p>
+                </div>
+                <% delete_confirmation_message = "Are you absolutely sure? This will permanently delete the workspace '#{Current.workspace.name}' and all its projects, features, and data. This action cannot be undone." %>
+                <%= button_to "Delete",
+                              workspace_path(Current.workspace),
+                              method: :delete,
+                              "x-data": "{}",
+                              "@click.prevent": "showConfirmation(#{delete_confirmation_message.to_json}).then(result => { if (result.isConfirmed) $el.closest('form').submit() })",
+                              class: "btn btn-danger" %>
+              </div>
+            <% else %>
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-medium text-red-600 dark:text-red-400">Leave workspace</p>
+                  <p class="text-xs text-stone-400 dark:text-white/40">You can rejoin later if invited</p>
+                </div>
+                <% leave_confirmation_message = "Are you sure you want to leave this workspace? You can rejoin later if invited." %>
+                <%= button_to "Leave",
+                              leave_workspace_path(current_workspace_member),
+                              method: :patch,
+                              "x-data": "{}",
+                              "@click.prevent": "showConfirmation(#{leave_confirmation_message.to_json}).then(result => { if (result.isConfirmed) $el.closest('form').submit() })",
+                              class: "btn btn-danger" %>
+              </div>
+            <% end %>
           </div>
-          <% delete_confirmation_message = "Are you absolutely sure? This will permanently delete your account and all your data. This action cannot be undone." %>
-          <%= button_to "Delete",
-                        user_path(@user),
-                        method: :delete,
-                        "x-data": "{}",
-                        "@click.prevent": "showConfirmation(\"#{delete_confirmation_message}\").then(result => { if (result.isConfirmed) $el.closest('form').submit() })",
-                        class: "btn btn-danger" %>
         </div>
-      </div>
-    </div>
+      <% end %>
+    <% end %>
   </div>
 </div>

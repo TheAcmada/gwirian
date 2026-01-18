@@ -114,6 +114,18 @@ class Ability
   end
 
   def initialize_workspace_ability(user)
+    can :leave, WorkspaceMember do |member|
+      next false unless member.user_id == user.id
+      next false unless member.current_member?
+
+      # Non-admins can always leave. Admins can only leave if another admin remains.
+      !member.workspace.admin?(user) || member.workspace.remaining_admin_count_after(user) > 0
+    end
+
+    can :destroy, Workspace do |workspace|
+      last_admin_of_workspace?(workspace, user)
+    end
+
     return unless Current.workspace
 
     can [ :index, :create ], WorkspaceMember do
@@ -123,5 +135,11 @@ class Ability
     can [ :update, :destroy, :resend_invitation ], WorkspaceMember do |member|
       Current.workspace.admin?(user) && member.user_id != user.id
     end
+  end
+
+  private
+
+  def last_admin_of_workspace?(workspace, user)
+    workspace.admin?(user) && workspace.remaining_admin_count_after(user).zero?
   end
 end

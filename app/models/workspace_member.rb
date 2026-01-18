@@ -43,6 +43,12 @@ class WorkspaceMember < ApplicationRecord
     true
   end
 
+  def leave!
+    return false unless current_member?
+    update!(status: "left_workspace")
+    true
+  end
+
   def generate_api_token(expires_in: 30.days)
     loop do
       self.api_token = SecureRandom.urlsafe_base64(32)

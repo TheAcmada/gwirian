@@ -43,12 +43,6 @@ class UsersController < ApplicationController
     end
   end
 
-  def destroy
-    @user = Current.user
-    @user.destroy
-    redirect_to root_path, notice: "Your account has been deleted. We're sorry to see you go!"
-  end
-
   private
 
   def spam_detected?

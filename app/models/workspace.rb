@@ -58,6 +58,21 @@ class Workspace < ApplicationRecord
     %w[viewer editor administrator].include?(role)
   end
 
+  # Returns the number of *other* current administrators that would remain
+  # after the given user leaves the workspace.
+  #
+  # @param [User] user
+  # @return [Integer]
+  def remaining_admin_count_after(user)
+    return 0 unless user
+
+    workspace_members
+      .current_member
+      .administrators
+      .where.not(user_id: user.id)
+      .count
+  end
+
   private
 
   def generate_slug
