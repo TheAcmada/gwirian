@@ -1,3 +1,5 @@
+require_relative "../../rails_ext/active_record_tasks_database_tasks"
+
 module Gwirian
   module Saas
     class Engine < ::Rails::Engine
@@ -33,7 +35,19 @@ module Gwirian
         end
       end
 
+      initializer "gwirian.saas.log_mode" do
+        Rails.logger.info "Gwirian SaaS mode enabled - Plan limits are active"
+      end
+
       config.to_prepare do
+        ::Workspace.include Workspace::Limited
+        ::ProjectsController.include Project::LimitedCreation
+        ::FeaturesController.include Feature::LimitedCreation
+        ::ScenariosController.include Scenario::LimitedCreation
+        ::WorkspaceMembersController.include WorkspaceMember::LimitedCreation
+        # API controllers
+        ::Api::V1::FeaturesController.include Feature::LimitedCreation
+        ::Api::V1::ScenariosController.include Scenario::LimitedCreation
       end
     end
   end

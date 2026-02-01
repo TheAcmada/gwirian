@@ -1,0 +1,68 @@
+<%
+  gem_path = Gem::Specification.find_by_name("gwirian-saas").gem_dir
+%>
+
+default: &default
+  adapter: sqlite3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+
+development:
+  primary:
+    <<: *default
+    database: storage/development.sqlite3
+  cache:
+    <<: *default
+    database: storage/development_cache.sqlite3
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *default
+    database: storage/development_queue.sqlite3
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *default
+    database: storage/development_cable.sqlite3
+    migrations_paths: db/cable_migrate
+  saas:
+    <<: *default
+    database: storage/development_saas.sqlite3
+    migrations_paths: <%= File.join(gem_path, "db", "migrate") %>
+    schema_dump: <%= File.join(gem_path, "db", "saas_schema.rb") %>
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test:
+  primary:
+    <<: *default
+    database: storage/test.sqlite3
+  saas:
+    <<: *default
+    database: storage/test_saas.sqlite3
+    migrations_paths: <%= File.join(gem_path, "db", "migrate") %>
+    schema_dump: <%= File.join(gem_path, "db", "saas_schema.rb") %>
+
+
+# Store production database in the storage/ directory, which by default
+# is mounted as a persistent Docker volume in config/deploy.yml.
+production:
+  primary:
+    <<: *default
+    database: storage/production.sqlite3
+  cache:
+    <<: *default
+    database: storage/production_cache.sqlite3
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *default
+    database: storage/production_queue.sqlite3
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *default
+    database: storage/production_cable.sqlite3
+    migrations_paths: db/cable_migrate
+  saas:
+    <<: *default
+    database: storage/production_saas.sqlite3
+    migrations_paths: <%= File.join(gem_path, "db", "migrate") %>
+    schema_dump: <%= File.join(gem_path, "db", "saas_schema.rb") %>

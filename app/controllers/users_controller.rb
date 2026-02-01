@@ -37,7 +37,7 @@ class UsersController < ApplicationController
     @user = Current.user
 
     if @user.update(user_params)
-      redirect_to edit_user_path(@user), notice: "Your profile has been updated successfully!"
+      redirect_to edit_user_path(@user), notice: "Your account has been updated successfully!"
     else
       render :edit, status: :unprocessable_entity
     end

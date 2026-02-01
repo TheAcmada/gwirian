@@ -174,7 +174,7 @@ class WorkspaceMembersController < ApplicationController
     end
 
     expires_in_days = params[:expires_in].present? ? params[:expires_in].to_i : 30
-    expires_in_days = [[expires_in_days, 1].max, 365].min
+    expires_in_days = [ [ expires_in_days, 1 ].max, 365 ].min
     expires_in = expires_in_days.days
     workspace_member.generate_api_token(expires_in: expires_in)
     workspace_member.reload
@@ -217,7 +217,7 @@ class WorkspaceMembersController < ApplicationController
       # Called from workspace-scoped context
       Current.workspace.workspace_members.find_by(user: Current.user)
     elsif params[:id]
-      # Called from profile page with workspace_member ID
+      # Called from account page with workspace_member ID
       workspace_member = WorkspaceMember.find_by(id: params[:id], user: Current.user)
       workspace_member if workspace_member&.current_member?
     end
@@ -238,10 +238,10 @@ class WorkspaceMembersController < ApplicationController
 
   def render_tbody(notice: nil)
     component = WorkspaceMembers::ListComponent.new(workspace: Current.workspace, current_user: Current.user)
-    html = render_to_string(partial: "workspace_members/tbody", locals: { 
-      workspace: Current.workspace, 
-      members: component.members, 
-      component: component 
+    html = render_to_string(partial: "workspace_members/tbody", locals: {
+      workspace: Current.workspace,
+      members: component.members,
+      component: component
     })
     if notice.present?
       html += render_to_string(partial: "shared/flash_notice", locals: { notice: notice })
