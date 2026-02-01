@@ -6,7 +6,7 @@ class Plan
       projects_limit: 1,
       features_limit: 5,
       scenarios_limit: 20,
-      members_limit: 1
+      members_limit: 3
     },
     starter: {
       key: "starter",
