@@ -9,10 +9,19 @@
   });
 
   document.body.addEventListener("htmx:responseError", function(event) {
+    console.log(event.detail);
     if (event.detail.xhr.status === 422) {
       event.preventDefault();
       let target = event.detail.target;
       target.innerHTML = event.detail.xhr.responseText;
+    }
+    else if (event.detail.xhr.status === 403) {
+      event.preventDefault();
+      const html = event.detail.xhr.responseText;
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+      const message = doc.body.textContent?.trim() || "Oh no! You are not allowed to do that.";
+      showError(message);
     }
     else if (event.detail.xhr.status === 500) {
       event.preventDefault();
