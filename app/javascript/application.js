@@ -9,7 +9,6 @@
   });
 
   document.body.addEventListener("htmx:responseError", function(event) {
-    console.log(event.detail);
     if (event.detail.xhr.status === 422) {
       event.preventDefault();
       let target = event.detail.target;
