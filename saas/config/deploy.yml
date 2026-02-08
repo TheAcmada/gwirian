@@ -2,12 +2,18 @@
 service: gwirian
 
 # Name of the container image.
-image: <%= ENV.fetch("DOCKER_REGISTRY_IMAGE") %>
+image: frocher/gwirian
+
+# Paths
+asset_path: /rails/public/assets
+hooks_path: <%= File.join(Gem::Specification.find_by_name("gwirian-saas").gem_dir, ".kamal", "hooks") %>
+secrets_path: <%= File.join(Gem::Specification.find_by_name("gwirian-saas").gem_dir, ".kamal/secrets") %>
+
 
 # Deploy to these servers.
 servers:
   web:
-    - <%= ENV.fetch("WEB_SERVER_IP") %>
+    - gwirian-prod
   # job:
   #   hosts:
   #     - 192.168.0.1
@@ -20,13 +26,13 @@ ssh:
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
 proxy:
   ssl: true
-  host: <%= ENV.fetch("APP_DOMAIN") %>
+  host: app.gwirian.com
 
 # Credentials for your image host.
 registry:
   # Specify the registry server, if you're not using Docker Hub
   # server: registry.digitalocean.com / ghcr.io / ...
-  username: <%= ENV.fetch("DOCKER_REGISTRY_USERNAME") %>
+  username: frocher
 
   # Always use an access token rather than real password when possible.
   password:
@@ -41,10 +47,11 @@ env:
     - SMTP_USERNAME
     - SMTP_PASSWORD
   clear:
-    BASE_URL: https://app.gwirian.com # The public URL of your Gwirian instance
-    MAILER_FROM_ADDRESS: <%= ENV.fetch("MAILER_FROM_ADDRESS", "support@example.com") %> # The email address that Gwirian will send emails from
-    SMTP_HOST: <%= ENV.fetch("SMTP_HOST", "mail.example.com") %>
-    SMTP_PORT: <%= ENV.fetch("SMTP_PORT", "1025") %>
+    RAILS_ENV: production
+    BASE_URL: https://app.gwirian.com
+    MAILER_FROM_ADDRESS: support@gwirian.com
+    SMTP_HOST: smtp.postmarkapp.com
+    SMTP_PORT: 587
     SOLID_QUEUE_IN_PUMA: true
 
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
@@ -71,12 +78,13 @@ asset_path: /rails/public/assets
 # Configure the image builder.
 builder:
   arch: arm64
+  dockerfile: <%= File.join(Gem::Specification.find_by_name("gwirian-saas").gem_dir, "Dockerfile") %>
 
 
 accessories:
   search:
     image: elastic/elasticsearch:8.19.9
-    host: <%= ENV.fetch("WEB_SERVER_IP") %>
+    host: gwirian-prod
     env:
       clear:
         discovery.type: single-node
