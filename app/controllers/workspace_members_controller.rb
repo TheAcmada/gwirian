@@ -264,5 +264,4 @@ class WorkspaceMembersController < ApplicationController
       redirect_to root_path, notice: notice
     end
   end
-
 end
