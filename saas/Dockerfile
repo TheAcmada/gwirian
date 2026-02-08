@@ -1,12 +1,3 @@
-# syntax=docker/dockerfile:1
-# check=error=true
-
-# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t gwirian .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name gwirian gwirian
-
-# For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
-
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=4.0.0
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
@@ -22,7 +13,9 @@ RUN apt-get update -qq && \
 # Set production environment
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
+    SAAS="1" \
     BUNDLE_PATH="/usr/local/bundle" \
+    BUNDLE_GEMFILE="Gemfile.saas" \
     BUNDLE_WITHOUT="development"
 
 # Throw-away build stage to reduce size of final image
@@ -34,7 +27,10 @@ RUN apt-get update -qq && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install application gems
-COPY Gemfile Gemfile.lock ./
+COPY Gemfile Gemfile.lock Gemfile.saas Gemfile.saas.lock .ruby-version ./
+COPY lib/gwirian.rb ./lib/gwirian.rb
+COPY saas/giwirian-saas.gemspec ./saas/
+COPY saas/lib/giwirian/saas/version.rb ./saas/lib/giwirian/saas/
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
@@ -57,13 +53,6 @@ FROM base
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
-
-# Image metadata
-ARG OCI_DESCRIPTION
-LABEL org.opencontainers.image.description="${OCI_DESCRIPTION}"
-ARG OCI_SOURCE
-LABEL org.opencontainers.image.source="${OCI_SOURCE}"
-LABEL org.opencontainers.image.licenses="O'Saasy"
 
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
