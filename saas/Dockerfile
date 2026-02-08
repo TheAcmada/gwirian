@@ -29,8 +29,8 @@ RUN apt-get update -qq && \
 # Install application gems
 COPY Gemfile Gemfile.lock Gemfile.saas Gemfile.saas.lock .ruby-version ./
 COPY lib/gwirian.rb ./lib/gwirian.rb
-COPY saas/giwirian-saas.gemspec ./saas/
-COPY saas/lib/giwirian/saas/version.rb ./saas/lib/giwirian/saas/
+COPY saas/gwirian-saas.gemspec ./saas/
+COPY saas/lib/gwirian/saas/version.rb ./saas/lib/gwirian/saas/
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
