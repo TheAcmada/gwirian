@@ -6,7 +6,8 @@ class AddWorkspaceToProjects < ActiveRecord::Migration[8.0]
     # Create default workspace for existing projects
     default_workspace = Workspace.create!(
       name: 'Default Workspace',
-      description: 'Default workspace for existing projects'
+      description: 'Default workspace for existing projects',
+      slug: 'default-workspace'
     )
 
     # Update all existing projects to reference the default workspace
