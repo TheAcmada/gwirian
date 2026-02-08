@@ -16,7 +16,7 @@ class WorkspaceMembersController < ApplicationController
       return
     end
 
-    email = workspace_member_params[:email]&.strip&.downcase
+    email = params.dig(:workspace_member, :email)&.strip&.downcase
     unless email.present?
       render_alert("Email is required")
       return
@@ -38,7 +38,7 @@ class WorkspaceMembersController < ApplicationController
     user ||= User.find_or_create_by!(email_address: email)
 
     # Create workspace member
-    role = workspace_member_params[:role].presence || "viewer"
+    role = params.dig(:workspace_member, :role).presence || "viewer"
     role = "viewer" unless %w[administrator editor viewer].include?(role)
 
     workspace_member = Current.workspace.workspace_members.build(
@@ -67,7 +67,10 @@ class WorkspaceMembersController < ApplicationController
       return
     end
 
-    if workspace_member.update(workspace_member_update_params)
+    role = params.dig(:workspace_member, :role)
+    role = nil unless role.in?(%w[administrator editor viewer])
+
+    if role && workspace_member.update(role: role)
       notice = "Member role updated successfully"
       if request.headers["HX-Request"]
         render_tbody(notice: notice)
@@ -262,11 +265,4 @@ class WorkspaceMembersController < ApplicationController
     end
   end
 
-  def workspace_member_params
-    params.require(:workspace_member).permit(:email, :role)
-  end
-
-  def workspace_member_update_params
-    params.require(:workspace_member).permit(:role)
-  end
 end
