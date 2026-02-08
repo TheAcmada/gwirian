@@ -36,10 +36,13 @@ class Ability
     initialize_scenario_ability(user)
     initialize_scenario_execution_ability(user)
     initialize_step_ability(user)
+    initialize_workspace_ability(user)
   end
 
   def initialize_project_ability(user)
-    can :create, Project
+    if Current.workspace && (Current.workspace.editor?(user) || Current.workspace.admin?(user))
+      can :create, Project
+    end
 
     can :read, Project do |project|
       project.member?(user)
@@ -49,7 +52,7 @@ class Ability
       project.admin?(user)
     end
 
-    can [ :remove, :update, :invite ], ProjectMember do |member|
+    can [ :remove, :update ], ProjectMember do |member|
       member.project.admin?(user) && member.email != user.email_address
     end
   end
@@ -108,5 +111,35 @@ class Ability
     can [ :update, :destroy ], Step do |step|
       step.scenario.feature.project.editor?(user) || step.scenario.feature.project.admin?(user)
     end
+  end
+
+  def initialize_workspace_ability(user)
+    can :leave, WorkspaceMember do |member|
+      next false unless member.user_id == user.id
+      next false unless member.current_member?
+
+      # Non-admins can always leave. Admins can only leave if another admin remains.
+      !member.workspace.admin?(user) || member.workspace.remaining_admin_count_after(user) > 0
+    end
+
+    can :destroy, Workspace do |workspace|
+      last_admin_of_workspace?(workspace, user)
+    end
+
+    return unless Current.workspace
+
+    can [ :index, :create ], WorkspaceMember do
+      Current.workspace.admin?(user)
+    end
+
+    can [ :update, :destroy, :resend_invitation ], WorkspaceMember do |member|
+      Current.workspace.admin?(user) && member.user_id != user.id
+    end
+  end
+
+  private
+
+  def last_admin_of_workspace?(workspace, user)
+    workspace.admin?(user) && workspace.remaining_admin_count_after(user).zero?
   end
 end

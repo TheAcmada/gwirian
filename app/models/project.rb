@@ -1,4 +1,5 @@
 class Project < ApplicationRecord
+  belongs_to :workspace
   has_many :project_members, dependent: :destroy
   has_many :features, dependent: :destroy
   has_many :scenarios, through: :features
@@ -16,7 +17,7 @@ class Project < ApplicationRecord
     @_user_roles ||= {}
     return @_user_roles[user.email_address] if @_user_roles.key?(user.email_address)
 
-    member = project_members.accepted.find_by(email: user.email_address)
+    member = project_members.find_by(email: user.email_address)
     role = member&.role
     @_user_roles[user.email_address] = role
     role

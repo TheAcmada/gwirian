@@ -1,13 +1,13 @@
 <div id="project-members-<%= project.id %>" class="space-y-1">
-  <% project.project_members.each do |member| %>
+  <% project.project_members.by_email.each do |member| %>
     <div class="flex items-center justify-between py-2 px-3 rounded transition-colors hover:bg-stone-50 dark:hover:bg-white/5">
       <div class="flex items-center gap-3">
         <div class="w-6 h-6 rounded flex items-center justify-center text-xs font-medium bg-stone-100 dark:bg-white/10 text-stone-700 dark:text-white/90">
           <%= member.email.first.upcase %>
         </div>
-        <div>
-          <span class="text-sm text-stone-800 dark:text-white/90"><%= member.email %></span>
-          <span class="text-xs ml-2 text-stone-400 dark:text-white/40">Since <%= member.created_at.strftime("%b %Y") %></span>
+        <div class="min-w-0">
+          <div class="text-sm text-stone-800 dark:text-white/90 truncate"><%= member.email %></div>
+          <div class="text-xs text-stone-400 dark:text-white/40">Since <%= member.created_at.strftime("%b %d, %Y") %></div>
         </div>
       </div>
 
@@ -27,22 +27,15 @@
           </span>
         <% end %>
 
-        <% if member.invitation_accepted %>
-          <span class="text-xs px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">Active</span>
-        <% else %>
-          <span class="text-xs px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">Pending</span>
+        <% unless member.workspace_member? %>
+          <span class="text-xs px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
+                x-data
+                x-tooltip="'This user is no longer a member of the workspace'">
+            Not in workspace
+          </span>
         <% end %>
 
         <div class="flex items-center gap-1">
-          <% if !member.invitation_accepted && can?(:update, member) %>
-            <button title="Resend invitation"
-                    class="p-1 rounded transition-colors hover:bg-stone-100 dark:hover:bg-white/10 text-stone-500 dark:text-white/60"
-                    hx-post="<%= resend_invitation_project_member_path(member) %>"
-                    hx-target="#project-members-<%= project.id %>"
-                    hx-swap="outerHTML">
-              <%= resend_icon %>
-            </button>
-          <% end %>
           <% if can?(:remove, member) %>
             <button title="Remove member"
                     class="p-1 rounded cursor-pointer transition-colors hover:bg-stone-100 dark:hover:bg-white/10 text-stone-500 dark:text-white/60"

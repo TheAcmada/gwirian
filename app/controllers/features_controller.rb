@@ -1,4 +1,5 @@
 class FeaturesController < ApplicationController
+  before_action :require_workspace
   before_action :set_project
   before_action :set_feature, only: [ :show, :update, :destroy, :add_tag, :remove_tag, :start_execution, :select_scenarios, :execute_scenarios ]
 
@@ -152,7 +153,7 @@ class FeaturesController < ApplicationController
   private
 
   def set_project
-    @project = Current.user.projects.find(params[:project_id])
+    @project = workspace_projects.find(params[:project_id])
   end
 
   def set_feature

@@ -1,8 +1,9 @@
 class ProjectsController < ApplicationController
+  before_action :require_workspace
   before_action :set_project, only: [ :show, :history, :edit, :update, :destroy, :add_member, :remove_member, :update_member ]
 
   def index
-    @projects = Current.user.projects
+    @projects = workspace_projects.order(:name)
   end
 
   def show
@@ -38,6 +39,10 @@ class ProjectsController < ApplicationController
   end
 
   def new
+    unless can? :create, Project
+      redirect_to projects_path, alert: "You are not authorized to create a project"
+      return
+    end
     @project = Project.new
   end
 
@@ -47,9 +52,9 @@ class ProjectsController < ApplicationController
       return
     end
 
-    @project = Project.new(project_params)
+    @project = Current.workspace.projects.new(project_params)
     if @project.save
-      @project.project_members.create!(email: Current.user.email_address, role: "administrator", invitation_accepted: true)
+      @project.project_members.create!(email: Current.user.email_address, role: "administrator")
       redirect_to project_path(@project), notice: "The project has been created successfully"
     else
       render :new, status: :unprocessable_entity
@@ -88,8 +93,22 @@ class ProjectsController < ApplicationController
       return
     end
 
+    email = member_params[:email]&.strip&.downcase
+
+    # Check if the email belongs to a current workspace member
+    user = User.find_by(email_address: email)
+    unless user && Current.workspace.workspace_members.current_member.exists?(user_id: user.id)
+      alert = "This user is not a member of the workspace"
+      if request.headers["HX-Request"]
+        render partial: "projects/project_members", locals: { project: @project, alert: alert }
+      else
+        redirect_to projects_path, alert: alert
+      end
+      return
+    end
+
     # Check if the email is already in the project
-    if @project.project_members.exists?(email: member_params[:email])
+    if @project.project_members.exists?(email: email)
       alert = "The member is already in the project"
       if request.headers["HX-Request"]
         render partial: "projects/project_members", locals: { project: @project, alert: alert }
@@ -161,23 +180,24 @@ class ProjectsController < ApplicationController
   end
 
   private
-    def render_alert(message)
-      redirect_to projects_path, alert: message
-    end
 
-    def set_project
-      @project = Current.user.projects.find(params[:id])
-    end
+  def render_alert(message)
+    redirect_to projects_path, alert: message
+  end
 
-    def project_params
-      params.require(:project).permit(:name, :description)
-    end
+  def set_project
+    @project = workspace_projects.order(:name).find(params[:id])
+  end
 
-    def member_params
-      params.require(:project_member).permit(:email)
-    end
+  def project_params
+    params.require(:project).permit(:name, :description)
+  end
 
-    def member_update_params
-      params.require(:project_member).permit(:role)
-    end
+  def member_params
+    params.require(:project_member).permit(:email)
+  end
+
+  def member_update_params
+    params.require(:project_member).permit(:role)
+  end
 end

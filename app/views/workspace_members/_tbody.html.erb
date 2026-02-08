@@ -1,0 +1,5 @@
+<tbody id="workspace-members-tbody-<%= workspace.id %>" class="divide-y divide-stone-100 dark:divide-stone-800">
+  <% members.each do |member| %>
+    <%= render WorkspaceMembers::RowComponent.new(member: member, workspace: workspace, list_component: component) %>
+  <% end %>
+</tbody>

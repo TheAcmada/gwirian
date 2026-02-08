@@ -22,6 +22,23 @@ Replace `bin/bundle` by running `bundle binstubs bundler --force`, then run this
 end
 
 require "rubygems"
+
+require_relative "../lib/gwirian"
+Gwirian.configure_bundle
+
 require "bundler/setup"
+
+if Gwirian.saas?
+  gem_path = Gem::Specification.find_by_name("gwirian-saas").gem_dir
+  deploy_config = File.join(gem_path, "config", "deploy.yml")
+
+  unless ARGV.include?("-c") || ARGV.include?("--config-file")
+    if ARGV.empty? || ARGV.first.start_with?("-")
+      ARGV.unshift("-c", deploy_config)
+    else
+      ARGV.insert(1, "-c", deploy_config)
+    end
+  end
+end
 
 load Gem.bin_path("kamal", "kamal")

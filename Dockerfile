@@ -58,6 +58,13 @@ FROM base
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
 
+# Image metadata
+ARG OCI_DESCRIPTION
+LABEL org.opencontainers.image.description="${OCI_DESCRIPTION}"
+ARG OCI_SOURCE
+LABEL org.opencontainers.image.source="${OCI_SOURCE}"
+LABEL org.opencontainers.image.licenses="O'Saasy"
+
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \

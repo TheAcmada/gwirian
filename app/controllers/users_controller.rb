@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   layout "unauthenticated", only: [ :new, :create ]
   allow_unauthenticated_access only: [ :new, :create ]
-  rate_limit to: 5, within: 3.minutes, only: :create, with: -> { redirect_to new_session_url, alert: "Try again later." }
+  rate_limit to: 5, within: 3.minutes, only: :create, with: -> { redirect_to new_session_url, alert: t("auth.try_again_later") }
 
   def new
     @user = User.new
@@ -14,13 +14,18 @@ class UsersController < ApplicationController
       return
     end
 
-    @user = User.new(user_params)
-    if @user.save
-      UserMailer.signup_notification(@user).deliver_later if Rails.application.config.signup.notify_email.present?
-      start_new_session_for(@user)
-      redirect_to root_path, notice: "🎉 Welcome to Gwirian! Your account has been created successfully."
+    @user = User.find_or_initialize_by(email_address: user_params[:email_address])
+
+    if @user.new_record?
+      if @user.save
+        UserMailer.signup_notification(@user).deliver_later if Rails.application.config.signup.notify_email.present?
+        redirect_to_session_magic_link(@user.send_magic_link)
+      else
+        render :new, status: :unprocessable_entity
+      end
     else
-      render :new, status: :unprocessable_entity
+      # User already exists, send them through normal sign-in flow
+      redirect_to_session_magic_link(@user.send_magic_link)
     end
   end
 
@@ -32,63 +37,9 @@ class UsersController < ApplicationController
     @user = Current.user
 
     if @user.update(user_params)
-      redirect_to edit_user_path(@user), notice: "Your profile has been updated successfully!"
+      redirect_to edit_user_path(@user), notice: "Your account has been updated successfully!"
     else
       render :edit, status: :unprocessable_entity
-    end
-  end
-
-  def update_password
-    @user = Current.user
-
-    unless @user.authenticate(params[:user][:current_password])
-      @user.errors.add(:current_password, "is incorrect")
-      render :edit, status: :unprocessable_entity and return
-    end
-
-    if params[:user][:password].blank?
-      @user.errors.add(:password, "can't be blank")
-      render :edit, status: :unprocessable_entity and return
-    end
-
-    if @user.update(password_params)
-      redirect_to edit_user_path(@user), notice: "Your password has been updated successfully!"
-    else
-      render :edit, status: :unprocessable_entity
-    end
-  end
-
-  def destroy
-    @user = Current.user
-    @user.destroy
-    redirect_to root_path, notice: "Your account has been deleted. We're sorry to see you go!"
-  end
-
-  def generate_api_token
-    @user = Current.user
-    expires_in_days = params[:expires_in].present? ? params[:expires_in].to_i : 30
-    # Ensure expires_in_days is between 1 and 365 days
-    expires_in_days = [ [ expires_in_days, 1 ].max, 365 ].min
-    expires_in = expires_in_days.days
-    @user.generate_api_token(expires_in: expires_in)
-    @user.reload
-
-    if request.headers["HX-Request"]
-      render partial: "api_token", locals: { user: @user }
-    else
-      redirect_to edit_user_path, notice: "API token generated successfully"
-    end
-  end
-
-  def revoke_api_token
-    @user = Current.user
-    @user.revoke_api_token
-    @user.reload
-
-    if request.headers["HX-Request"]
-      render partial: "api_token", locals: { user: @user }
-    else
-      redirect_to edit_user_path, notice: "API token revoked successfully"
     end
   end
 
@@ -99,10 +50,6 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:email_address, :password, :password_confirmation, :locale)
-  end
-
-  def password_params
-    params.require(:user).permit(:password, :password_confirmation)
+    params.require(:user).permit(:email_address, :locale)
   end
 end

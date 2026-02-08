@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_26_083503) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_18_164931) do
   create_table "features", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -31,20 +31,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_26_083503) do
     t.index ["user_id"], name: "index_login_histories_on_user_id"
   end
 
+  create_table "magic_links", force: :cascade do |t|
+    t.string "code", null: false
+    t.integer "user_id", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_magic_links_on_code", unique: true
+    t.index ["expires_at"], name: "index_magic_links_on_expires_at"
+    t.index ["user_id"], name: "index_magic_links_on_user_id"
+  end
+
   create_table "project_members", force: :cascade do |t|
     t.integer "project_id", null: false
     t.string "email", null: false
     t.string "role", default: "guest", null: false
-    t.boolean "invitation_accepted", default: false, null: false
-    t.string "project_members"
-    t.string "invitation_token"
-    t.datetime "last_invitation_sent_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.datetime "invitation_token_expires_at"
     t.index ["email"], name: "index_project_members_on_email"
-    t.index ["invitation_token"], name: "index_project_members_on_invitation_token", unique: true
-    t.index ["invitation_token_expires_at"], name: "index_project_members_on_invitation_token_expires_at"
     t.index ["project_id", "email"], name: "index_project_members_on_project_id_and_email", unique: true
     t.index ["project_id"], name: "index_project_members_on_project_id"
   end
@@ -54,6 +58,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_26_083503) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "workspace_id", null: false
+    t.index ["workspace_id"], name: "index_projects_on_workspace_id"
   end
 
   create_table "scenario_executions", force: :cascade do |t|
@@ -135,22 +141,50 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_26_083503) do
 
   create_table "users", force: :cascade do |t|
     t.string "email_address", null: false
-    t.string "password_digest", null: false
+    t.string "password_digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["email_address"], name: "index_users_on_email_address", unique: true
+  end
+
+  create_table "workspace_members", force: :cascade do |t|
+    t.integer "workspace_id", null: false
+    t.integer "user_id", null: false
+    t.string "role", default: "viewer", null: false
+    t.string "status", default: "invited", null: false
+    t.datetime "last_invitation_sent_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "last_accessed_at"
     t.string "api_token"
     t.datetime "api_token_expires_at"
-    t.index ["api_token"], name: "index_users_on_api_token", unique: true
-    t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["api_token"], name: "index_workspace_members_on_api_token", unique: true
+    t.index ["status"], name: "index_workspace_members_on_status"
+    t.index ["user_id"], name: "index_workspace_members_on_user_id"
+    t.index ["workspace_id", "user_id"], name: "index_workspace_members_on_workspace_id_and_user_id", unique: true
+    t.index ["workspace_id"], name: "index_workspace_members_on_workspace_id"
+  end
+
+  create_table "workspaces", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "slug", null: false
+    t.index ["slug"], name: "index_workspaces_on_slug", unique: true
   end
 
   add_foreign_key "features", "projects"
   add_foreign_key "login_histories", "users"
+  add_foreign_key "magic_links", "users"
   add_foreign_key "project_members", "projects"
+  add_foreign_key "projects", "workspaces"
   add_foreign_key "scenario_executions", "scenarios"
   add_foreign_key "scenario_executions", "users"
   add_foreign_key "scenarios", "features"
   add_foreign_key "sessions", "users"
   add_foreign_key "steps", "scenarios"
   add_foreign_key "taggings", "tags"
+  add_foreign_key "workspace_members", "users"
+  add_foreign_key "workspace_members", "workspaces"
 end

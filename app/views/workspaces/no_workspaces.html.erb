@@ -1,0 +1,14 @@
+<% content_for :title, "No Workspaces" %>
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <div class="max-w-2xl mx-auto space-y-8">
+    <div class="text-center">
+      <svg class="w-12 h-12 mx-auto mb-4 text-stone-300 dark:text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+      </svg>
+      <h1 class="text-2xl font-semibold mb-2 text-stone-800 dark:text-white/90">No workspaces available</h1>
+      <p class="text-sm text-stone-500 dark:text-white/60">Create a new workspace or accept an invitation to get started.</p>
+    </div>
+
+    <%= render Workspaces::OptionsComponent.new %>
+  </div>
+</div>

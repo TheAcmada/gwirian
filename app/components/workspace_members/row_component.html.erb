@@ -1,0 +1,66 @@
+<tr class="hover:bg-stone-50 dark:hover:bg-white/5 transition-colors">
+  <td class="px-3 py-2">
+    <div class="flex items-center gap-3">
+      <div class="w-6 h-6 rounded flex items-center justify-center text-xs font-medium bg-stone-100 dark:bg-white/10 text-stone-700 dark:text-white/90 flex-shrink-0">
+        <%= member_avatar_letter %>
+      </div>
+      <div class="min-w-0">
+        <div class="text-sm text-stone-800 dark:text-white/90 truncate"><%= member_email %></div>
+        <div class="text-xs text-stone-400 dark:text-white/40">Since <%= member.created_at.strftime("%b %d, %Y") %></div>
+      </div>
+    </div>
+  </td>
+  <td class="px-3 py-2">
+    <% if can_update? %>
+      <form class="inline-block m-0" 
+            hx-patch="<%= workspace_member_path(member) %>"
+            hx-target="#workspace-members-tbody-<%= workspace.id %>"
+            hx-swap="outerHTML"
+            hx-trigger="change">
+        <%= select_tag "workspace_member[role]",
+          options_for_select([["Admin", "administrator"], ["Editor", "editor"], ["Viewer", "viewer"]], member.role),
+          id: "member-role-#{member.id}",
+          class: "input h-7 text-xs w-24 py-0",
+          name: "workspace_member[role]" %>
+      </form>
+    <% else %>
+      <span class="text-xs px-1.5 py-0.5 rounded bg-stone-100 dark:bg-white/10 text-stone-500 dark:text-white/60 whitespace-nowrap">
+        <%= member.role.humanize %>
+      </span>
+    <% end %>
+  </td>
+  <td class="px-3 py-2">
+    <span class="text-xs px-1.5 py-0.5 rounded <%= member_status_class %> whitespace-nowrap">
+      <%= member_status %>
+    </span>
+  </td>
+  <td class="px-3 py-2">
+    <div class="flex items-center justify-end gap-1">
+      <% if can_resend? %>
+        <button title="Resend invitation"
+                class="p-1 rounded transition-colors hover:bg-stone-100 dark:hover:bg-white/10 text-stone-500 dark:text-white/60 flex items-center justify-center"
+                hx-post="<%= resend_invitation_workspace_member_path(member) %>"
+                hx-target="#workspace-members-tbody-<%= workspace.id %>"
+                hx-swap="outerHTML">
+          <%= helpers.resend_icon %>
+        </button>
+      <% end %>
+      <% if can_remove? %>
+        <button title="Remove member"
+                class="p-1 rounded cursor-pointer transition-colors hover:bg-stone-100 dark:hover:bg-white/10 text-stone-500 dark:text-white/60 flex items-center justify-center"
+                hx-delete="<%= workspace_member_path(member) %>"
+                hx-target="#workspace-members-tbody-<%= workspace.id %>"
+                hx-swap="outerHTML"
+                hx-trigger="confirmed"
+                x-data="{}"
+                @click.prevent="showConfirmation('Are you sure you want to remove this member?').then(result => {
+                  if (result.isConfirmed) {
+                    htmx.trigger($el, 'confirmed')
+                  }
+                })">
+          <%= helpers.delete_icon %>
+        </button>
+      <% end %>
+    </div>
+  </td>
+</tr>

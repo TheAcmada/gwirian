@@ -1,0 +1,11 @@
+<% content_for :title, "Create or Join Workspace" %>
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <div class="max-w-2xl mx-auto space-y-8">
+    <div class="text-center">
+      <h1 class="text-2xl font-semibold mb-2 text-stone-800 dark:text-white/90">Create or join a workspace</h1>
+      <p class="text-sm text-stone-500 dark:text-white/60">Create a new workspace or accept an invitation to join one.</p>
+    </div>
+
+    <%= render Workspaces::OptionsComponent.new(workspace: @workspace) %>
+  </div>
+</div>

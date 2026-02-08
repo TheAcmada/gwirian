@@ -1,4 +1,5 @@
 class StepsController < ApplicationController
+  before_action :require_workspace
   before_action :set_project
   before_action :set_feature
   before_action :set_scenario
@@ -65,7 +66,7 @@ class StepsController < ApplicationController
   private
 
   def set_project
-    @project = Current.user.projects.find(params[:project_id])
+    @project = workspace_projects.find(params[:project_id])
   end
 
   def set_feature

@@ -57,11 +57,25 @@ Rails.application.configure do
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
 
-  # Use resend to send emails in production
-  config.action_mailer.delivery_method = :resend
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    user_name: ENV["SMTP_USERNAME"],
+    password: ENV["SMTP_PASSWORD"],
+    address: ENV["SMTP_HOST"],
+    port: ENV["SMTP_PORT"] || 25,
+    authentication: :plain
+  }
 
-  # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "app.gwirian.com" }
+  # Base URL for links in emails and other external references.
+  # Set BASE_URL to your instance's public URL (e.g., https://app.gwirian.com"
+  if base_url = ENV["BASE_URL"].presence
+    uri = URI.parse(base_url)
+    url_options = { host: uri.host, protocol: uri.scheme }
+    url_options[:port] = uri.port if uri.port != uri.default_port
+
+    routes.default_url_options = url_options
+    config.action_mailer.default_url_options = url_options
+  end
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

@@ -1,0 +1,14 @@
+Gwirian verification code
+
+Hello!
+
+Please enter this 6-character verification code on the Gwirian sign-in page:
+
+<%= @magic_link.code %>
+
+This code will work for <%= distance_of_time_in_words(MagicLink::EXPIRATION_TIME) %>.
+
+If you didn't request this code, you can safely ignore this email.
+
+---
+© <%= Time.current.year %> Gwirian. All rights reserved.

@@ -6,10 +6,17 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
   add_flash_types :error
 
+  before_action :track_workspace_access
+
   # Map current_user to Current.user for CanCanCan
   def current_user
     Current.user
   end
+
+  def current_workspace
+    Current.workspace
+  end
+  helper_method :current_workspace
 
   def set_time_zone
     session[:timezone] = request.headers["X-Timezone"] if request.headers["X-Timezone"].present?
@@ -23,4 +30,29 @@ class ApplicationController < ActionController::Base
     return nil if time.nil?
     time.in_time_zone(get_time_zone)
   end
+
+  private
+
+  def track_workspace_access
+    return unless Current.workspace && Current.user
+
+    workspace_member = Current.user.workspace_members.find_by(workspace: Current.workspace)
+    workspace_member&.touch(:last_accessed_at)
+  end
+
+  def require_workspace
+    unless Current.workspace
+      redirect_to root_path, alert: "Please select a workspace"
+    end
+  end
+
+  def workspace_projects
+    return Project.none unless Current.workspace && Current.user
+
+    Current.workspace.projects
+      .joins(:project_members)
+      .where(project_members: { email: Current.user.email_address })
+      .distinct
+  end
+  helper_method :workspace_projects
 end

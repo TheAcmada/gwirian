@@ -1,0 +1,17 @@
+<div id="workspace-members-<%= workspace.id %>">
+  <div class="overflow-x-auto">
+    <table class="min-w-full">
+      <thead>
+        <tr class="border-b border-stone-200 dark:border-stone-800">
+          <th class="px-3 py-2 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">Member</th>
+          <th class="px-3 py-2 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">Role</th>
+          <th class="px-3 py-2 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">Status</th>
+          <th class="px-3 py-2 text-right text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <%= render "workspace_members/tbody", workspace: workspace, members: members, component: self %>
+    </table>
+  </div>
+</div>
+<%= render "shared/flash_alert", alert: alert if alert.present? %>
+<%= render "shared/flash_notice", notice: notice if notice.present? %>

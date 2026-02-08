@@ -3,7 +3,6 @@ FactoryBot.define do
     association :project
     sequence(:email) { |n| "member#{n}@example.com" }
     role { "viewer" }
-    invitation_accepted { true }
 
     trait :administrator do
       role { "administrator" }
@@ -15,10 +14,6 @@ FactoryBot.define do
 
     trait :viewer do
       role { "viewer" }
-    end
-
-    trait :pending do
-      invitation_accepted { false }
     end
   end
 end

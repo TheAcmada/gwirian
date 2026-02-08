@@ -44,6 +44,7 @@ class McpController < ActionController::Base
   def build_server_context
     {
       current_user: current_user,
+      current_workspace: Current.workspace,
       request_id: request.request_id,
       ip_address: request.remote_ip
     }
@@ -55,13 +56,16 @@ class McpController < ActionController::Base
 
   def authenticate_with_api_token!
     token = request.headers["authorization"]&.split(" ")&.last || params[:api_token]
-    @current_user = User.find_by(api_token: token)
-    unless @current_user&.api_token_valid?
+    @current_workspace_member = WorkspaceMember.find_by(api_token: token)
+    unless @current_workspace_member&.api_token_valid?
       render json: {
         jsonrpc: "2.0",
         id: nil,
         error: { code: -32001, message: "Unauthorized" }
       }, status: :unauthorized
+      return
     end
+    @current_user = @current_workspace_member.user
+    Current.workspace = @current_workspace_member.workspace
   end
 end

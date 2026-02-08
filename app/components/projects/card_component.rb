@@ -19,7 +19,7 @@ module Projects
     end
 
     def members_count
-      project.project_members.accepted.count
+      project.project_members.count
     end
 
     def execution_stats

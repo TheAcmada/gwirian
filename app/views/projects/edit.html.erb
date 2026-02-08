@@ -34,20 +34,7 @@
     <div>
       <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Team Members</h2>
       <%= render "projects/project_members", project: @project %>
-      <% if can? :add_member, @project %>
-        <form hx-post="<%= add_member_project_path(@project) %>"
-              hx-target="#project-members-<%= @project.id %>"
-              hx-swap="outerHTML"
-              class="flex gap-2 items-center mt-4">
-          <input type="email" name="project_member[email]" class="input flex-1" placeholder="Email address" required>
-          <select name="project_member[role]" class="input w-36">
-            <option value="administrator">Admin</option>
-            <option value="editor">Editor</option>
-            <option value="viewer" selected>Viewer</option>
-          </select>
-          <button type="submit" class="btn btn-primary">Add</button>
-        </form>
-      <% end %>
+      <%= render Projects::AddMemberFormComponent.new(project: @project) %>
     </div>
 
     <!-- Danger Zone -->

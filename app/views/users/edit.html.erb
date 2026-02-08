@@ -1,65 +1,87 @@
-<% content_for :title, "Profile" %>
+<% content_for :title, "Account" %>
 <div class="max-w-3xl mx-auto px-4 py-12">
   <!-- Page Header -->
   <div class="mb-8">
-    <h1 class="text-4xl font-bold tracking-tight mb-2 text-stone-800 dark:text-white/90" style="letter-spacing: -0.02em;">Profile</h1>
+    <h1 class="text-4xl font-bold tracking-tight mb-2 text-stone-800 dark:text-white/90" style="letter-spacing: -0.02em;">Account</h1>
     <p class="text-stone-500 dark:text-white/60">Manage your account settings</p>
   </div>
 
   <div class="space-y-8">
-    <!-- API Token Section -->
+    <!-- Email Section -->
     <div>
-      <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">API Token</h2>
-      <%= render 'api_token', user: @user %>
-    </div>
-
-    <!-- Password Section -->
-    <div>
-      <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Password</h2>
-      <%= form_with model: @user, url: update_password_user_path, method: :patch, local: true do |f| %>
-        <%= render 'shared/errors', model: @user %>
-
-        <div class="mb-4">
-          <%= f.label :current_password, "Current password", class: 'block text-sm font-medium mb-1 text-stone-800 dark:text-white/90' %>
-          <%= f.password_field :current_password, autocomplete: "current-password", class: 'input', required: true %>
-        </div>
-
-        <div class="mb-4">
-          <%= f.label :password, "New password", class: 'block text-sm font-medium mb-1 text-stone-800 dark:text-white/90' %>
-          <%= f.password_field :password, autocomplete: "new-password", class: 'input' %>
-          <p class="mt-1 text-xs text-stone-400 dark:text-white/40">Must be at least 12 characters long. Consider using a pass phrase for better security.</p>
-        </div>
-
-        <div class="mb-4">
-          <%= f.label :password_confirmation, "Confirm new password", class: 'block text-sm font-medium mb-1 text-stone-800 dark:text-white/90' %>
-          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: 'input' %>
-        </div>
-
-        <div class="flex justify-end gap-2">
-          <%= f.submit "Update Password", class: 'btn btn-primary' %>
-        </div>
-      <% end %>
-    </div>
-
-    <!-- Danger Zone -->
-    <div class="pt-6 border-t border-red-200 dark:border-red-900/30">
-      <div class="bg-red-50 dark:bg-red-900/10 rounded-lg p-6">
-        <h2 class="text-sm font-medium mb-4 text-red-600 dark:text-red-400">Danger Zone</h2>
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-red-600 dark:text-red-400">Delete account</p>
-            <p class="text-xs text-stone-400 dark:text-white/40">This action cannot be undone</p>
-          </div>
-          <% delete_confirmation_message = "Are you absolutely sure? This will permanently delete your account and all your data. This action cannot be undone." %>
-          <%= button_to "Delete",
-                        user_path(@user),
-                        method: :delete,
-                        "x-data": "{}",
-                        "@click.prevent": "showConfirmation(\"#{delete_confirmation_message}\").then(result => { if (result.isConfirmed) $el.closest('form').submit() })",
-                        class: "btn btn-danger" %>
-        </div>
+      <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Email</h2>
+      <div class="bg-stone-50 dark:bg-white/5 rounded-lg p-4">
+        <p class="text-stone-800 dark:text-white/90"><%= @user.email_address %></p>
+        <p class="text-xs text-stone-400 dark:text-white/40 mt-1">You sign in using a verification code sent to this email</p>
       </div>
     </div>
+
+    <%= render "workspaces/usage", workspace: Current.workspace if Gwirian.saas? && Current.workspace %>
+
+    <!-- API Token Section -->
+    <% if Current.workspace %>
+      <% current_workspace_member = @user.workspace_members.find_by(workspace: Current.workspace) %>
+      <% if current_workspace_member %>
+        <div>
+          <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">API Token</h2>
+          <p class="text-xs text-stone-400 dark:text-white/40 mb-4">API token for <strong><%= Current.workspace.name %></strong> workspace</p>
+          <%= render WorkspaceMembers::ApiTokenComponent.new(workspace_member: current_workspace_member) %>
+        </div>
+      <% end %>
+    <% else %>
+      <div>
+        <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">API Token</h2>
+        <div class="bg-stone-50 dark:bg-white/5 rounded-lg p-4">
+          <p class="text-sm text-stone-600 dark:text-white/60">Please select a workspace to manage your API token.</p>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Workspace Access -->
+    <% if Current.workspace %>
+      <% current_workspace_member = @user.workspace_members.find_by(workspace: Current.workspace) %>
+      <% if current_workspace_member&.current_member? %>
+        <% is_last_admin = Current.workspace.admin?(@user) && Current.workspace.remaining_admin_count_after(@user).zero? %>
+        <div class="pt-6 border-t border-red-200 dark:border-red-900/30">
+          <div class="bg-red-50 dark:bg-red-900/10 rounded-lg p-6">
+            <h2 class="text-sm font-medium mb-4 text-red-600 dark:text-red-400">Workspace access</h2>
+            <p class="text-xs text-stone-500 dark:text-white/60 mb-4">
+              Manage your access to the <strong><%= Current.workspace.name %></strong> workspace.
+              You can leave if at least one administrator will remain. If you are the last administrator, you can delete the workspace instead.
+            </p>
+
+            <% if is_last_admin %>
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-medium text-red-600 dark:text-red-400">Delete workspace</p>
+                  <p class="text-xs text-stone-400 dark:text-white/40">This action cannot be undone</p>
+                </div>
+                <% delete_confirmation_message = "Are you absolutely sure? This will permanently delete the workspace '#{Current.workspace.name}' and all its projects, features, and data. This action cannot be undone." %>
+                <%= button_to "Delete",
+                              workspace_path(Current.workspace),
+                              method: :delete,
+                              "x-data": "{}",
+                              "@click.prevent": "showConfirmation(#{delete_confirmation_message.to_json}).then(result => { if (result.isConfirmed) $el.closest('form').submit() })",
+                              class: "btn btn-danger" %>
+              </div>
+            <% else %>
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-medium text-red-600 dark:text-red-400">Leave workspace</p>
+                  <p class="text-xs text-stone-400 dark:text-white/40">You can rejoin later if invited</p>
+                </div>
+                <% leave_confirmation_message = "Are you sure you want to leave this workspace? You can rejoin later if invited." %>
+                <%= button_to "Leave",
+                              leave_workspace_path(current_workspace_member),
+                              method: :patch,
+                              "x-data": "{}",
+                              "@click.prevent": "showConfirmation(#{leave_confirmation_message.to_json}).then(result => { if (result.isConfirmed) $el.closest('form').submit() })",
+                              class: "btn btn-danger" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
   </div>
 </div>
-

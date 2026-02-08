@@ -14,6 +14,14 @@
       let target = event.detail.target;
       target.innerHTML = event.detail.xhr.responseText;
     }
+    else if (event.detail.xhr.status === 403) {
+      event.preventDefault();
+      const html = event.detail.xhr.responseText;
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+      const message = doc.body.textContent?.trim() || "Oh no! You are not allowed to do that.";
+      showError(message);
+    }
     else if (event.detail.xhr.status === 500) {
       event.preventDefault();
       showError(window.I18n?.error?.something_went_wrong || "Oops! Something went wrong. Please try again or contact support if the problem persists.");

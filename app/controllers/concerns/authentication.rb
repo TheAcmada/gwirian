@@ -1,5 +1,6 @@
 module Authentication
   extend ActiveSupport::Concern
+  include Authentication::ViaMagicLink
 
   included do
     before_action :require_authentication
@@ -39,11 +40,32 @@ module Authentication
 
     def request_authentication
       session[:return_to_after_authenticating] = request.url
-      redirect_to new_session_path
+      redirect_to new_session_url(script_name: nil)
     end
 
     def after_authentication_url
-      session.delete(:return_to_after_authenticating) || root_url
+      return_to = session.delete(:return_to_after_authenticating)
+      return return_to if return_to.present?
+
+      # Find user's default workspace
+      workspace = default_workspace_for_user
+      return root_url unless workspace
+
+      "#{root_url}#{workspace.slug}/projects"
+    end
+
+    def default_workspace_for_user
+      return nil unless Current.user
+
+      # Find last accessed workspace (only current members)
+      last_accessed = Current.user.workspace_members
+                                  .current_member
+                                  .where.not(last_accessed_at: nil)
+                                  .order(last_accessed_at: :desc)
+                                  .first&.workspace
+
+      # Fall back to first current member workspace
+      last_accessed || Current.user.workspace_members.current_member.first&.workspace
     end
 
     def start_new_session_for(user)

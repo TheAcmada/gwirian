@@ -1,0 +1,105 @@
+<% if can_add_member? %>
+  <form hx-post="<%= add_member_project_path(project) %>"
+        hx-target="#project-members-<%= project.id %>"
+        hx-swap="outerHTML"
+        class="flex gap-2 items-center mt-4"
+        x-data="memberAutocomplete(<%= available_members_json %>)"
+        @submit="submitForm">
+    <div class="relative flex-1">
+      <input type="text"
+             name="project_member[email]"
+             x-model="query"
+             @input="search()"
+             @focus="showResults = query.length > 0 && results.length > 0"
+             @keydown.down.prevent="highlightNext()"
+             @keydown.up.prevent="highlightPrev()"
+             @keydown.enter.prevent="selectHighlightedOrSubmit($event)"
+             @keydown.escape="showResults = false"
+             @click.away="showResults = false"
+             class="input w-full"
+             placeholder="Type email to search workspace members..."
+             autocomplete="off"
+             required>
+      <ul x-show="showResults && results.length > 0"
+          x-cloak
+          class="absolute z-10 w-full mt-1 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-lg shadow-lg max-h-48 overflow-auto">
+        <template x-for="(member, index) in results" :key="member.email">
+          <li @click="select(member)"
+              @mouseenter="highlightedIndex = index"
+              :class="{ 'bg-stone-100 dark:bg-stone-700': highlightedIndex === index }"
+              class="px-3 py-2 cursor-pointer hover:bg-stone-100 dark:hover:bg-stone-700 text-sm text-stone-800 dark:text-white/90">
+            <span x-text="member.email"></span>
+          </li>
+        </template>
+      </ul>
+    </div>
+    <select name="project_member[role]" class="input w-36">
+      <option value="administrator">Admin</option>
+      <option value="editor">Editor</option>
+      <option value="viewer" selected>Viewer</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Add</button>
+  </form>
+  <script>
+    function memberAutocomplete(allMembers) {
+      return {
+        query: '',
+        results: [],
+        showResults: false,
+        highlightedIndex: -1,
+        allMembers: allMembers,
+
+        search() {
+          if (this.query.length < 1) {
+            this.results = [];
+            this.showResults = false;
+            return;
+          }
+          this.results = this.allMembers.filter(m =>
+            m.email.toLowerCase().includes(this.query.toLowerCase())
+          ).slice(0, 10);
+          this.showResults = this.results.length > 0;
+          this.highlightedIndex = -1;
+        },
+
+        select(member) {
+          this.query = member.email;
+          this.showResults = false;
+          this.highlightedIndex = -1;
+        },
+
+        highlightNext() {
+          if (this.results.length === 0) return;
+          if (this.highlightedIndex < this.results.length - 1) {
+            this.highlightedIndex++;
+          } else {
+            this.highlightedIndex = 0;
+          }
+        },
+
+        highlightPrev() {
+          if (this.results.length === 0) return;
+          if (this.highlightedIndex > 0) {
+            this.highlightedIndex--;
+          } else {
+            this.highlightedIndex = this.results.length - 1;
+          }
+        },
+
+        selectHighlightedOrSubmit(event) {
+          if (this.highlightedIndex >= 0 && this.showResults) {
+            this.select(this.results[this.highlightedIndex]);
+          } else if (this.query.length > 0) {
+            // Allow form submission if no dropdown selection
+            event.target.closest('form').requestSubmit();
+          }
+        },
+
+        submitForm(event) {
+          // Close the dropdown on form submit
+          this.showResults = false;
+        }
+      }
+    }
+  </script>
+<% end %>

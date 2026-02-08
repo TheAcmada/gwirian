@@ -8,8 +8,7 @@ module Mcp
       input_schema(
         {
           type: "object",
-          properties: {},
-          required: []
+          properties: {}
         }
       )
 
