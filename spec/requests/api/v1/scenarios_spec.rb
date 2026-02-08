@@ -37,7 +37,7 @@ RSpec.describe "Api::V1::Scenarios", type: :request do
     end
 
     context "with valid authentication" do
-      let!(:member) { create(:project_member, project: project, email: user.email_address, ) }
+      let!(:member) { create(:project_member, project: project, email: user.email_address,) }
       let!(:scenario1) { create(:scenario, feature: feature, title: "Scenario A", position: 1) }
       let!(:scenario2) { create(:scenario, feature: feature, title: "Scenario B", position: 2) }
       let!(:scenario3) { create(:scenario, feature: feature, title: "Scenario C", position: 3) }
@@ -105,7 +105,7 @@ RSpec.describe "Api::V1::Scenarios", type: :request do
   end
 
   describe "GET /api/v1/projects/:project_id/features/:feature_id/scenarios/:id" do
-    let!(:member) { create(:project_member, project: project, email: user.email_address, ) }
+    let!(:member) { create(:project_member, project: project, email: user.email_address,) }
     let(:scenario) { create(:scenario, feature: feature, title: "Test Scenario", given: "Given context", when: "When action", then: "Then result") }
 
     context "without authentication" do
@@ -185,7 +185,7 @@ RSpec.describe "Api::V1::Scenarios", type: :request do
 
     context "with valid authentication" do
       context "as viewer" do
-        let!(:viewer_member) { create(:project_member, project: project, email: user.email_address, role: "viewer", ) }
+        let!(:viewer_member) { create(:project_member, project: project, email: user.email_address, role: "viewer",) }
 
         it "returns 403 forbidden" do
           post "/api/v1/projects/#{project.id}/features/#{feature.id}/scenarios", params: valid_params, headers: api_headers(workspace_member.api_token)
@@ -195,7 +195,7 @@ RSpec.describe "Api::V1::Scenarios", type: :request do
       end
 
       context "as editor" do
-        let!(:editor_member) { create(:project_member, project: project, email: user.email_address, role: "editor", ) }
+        let!(:editor_member) { create(:project_member, project: project, email: user.email_address, role: "editor",) }
 
         it "successfully creates scenario with valid params" do
           expect {
@@ -242,7 +242,7 @@ RSpec.describe "Api::V1::Scenarios", type: :request do
       end
 
       context "as administrator" do
-        let!(:admin_member) { create(:project_member, project: project, email: user.email_address, role: "administrator", ) }
+        let!(:admin_member) { create(:project_member, project: project, email: user.email_address, role: "administrator",) }
 
         it "successfully creates scenario" do
           expect {
@@ -277,7 +277,7 @@ RSpec.describe "Api::V1::Scenarios", type: :request do
 
     context "with valid authentication" do
       context "as viewer" do
-        let!(:viewer_member) { create(:project_member, project: project, email: user.email_address, role: "viewer", ) }
+        let!(:viewer_member) { create(:project_member, project: project, email: user.email_address, role: "viewer",) }
 
         it "returns 403 forbidden" do
           patch "/api/v1/projects/#{project.id}/features/#{feature.id}/scenarios/#{scenario.id}", params: update_params, headers: api_headers(workspace_member.api_token)
@@ -287,7 +287,7 @@ RSpec.describe "Api::V1::Scenarios", type: :request do
       end
 
       context "as editor" do
-        let!(:editor_member) { create(:project_member, project: project, email: user.email_address, role: "editor", ) }
+        let!(:editor_member) { create(:project_member, project: project, email: user.email_address, role: "editor",) }
 
         it "successfully updates scenario with valid params" do
           patch "/api/v1/projects/#{project.id}/features/#{feature.id}/scenarios/#{scenario.id}", params: update_params, headers: api_headers(workspace_member.api_token)
@@ -328,7 +328,7 @@ RSpec.describe "Api::V1::Scenarios", type: :request do
       end
 
       context "as administrator" do
-        let!(:admin_member) { create(:project_member, project: project, email: user.email_address, role: "administrator", ) }
+        let!(:admin_member) { create(:project_member, project: project, email: user.email_address, role: "administrator",) }
 
         it "successfully updates scenario" do
           patch "/api/v1/projects/#{project.id}/features/#{feature.id}/scenarios/#{scenario.id}", params: update_params, headers: api_headers(workspace_member.api_token)
@@ -353,7 +353,7 @@ RSpec.describe "Api::V1::Scenarios", type: :request do
 
     context "with valid authentication" do
       context "as viewer" do
-        let!(:viewer_member) { create(:project_member, project: project, email: user.email_address, role: "viewer", ) }
+        let!(:viewer_member) { create(:project_member, project: project, email: user.email_address, role: "viewer",) }
 
         it "returns 403 forbidden" do
           delete "/api/v1/projects/#{project.id}/features/#{feature.id}/scenarios/#{scenario.id}", headers: api_headers(workspace_member.api_token)
@@ -363,7 +363,7 @@ RSpec.describe "Api::V1::Scenarios", type: :request do
       end
 
       context "as editor" do
-        let!(:editor_member) { create(:project_member, project: project, email: user.email_address, role: "editor", ) }
+        let!(:editor_member) { create(:project_member, project: project, email: user.email_address, role: "editor",) }
 
         it "successfully deletes scenario" do
           expect {
@@ -394,7 +394,7 @@ RSpec.describe "Api::V1::Scenarios", type: :request do
       end
 
       context "as administrator" do
-        let!(:admin_member) { create(:project_member, project: project, email: user.email_address, role: "administrator", ) }
+        let!(:admin_member) { create(:project_member, project: project, email: user.email_address, role: "administrator",) }
 
         it "successfully deletes scenario" do
           expect {

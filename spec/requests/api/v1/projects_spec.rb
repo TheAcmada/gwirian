@@ -37,9 +37,9 @@ RSpec.describe "Api::V1::Projects", type: :request do
       let!(:project1) { create(:project, name: "Project 1", workspace: workspace) }
       let!(:project2) { create(:project, name: "Project 2", workspace: workspace) }
       let!(:other_project) { create(:project, name: "Other Project", workspace: workspace) }
-      let!(:member1) { create(:project_member, project: project1, email: user.email_address, ) }
-      let!(:member2) { create(:project_member, project: project2, email: user.email_address, ) }
-      let!(:other_member) { create(:project_member, project: other_project, email: "other@example.com", ) }
+      let!(:member1) { create(:project_member, project: project1, email: user.email_address,) }
+      let!(:member2) { create(:project_member, project: project2, email: user.email_address,) }
+      let!(:other_member) { create(:project_member, project: other_project, email: "other@example.com",) }
 
       it "returns only projects where user is a member" do
         get "/api/v1/projects", headers: api_headers(workspace_member.api_token)
@@ -88,7 +88,7 @@ RSpec.describe "Api::V1::Projects", type: :request do
     let(:user) { create(:user) }
     let!(:workspace_member) { create(:workspace_member, :with_api_token, user: user, workspace: workspace) }
     let(:project) { create(:project, name: "Test Project", description: "Test Description", workspace: workspace) }
-    let!(:member) { create(:project_member, project: project, email: user.email_address, ) }
+    let!(:member) { create(:project_member, project: project, email: user.email_address,) }
 
     context "without authentication" do
       it "returns unauthorized" do

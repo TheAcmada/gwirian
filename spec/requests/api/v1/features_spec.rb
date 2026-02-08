@@ -36,7 +36,7 @@ RSpec.describe "Api::V1::Features", type: :request do
     end
 
     context "with valid authentication" do
-      let!(:member) { create(:project_member, project: project, email: user.email_address, ) }
+      let!(:member) { create(:project_member, project: project, email: user.email_address,) }
       let!(:feature1) { create(:feature, project: project, title: "Feature A") }
       let!(:feature2) { create(:feature, project: project, title: "Feature B") }
       let!(:feature3) { create(:feature, project: project, title: "Feature C") }
@@ -92,7 +92,7 @@ RSpec.describe "Api::V1::Features", type: :request do
   end
 
   describe "GET /api/v1/projects/:project_id/features/:id" do
-    let!(:member) { create(:project_member, project: project, email: user.email_address, ) }
+    let!(:member) { create(:project_member, project: project, email: user.email_address,) }
     let(:feature) { create(:feature, project: project, title: "Test Feature", description: "Test Description") }
 
     context "without authentication" do
@@ -135,7 +135,7 @@ RSpec.describe "Api::V1::Features", type: :request do
       context "when feature belongs to different project" do
         let(:other_project) { create(:project) }
         let(:other_feature) { create(:feature, project: other_project) }
-        let!(:other_member) { create(:project_member, project: other_project, email: user.email_address, ) }
+        let!(:other_member) { create(:project_member, project: other_project, email: user.email_address,) }
 
         it "returns 404" do
           get "/api/v1/projects/#{project.id}/features/#{other_feature.id}", headers: api_headers(workspace_member.api_token)
@@ -167,7 +167,7 @@ RSpec.describe "Api::V1::Features", type: :request do
 
     context "with valid authentication" do
       context "as viewer" do
-        let!(:viewer_member) { create(:project_member, project: project, email: user.email_address, role: "viewer", ) }
+        let!(:viewer_member) { create(:project_member, project: project, email: user.email_address, role: "viewer",) }
 
         it "returns 403 forbidden" do
           post "/api/v1/projects/#{project.id}/features", params: valid_params, headers: api_headers(workspace_member.api_token)
@@ -177,7 +177,7 @@ RSpec.describe "Api::V1::Features", type: :request do
       end
 
       context "as editor" do
-        let!(:editor_member) { create(:project_member, project: project, email: user.email_address, role: "editor", ) }
+        let!(:editor_member) { create(:project_member, project: project, email: user.email_address, role: "editor",) }
 
         it "successfully creates feature with valid params" do
           expect {
@@ -229,7 +229,7 @@ RSpec.describe "Api::V1::Features", type: :request do
       end
 
       context "as administrator" do
-        let!(:admin_member) { create(:project_member, project: project, email: user.email_address, role: "administrator", ) }
+        let!(:admin_member) { create(:project_member, project: project, email: user.email_address, role: "administrator",) }
 
         it "successfully creates feature" do
           expect {
@@ -263,7 +263,7 @@ RSpec.describe "Api::V1::Features", type: :request do
 
     context "with valid authentication" do
       context "as viewer" do
-        let!(:viewer_member) { create(:project_member, project: project, email: user.email_address, role: "viewer", ) }
+        let!(:viewer_member) { create(:project_member, project: project, email: user.email_address, role: "viewer",) }
 
         it "returns 403 forbidden" do
           patch "/api/v1/projects/#{project.id}/features/#{feature.id}", params: update_params, headers: api_headers(workspace_member.api_token)
@@ -273,7 +273,7 @@ RSpec.describe "Api::V1::Features", type: :request do
       end
 
       context "as editor" do
-        let!(:editor_member) { create(:project_member, project: project, email: user.email_address, role: "editor", ) }
+        let!(:editor_member) { create(:project_member, project: project, email: user.email_address, role: "editor",) }
 
         it "successfully updates feature with valid params" do
           patch "/api/v1/projects/#{project.id}/features/#{feature.id}", params: update_params, headers: api_headers(workspace_member.api_token)
@@ -317,7 +317,7 @@ RSpec.describe "Api::V1::Features", type: :request do
       end
 
       context "as administrator" do
-        let!(:admin_member) { create(:project_member, project: project, email: user.email_address, role: "administrator", ) }
+        let!(:admin_member) { create(:project_member, project: project, email: user.email_address, role: "administrator",) }
 
         it "successfully updates feature" do
           patch "/api/v1/projects/#{project.id}/features/#{feature.id}", params: update_params, headers: api_headers(workspace_member.api_token)
@@ -342,7 +342,7 @@ RSpec.describe "Api::V1::Features", type: :request do
 
     context "with valid authentication" do
       context "as viewer" do
-        let!(:viewer_member) { create(:project_member, project: project, email: user.email_address, role: "viewer", ) }
+        let!(:viewer_member) { create(:project_member, project: project, email: user.email_address, role: "viewer",) }
 
         it "returns 403 forbidden" do
           delete "/api/v1/projects/#{project.id}/features/#{feature.id}", headers: api_headers(workspace_member.api_token)
@@ -352,7 +352,7 @@ RSpec.describe "Api::V1::Features", type: :request do
       end
 
       context "as editor" do
-        let!(:editor_member) { create(:project_member, project: project, email: user.email_address, role: "editor", ) }
+        let!(:editor_member) { create(:project_member, project: project, email: user.email_address, role: "editor",) }
 
         it "successfully deletes feature" do
           expect {
@@ -383,7 +383,7 @@ RSpec.describe "Api::V1::Features", type: :request do
       end
 
       context "as administrator" do
-        let!(:admin_member) { create(:project_member, project: project, email: user.email_address, role: "administrator", ) }
+        let!(:admin_member) { create(:project_member, project: project, email: user.email_address, role: "administrator",) }
 
         it "successfully deletes feature" do
           expect {

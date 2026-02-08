@@ -36,11 +36,11 @@ module WorkspaceMembers
 
     def expiration_options
       [
-        ["30 days", 30],
-        ["60 days", 60],
-        ["90 days", 90],
-        ["180 days", 180],
-        ["1 year", 365]
+        [ "30 days", 30 ],
+        [ "60 days", 60 ],
+        [ "90 days", 90 ],
+        [ "180 days", 180 ],
+        [ "1 year", 365 ]
       ]
     end
 

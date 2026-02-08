@@ -44,7 +44,6 @@ module Tags
     end
 
     private
-
     attr_reader :taggable, :tags, :css_class, :project
   end
 end

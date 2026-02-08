@@ -45,6 +45,5 @@ module WorkspaceMembers
     private
 
     attr_reader :workspace, :current_user, :notice, :alert
-
   end
 end
