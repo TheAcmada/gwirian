@@ -48,7 +48,7 @@ class WorkspacesController < ApplicationController
 
     workspace_name = workspace.name
     workspace.destroy
-    redirect_to_default_workspace_or_root(notice: "Workspace '#{workspace_name}' has been deleted.")
+    redirect_to_default_workspace_or_root(notice: "Workspace #{workspace_name} has been deleted.")
   end
 
   private
