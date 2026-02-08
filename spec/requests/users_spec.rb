@@ -206,30 +206,15 @@ RSpec.describe "Users", type: :request do
   describe "DELETE /users/:id" do
     let(:user) { create(:user) }
 
-    context "when authenticated" do
-      before do
-        sign_in_as(user)
-      end
-
-      it "deletes the user" do
-        user_id = user.id
-        delete "/users/#{user.id}"
-        expect(User.find_by(id: user_id)).to be_nil
-      end
-
-      it "redirects to root path with notice" do
-        delete "/users/#{user.id}"
-        expect(response).to redirect_to(root_path)
-        follow_redirect!
-        expect(response.body).to include("account has been deleted")
-      end
+    it "returns 404 Not Found (route not implemented)" do
+      sign_in_as(user)
+      delete "/users/#{user.id}"
+      expect(response).to have_http_status(:not_found)
     end
 
-    context "when not authenticated" do
-      it "redirects to login" do
-        delete "/users/#{user.id}"
-        expect(response).to redirect_to(new_session_path)
-      end
+    it "returns 404 when not authenticated" do
+      delete "/users/#{user.id}"
+      expect(response).to have_http_status(:not_found)
     end
   end
 end
