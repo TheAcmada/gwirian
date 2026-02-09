@@ -14,7 +14,7 @@ bin/rails saas:disable
 
 ## How to update Gwirian
 
-After making changes to this gem, you need to update Fizzy to pick up the changes:
+After making changes to this gem, you need to update Gwirian to pick up the changes:
 
 ```ruby
 BUNDLE_GEMFILE=Gemfile.saas bundle update --conservative gwirian-saas
