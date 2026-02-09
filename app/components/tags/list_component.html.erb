@@ -9,7 +9,7 @@
         this.showAddInput = false;
       }
     }"
-    x-on:htmx:after-swap.window="if ($event.detail.target.closest('.mb-8')) { showAddInput = false; newTagName = ''; }"
+    x-on:htmx:after-swap.window="if ($event.detail.target.closest('[data-feature-header]')) { showAddInput = false; newTagName = ''; }"
     x-on:mouseenter="$refs.addButton?.classList.remove('opacity-0')"
     x-on:mouseleave="if (!showAddInput) $refs.addButton?.classList.add('opacity-0')"
   >
@@ -22,7 +22,7 @@
               type="button"
               hx-delete="<%= remove_tag_path(tag.name) %>"
               hx-vals='{"tag_name": <%= tag.name.to_json %>}'
-              hx-target="closest .mb-8"
+              hx-target="closest [data-feature-header]"
               hx-swap="outerHTML"
               class="opacity-0 group-hover:opacity-100 transition-opacity ml-0.5 hover:text-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 rounded cursor-pointer"
               aria-label="Remove tag <%= tag.name %>"
@@ -40,7 +40,7 @@
         x-show="showAddInput"
         x-transition
         hx-post="<%= add_tag_path %>"
-        hx-target="closest .mb-8"
+        hx-target="closest [data-feature-header]"
         hx-swap="outerHTML"
         hx-trigger="submit"
         hx-on::after-swap="showAddInput = false; newTagName = '';"
