@@ -37,6 +37,8 @@ env:
     MAILER_FROM_ADDRESS: "support@example.com" # The email address that Gwirian will send emails from
     SMTP_HOST: mail.example.com
     SOLID_QUEUE_IN_PUMA: true # Run background jobs in the same process as the web server
+    ELASTICSEARCH_URL: http://gwirian-search:9200
+
 
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
 # "bin/kamal logs -r job" will tail logs from the first server in the job section.

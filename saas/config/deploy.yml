@@ -53,6 +53,7 @@ env:
     SMTP_HOST: smtp.postmarkapp.com
     SMTP_PORT: 587
     SOLID_QUEUE_IN_PUMA: true
+    ELASTICSEARCH_URL: http://gwirian-search:9200
 
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
 # "bin/kamal logs -r job" will tail logs from the first server in the job section.
