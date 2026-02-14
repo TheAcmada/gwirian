@@ -50,7 +50,7 @@
 </div>
 
 <% if Rails.env.development? && flash[:magic_link_code].present? %>
-  <div class="fixed bottom-4 right-4 bg-amber-100 dark:bg-amber-900/50 border border-amber-300 dark:border-amber-700 rounded-lg p-4 shadow-lg">
+  <div class="fixed bottom-4 left-4 z-50 bg-amber-100 dark:bg-amber-900/50 border border-amber-300 dark:border-amber-700 rounded-lg p-4 shadow-lg">
     <div class="flex items-center gap-3">
       <span class="text-xs font-bold uppercase text-amber-600 dark:text-amber-400">Dev</span>
       <span class="text-sm text-amber-700 dark:text-amber-300">Code:</span>
