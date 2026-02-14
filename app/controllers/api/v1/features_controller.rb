@@ -46,17 +46,10 @@ class Api::V1::FeaturesController < Api::V1::ApiController
   private
 
   def set_feature
-    @feature = @project.features.find_by(id: params[:id])
-    unless @feature
-      render json: { error: "Feature not found" }, status: :not_found and return
-    end
+    @feature = @project.features.find(params[:id])
   end
 
   def feature_params
     params.require(:feature).permit(:title, :description, :tag_list)
-  end
-
-  rescue_from CanCan::AccessDenied do |exception|
-    render json: { error: "Access denied" }, status: :forbidden
   end
 end

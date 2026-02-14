@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class McpController < ActionController::Base
-  before_action :authenticate_with_api_token!
+  include Authentication::ViaApiToken
   skip_before_action :verify_authenticity_token
 
   def handle
@@ -12,7 +12,6 @@ class McpController < ActionController::Base
     request_id = nil
 
     begin
-      # Parse the request JSON to get the id for error reporting before the main processing
       request_data = JSON.parse(body) rescue {}
       request_id = request_data["id"]
 
@@ -38,8 +37,15 @@ class McpController < ActionController::Base
     end
   end
 
-
   private
+
+  def render_token_unauthorized
+    render json: {
+      jsonrpc: "2.0",
+      id: nil,
+      error: { code: -32001, message: "Unauthorized" }
+    }, status: :unauthorized
+  end
 
   def build_server_context
     {
@@ -48,24 +54,5 @@ class McpController < ActionController::Base
       request_id: request.request_id,
       ip_address: request.remote_ip
     }
-  end
-
-  def current_user
-    @current_user
-  end
-
-  def authenticate_with_api_token!
-    token = request.headers["authorization"]&.split(" ")&.last || params[:api_token]
-    @current_workspace_member = WorkspaceMember.find_by(api_token: token)
-    unless @current_workspace_member&.api_token_valid?
-      render json: {
-        jsonrpc: "2.0",
-        id: nil,
-        error: { code: -32001, message: "Unauthorized" }
-      }, status: :unauthorized
-      return
-    end
-    @current_user = @current_workspace_member.user
-    Current.workspace = @current_workspace_member.workspace
   end
 end

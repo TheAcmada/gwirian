@@ -1,6 +1,19 @@
+# frozen_string_literal: true
+
 class Api::V1::ApiController < ActionController::Base
-  before_action :authenticate_with_api_token!
+  include Authentication::ViaApiToken
+  include ProjectAccessible
+
   before_action :set_project, if: -> { params[:project_id].present? }
+
+  rescue_from ActiveRecord::RecordNotFound do |e|
+    message = record_not_found_message(e)
+    render json: { error: message }, status: :not_found
+  end
+
+  rescue_from CanCan::AccessDenied do
+    render json: { error: "Access denied" }, status: :forbidden
+  end
 
   def current_user
     @current_user
@@ -10,28 +23,20 @@ class Api::V1::ApiController < ActionController::Base
     @current_workspace_member
   end
 
-  private
-
-  def authenticate_with_api_token!
-    token = request.headers["authorization"]&.split(" ")&.last || params[:api_token]
-    @current_workspace_member = WorkspaceMember.find_by(api_token: token)
-    unless @current_workspace_member&.api_token_valid?
-      render json: { error: "Unauthorized" }, status: :unauthorized
-      return
-    end
-    @current_user = @current_workspace_member.user
-    Current.workspace = @current_workspace_member.workspace
-  end
-
   protected
 
-  def set_project
-    @project = Current.workspace.projects
-      .joins(:project_members)
-      .where(project_members: { email: current_user.email_address })
-      .find_by(id: params[:project_id])
-    unless @project
-      render json: { error: "Project not found" }, status: :not_found and return
+  def record_not_found_message(exception)
+    model_name = exception.respond_to?(:model) && exception.model ? (exception.model.is_a?(Class) ? exception.model.name : exception.model.to_s) : nil
+    case model_name
+    when "Project" then "Project not found"
+    when "Feature" then "Feature not found"
+    when "Scenario" then "Scenario not found"
+    when "ScenarioExecution" then "Scenario execution not found"
+    else exception.message
     end
+  end
+
+  def set_project
+    @project = accessible_projects.find(params[:project_id])
   end
 end

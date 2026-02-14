@@ -40,6 +40,8 @@ module Gwirian
       end
 
       config.to_prepare do
+        require_relative "mcp_tools_limited_creation"
+
         ::Workspace.include Workspace::Limited
         ::ProjectsController.include Project::LimitedCreation
         ::FeaturesController.include Feature::LimitedCreation
@@ -48,6 +50,9 @@ module Gwirian
         # API controllers
         ::Api::V1::FeaturesController.include Feature::LimitedCreation
         ::Api::V1::ScenariosController.include Scenario::LimitedCreation
+        # MCP tools: enforce plan limits when creating features/scenarios via MCP
+        ::Mcp::Tools::CreateFeature.singleton_class.prepend(Feature::LimitedMcpCreation)
+        ::Mcp::Tools::CreateScenario.singleton_class.prepend(Scenario::LimitedMcpCreation)
       end
     end
   end

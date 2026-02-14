@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   include Authentication
+  include ProjectAccessible
   include Pagy::Method
 
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
@@ -47,12 +48,7 @@ class ApplicationController < ActionController::Base
   end
 
   def workspace_projects
-    return Project.none unless Current.workspace && Current.user
-
-    Current.workspace.projects
-      .joins(:project_members)
-      .where(project_members: { email: Current.user.email_address })
-      .distinct
+    accessible_projects
   end
   helper_method :workspace_projects
 end

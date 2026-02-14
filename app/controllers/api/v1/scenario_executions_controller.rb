@@ -49,31 +49,18 @@ class Api::V1::ScenarioExecutionsController < Api::V1::ApiController
   private
 
   def set_feature
-    @feature = @project.features.find_by(id: params[:feature_id])
-    unless @feature
-      render json: { error: "Feature not found" }, status: :not_found and return
-    end
+    @feature = @project.features.find(params[:feature_id])
   end
 
   def set_scenario
-    @scenario = @feature.scenarios.find_by(id: params[:scenario_id])
-    unless @scenario
-      render json: { error: "Scenario not found" }, status: :not_found and return
-    end
+    @scenario = @feature.scenarios.find(params[:scenario_id])
   end
 
   def set_scenario_execution
-    @scenario_execution = @scenario.scenario_executions.find_by(id: params[:id])
-    unless @scenario_execution
-      render json: { error: "Scenario execution not found" }, status: :not_found and return
-    end
+    @scenario_execution = @scenario.scenario_executions.find(params[:id])
   end
 
   def scenario_execution_params
     params.require(:scenario_execution).permit(:status, :notes, :executed_at)
-  end
-
-  rescue_from CanCan::AccessDenied do |exception|
-    render json: { error: "Access denied" }, status: :forbidden
   end
 end
