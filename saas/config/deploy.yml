@@ -50,7 +50,7 @@ env:
     RAILS_ENV: production
     BASE_URL: https://app.gwirian.com
     MAILER_FROM_ADDRESS: support@gwirian.com
-    SMTP_HOST: smtp.postmarkapp.com
+    SMTP_HOST: smtp.resend.com
     SMTP_PORT: 587
     SOLID_QUEUE_IN_PUMA: true
     ELASTICSEARCH_URL: http://gwirian-search:9200
