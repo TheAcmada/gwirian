@@ -9,6 +9,7 @@ module WorkspaceMember::LimitedCreation
 
   def ensure_under_members_limit
     return unless Current.workspace
+    return if respond_to?(:current_user) && Gwirian::Saas::PlanLimitsBypass.gwirian_com?(current_user)
 
     if Current.workspace.exceeding_members_limit?
       message = "You have reached the team member limit for your plan (#{Current.workspace.plan.name}). " \

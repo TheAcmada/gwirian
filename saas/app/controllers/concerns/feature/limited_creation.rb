@@ -9,6 +9,7 @@ module Feature::LimitedCreation
 
   def ensure_under_features_limit
     return unless Current.workspace
+    return if respond_to?(:current_user) && Gwirian::Saas::PlanLimitsBypass.gwirian_com?(current_user)
 
     if Current.workspace.exceeding_features_limit?
       message = "You have reached the feature limit for your plan (#{Current.workspace.plan.name}). " \

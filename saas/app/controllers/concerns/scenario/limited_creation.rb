@@ -9,6 +9,7 @@ module Scenario::LimitedCreation
 
   def ensure_under_scenarios_limit
     return unless Current.workspace
+    return if respond_to?(:current_user) && Gwirian::Saas::PlanLimitsBypass.gwirian_com?(current_user)
 
     if Current.workspace.exceeding_scenarios_limit?
       message = "You have reached the scenario limit for your plan (#{Current.workspace.plan.name}). " \

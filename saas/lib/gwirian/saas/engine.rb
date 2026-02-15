@@ -40,6 +40,7 @@ module Gwirian
       end
 
       config.to_prepare do
+        require_relative "plan_limits_bypass"
         require_relative "mcp_tools_limited_creation"
 
         ::Workspace.include Workspace::Limited

@@ -9,6 +9,7 @@ module Project::LimitedCreation
 
   def ensure_under_projects_limit
     return unless Current.workspace
+    return if respond_to?(:current_user) && Gwirian::Saas::PlanLimitsBypass.gwirian_com?(current_user)
 
     if Current.workspace.exceeding_projects_limit?
       message = "You have reached the project limit for your plan (#{Current.workspace.plan.name}). " \
