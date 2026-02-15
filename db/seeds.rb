@@ -76,6 +76,16 @@ def seed_project_member(project, email:, role: "editor")
   end
 end
 
+def seed_scenario_execution(scenario, user, status:, executed_at:, notes: nil)
+  ScenarioExecution.create!(
+    scenario: scenario,
+    user: user,
+    status: status,
+    executed_at: executed_at,
+    notes: notes.presence
+  )
+end
+
 # ---------------------------------------------------------------------------
 # Seed data: add or edit projects, features, and scenarios here
 # ---------------------------------------------------------------------------
@@ -92,11 +102,52 @@ USERS_SEED = [
 # For each project name, list emails of non-admin members to add (must be in USERS_SEED).
 # Each project ends up with 1 admin + these members, so total count varies 2–5 per project.
 PROJECT_MEMBERS_SEED = {
-  "E-Commerce Platform" => ["alice@example.com"],                                    # 2 total
-  "Content Management System" => ["alice@example.com", "bob@example.com"],            # 3 total
-  "Mobile Banking Application" => ["alice@example.com", "bob@example.com", "carol@example.com"], # 4 total
-  "Task Management System" => ["alice@example.com", "bob@example.com", "carol@example.com", "dave@example.com"] # 5 total
+  "E-Commerce Platform" => [ "alice@example.com" ],                                    # 2 total
+  "Content Management System" => [ "alice@example.com", "bob@example.com" ],            # 3 total
+  "Mobile Banking Application" => [ "alice@example.com", "bob@example.com", "carol@example.com" ], # 4 total
+  "Task Management System" => [ "alice@example.com", "bob@example.com", "carol@example.com", "dave@example.com" ] # 5 total
 }.freeze
+
+# Template for scenario executions: status, days_ago, and notes (nil = no notes).
+# Used to build a rich, representative set of executions across dates and outcomes.
+EXECUTION_NOTE_TEMPLATES = {
+  passed: [
+    nil,
+    "All steps green.",
+    "Green in CI. No flakiness.",
+    "Smoke test run. Environment: staging.",
+    "Regression run completed. Coverage OK.",
+    "Passed after fixing fixture data."
+  ].freeze,
+  failed: [
+    "Timeout waiting for payment gateway response.",
+    "Assertion failed: expected cart count 2, got 1.",
+    "Element not found: Add to Cart button (selector changed).",
+    "Flaky – passed on retry. Investigating.",
+    "Stale element reference. Need explicit wait.",
+    "API returned 502. Backend deployment in progress.",
+    "Snapshot mismatch on checkout summary.",
+    "Failed on Safari only. Cross-browser ticket created."
+  ].freeze,
+  pending: [
+    nil,
+    "Scheduled for nightly run.",
+    "Blocked by API rate limit. Retry tomorrow.",
+    "Skipped – env under maintenance.",
+    "Waiting for design sign-off on new flow.",
+    "Not run this cycle. Backlog."
+  ].freeze
+}.freeze
+
+# One entry per execution to add per scenario: [status, days_ago, note_index_in_templates].
+# Spread of dates (0 = today) and mix of statuses. Note index can be nil (no note) or 0, 1, ...
+EXECUTION_TEMPLATES = [
+  [ :passed,  0,  0 ], [ :passed,  1,  1 ], [ :failed,  3,  0 ], [ :passed,  7,  2 ],
+  [ :pending, 10, 1 ], [ :passed,  14, 3 ], [ :failed,  21,  2 ], [ :passed,  28, 4 ],
+  [ :passed,  35, 0 ], [ :failed,  42, 5 ], [ :passed,  49, 1 ], [ :pending, 56, 3 ],
+  [ :passed,  60, 0 ], [ :failed,  5,  6 ], [ :passed,  12, 5 ], [ :pending, 18, 0 ],
+  [ :passed,  25, 2 ], [ :failed,  33, 3 ], [ :passed,  45, nil ], [ :pending, 52, 4 ]
+].freeze
 
 PROJECTS_SEED = [
   {
@@ -300,6 +351,33 @@ PROJECT_MEMBERS_SEED.each do |project_name, emails|
   end
 end
 
+puts "Creating scenario executions..."
+all_users = [ admin_user ] + seed_users
+Scenario.includes(:feature).find_each do |scenario|
+  # Number of executions per scenario: 4–10, deterministic from scenario id
+  count = 4 + (scenario.id % 7)
+  count.times do |i|
+    template = EXECUTION_TEMPLATES[(scenario.id + i) % EXECUTION_TEMPLATES.size]
+    status_sym, days_ago, note_idx = template
+    status = status_sym.to_s
+    executed_at = days_ago.days.ago + (scenario.id * 37 + i * 11).seconds
+    notes = if note_idx.nil?
+      nil
+    else
+      arr = EXECUTION_NOTE_TEMPLATES[status_sym]
+      arr[note_idx % arr.size] if arr
+    end
+    user = all_users[(scenario.id + i) % all_users.size]
+    seed_scenario_execution(
+      scenario,
+      user,
+      status: status,
+      executed_at: executed_at,
+      notes: notes
+    )
+  end
+end
+
 puts "Seeding complete! Created:"
 puts "  - #{User.count} users"
 puts "  - #{WorkspaceMember.count} workspace members"
@@ -307,3 +385,4 @@ puts "  - #{Project.count} projects"
 puts "  - #{ProjectMember.count} project members"
 puts "  - #{Feature.count} features"
 puts "  - #{Scenario.count} scenarios"
+puts "  - #{ScenarioExecution.count} scenario executions"
