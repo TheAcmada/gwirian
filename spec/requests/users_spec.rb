@@ -35,6 +35,15 @@ RSpec.describe "Users", type: :request do
         expect(response).to redirect_to(session_magic_link_path)
       end
 
+      it "sends welcome email to the new user" do
+        allow(UserMailer).to receive(:welcome).and_return(double(deliver_later: true))
+
+        post "/users", params: valid_params
+        user = User.find_by(email_address: "newuser@example.com")
+
+        expect(UserMailer).to have_received(:welcome).with(user)
+      end
+
       context "when signup notification email is configured" do
         before do
           signup_config = double(notify_email: "admin@example.com")

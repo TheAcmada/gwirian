@@ -18,6 +18,7 @@ class UsersController < ApplicationController
 
     if @user.new_record?
       if @user.save
+        UserMailer.welcome(@user).deliver_later
         UserMailer.signup_notification(@user).deliver_later if Rails.application.config.signup.notify_email.present?
         redirect_to_session_magic_link(@user.send_magic_link)
       else

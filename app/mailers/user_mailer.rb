@@ -1,4 +1,9 @@
 class UserMailer < ApplicationMailer
+  def welcome(user)
+    @user = user
+    mail(to: @user.email_address, subject: "Welcome to Gwirian")
+  end
+
   def signup_notification(user)
     mail_to = Rails.application.config.signup.notify_email
     unless mail_to.blank?
