@@ -10,8 +10,8 @@
   <%# Page navigation %>
   <div class="flex items-center gap-1">
     <%# Previous button %>
-    <% if pagy.prev %>
-      <%= link_to url_for(page: pagy.prev), class: "inline-flex items-center justify-center w-8 h-8 rounded text-sm text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors" do %>
+    <% if pagy.previous %>
+      <%= link_to url_for(page: pagy.previous), class: "inline-flex items-center justify-center w-8 h-8 rounded text-sm text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors" do %>
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
@@ -25,7 +25,7 @@
     <% end %>
 
     <%# Page numbers %>
-    <% pagy.series.each do |item| %>
+    <% pagy_series(pagy).each do |item| %>
       <% if item.is_a?(Integer) %>
         <% if item == pagy.page %>
           <span class="inline-flex items-center justify-center min-w-[2rem] h-8 px-2 rounded text-sm font-medium bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-white">

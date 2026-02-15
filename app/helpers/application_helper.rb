@@ -1,4 +1,31 @@
 module ApplicationHelper
+  # Build pagination series array compatible with Pagy (page numbers, :gap, current as Integer).
+  # Use when rendering custom pagination; Pagy::Offset does not expose #series publicly.
+  def pagy_series(pagy, slots: 7)
+    page = pagy.page
+    last = pagy.last
+    return [] if slots < 1 || last < 1
+
+    if slots >= last
+      (1..last).to_a
+    else
+      half = (slots - 1) / 2
+      start = if page <= half
+        1
+      elsif page > (last - slots + half)
+        last - slots + 1
+      else
+        page - half
+      end
+      series = (start...(start + slots)).to_a
+      series[0] = 1
+      series[1] = :gap unless series[1] == 2
+      series[-2] = :gap unless series[-2] == last - 1
+      series[-1] = last
+      series
+    end
+  end
+
   # Format datetime with 24-hour time
   # Examples:
   #   format_datetime(time) => "Dec 22, 2025, 16:56"
