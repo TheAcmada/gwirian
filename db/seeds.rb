@@ -59,9 +59,44 @@ def seed_scenario(feature, title:, given: "", when_step: nil, then_step: nil)
   end
 end
 
+def seed_user(email_address)
+  User.find_or_create_by!(email_address: email_address)
+end
+
+def seed_workspace_member(workspace, user, role: "viewer", status: "current_member")
+  WorkspaceMember.find_or_create_by!(workspace: workspace, user: user) do |wm|
+    wm.role = role
+    wm.status = status
+  end
+end
+
+def seed_project_member(project, email:, role: "editor")
+  ProjectMember.find_or_create_by!(project: project, email: email) do |pm|
+    pm.role = role
+  end
+end
+
 # ---------------------------------------------------------------------------
 # Seed data: add or edit projects, features, and scenarios here
 # ---------------------------------------------------------------------------
+
+# 4 additional users (admin is created separately). Each gets workspace membership
+# and is distributed across projects as below.
+USERS_SEED = [
+  { email: "alice@example.com" },
+  { email: "bob@example.com" },
+  { email: "carol@example.com" },
+  { email: "dave@example.com" }
+].freeze
+
+# For each project name, list emails of non-admin members to add (must be in USERS_SEED).
+# Each project ends up with 1 admin + these members, so total count varies 2–5 per project.
+PROJECT_MEMBERS_SEED = {
+  "E-Commerce Platform" => ["alice@example.com"],                                    # 2 total
+  "Content Management System" => ["alice@example.com", "bob@example.com"],            # 3 total
+  "Mobile Banking Application" => ["alice@example.com", "bob@example.com", "carol@example.com"], # 4 total
+  "Task Management System" => ["alice@example.com", "bob@example.com", "carol@example.com", "dave@example.com"] # 5 total
+}.freeze
 
 PROJECTS_SEED = [
   {
@@ -216,8 +251,16 @@ seed_cleanup!
 admin_user = seed_admin_user
 default_workspace = seed_default_workspace(admin_user)
 
-puts "Creating projects..."
+puts "Creating users..."
+seed_users = USERS_SEED.map { |u| seed_user(u[:email]) }
+# Add all 4 as workspace members: 2 editors, 2 viewers
+seed_users.each_with_index do |user, i|
+  role = i < 2 ? "editor" : "viewer"
+  seed_workspace_member(default_workspace, user, role: role)
+end
 
+puts "Creating projects..."
+projects_by_name = {}
 PROJECTS_SEED.each do |project_data|
   project = seed_project(
     default_workspace,
@@ -225,6 +268,7 @@ PROJECTS_SEED.each do |project_data|
     description: project_data[:description],
     admin_user: admin_user
   )
+  projects_by_name[project_data[:name]] = project
 
   (project_data[:features] || []).each do |feature_data|
     feature = seed_feature(
@@ -246,7 +290,20 @@ PROJECTS_SEED.each do |project_data|
   end
 end
 
+puts "Adding project members..."
+PROJECT_MEMBERS_SEED.each do |project_name, emails|
+  project = projects_by_name[project_name]
+  next unless project
+
+  emails.each do |email|
+    seed_project_member(project, email: email, role: "editor")
+  end
+end
+
 puts "Seeding complete! Created:"
+puts "  - #{User.count} users"
+puts "  - #{WorkspaceMember.count} workspace members"
 puts "  - #{Project.count} projects"
+puts "  - #{ProjectMember.count} project members"
 puts "  - #{Feature.count} features"
 puts "  - #{Scenario.count} scenarios"
