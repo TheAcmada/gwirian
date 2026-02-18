@@ -8,5 +8,6 @@
     </main>
     <%= render partial: "layouts/confirm_dialog" %>
     <%= render partial: "layouts/notification" %>
+    <%= render Shared::CommandPaletteComponent.new(workspace: Current.workspace, project: @project) %>
   </body>
 </html>

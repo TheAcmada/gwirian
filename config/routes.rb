@@ -52,6 +52,7 @@ Rails.application.routes.draw do
       end
     end
     member do
+      get :search
       get :history
       post :add_member
       delete :remove_member

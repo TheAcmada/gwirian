@@ -121,6 +121,113 @@
 
   initializeDynamicFeatures();
 
+  // Command palette (Ctrl+K) – Alpine.js component used by Shared::CommandPaletteComponent
+  document.addEventListener("alpine:init", () => {
+    Alpine.data("commandPalette", () => ({
+      open: false,
+      query: "",
+      staticItems: [],
+      searchResults: [],
+      selectedIndex: 0,
+      loading: false,
+      searchUrl: null,
+      csrfToken: "",
+      debounceTimer: null,
+
+      get items() {
+        const q = this.query.trim().toLowerCase();
+        if (!q) {
+          return this.staticItems;
+        }
+        const words = q.split(/\s+/).filter(Boolean);
+        const filtered = this.staticItems.filter((item) => {
+          const title = (item.title || "").toLowerCase();
+          const keywords = (item.keywords || "").toLowerCase();
+          const text = `${title} ${keywords}`;
+          return words.every((w) => text.includes(w));
+        });
+        return filtered.concat(this.searchResults);
+      },
+
+      initFromDataset() {
+        try {
+          const raw = this.$el.dataset.config;
+          if (!raw) return;
+          const config = JSON.parse(raw);
+          this.searchUrl = config.searchUrl || null;
+          this.staticItems = config.staticItems || [];
+          this.csrfToken = config.csrfToken || "";
+        } catch (e) {
+          this.staticItems = [];
+        }
+      },
+
+      runSearch() {
+        clearTimeout(this.debounceTimer);
+        const q = this.query.trim();
+        if (!q) {
+          this.searchResults = [];
+          this.loading = false;
+          this.selectedIndex = 0;
+          return;
+        }
+        if (this.searchUrl) {
+          this.loading = true;
+          this.debounceTimer = setTimeout(() => {
+            fetch(`${this.searchUrl}?q=${encodeURIComponent(q)}`, {
+              method: "GET",
+              headers: { "Accept": "application/json", "X-Requested-With": "XMLHttpRequest" }
+            })
+              .then((res) => res.ok ? res.json() : { results: [] })
+              .then((data) => {
+                this.searchResults = data.results || [];
+                this.selectedIndex = 0;
+              })
+              .catch(() => { this.searchResults = []; })
+              .finally(() => { this.loading = false; });
+          }, 300);
+        } else {
+          this.searchResults = [];
+          this.loading = false;
+        }
+        this.$nextTick(() => {
+          this.selectedIndex = Math.min(this.selectedIndex, Math.max(0, this.items.length - 1));
+        });
+      },
+
+      selectResult(item) {
+        if (!item || !item.url) return;
+        if (item.method === "post") {
+          fetch(item.url, {
+            method: "POST",
+            redirect: "manual",
+            headers: {
+              "X-CSRF-Token": this.csrfToken,
+              "Accept": "text/html",
+              "Content-Type": "application/x-www-form-urlencoded",
+              "X-Requested-With": "XMLHttpRequest"
+            }
+          })
+            .then((res) => {
+              const loc = res.headers.get("Location");
+              if (res.type === "opaqueredirect" || (res.status >= 300 && res.status < 400) || loc) {
+                window.location.href = loc || res.url || item.url;
+              } else {
+                window.location.href = item.url;
+              }
+            })
+            .catch(() => { window.location.href = item.url; });
+        } else {
+          window.location.href = item.url;
+        }
+      },
+
+      typeBadge(type) {
+        return { feature: "Feature", scenario: "Scenario", command: "Command", nav: "Go to" }[type] || type;
+      }
+    }));
+  });
+
   // Make variables available globally
   window.showConfirmation = showConfirmation;
   window.showNotice = showNotice;

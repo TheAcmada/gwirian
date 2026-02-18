@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
   before_action :require_workspace
-  before_action :set_project, only: [ :show, :history, :edit, :update, :destroy, :add_member, :remove_member, :update_member ]
+  before_action :set_project, only: [ :show, :search, :history, :edit, :update, :destroy, :add_member, :remove_member, :update_member ]
 
   def index
     @projects = workspace_projects.order(:name)
@@ -10,6 +10,45 @@ class ProjectsController < ApplicationController
     unless can? :read, @project
       render_alert("You are not authorized to view this project")
     end
+  end
+
+  def search
+    unless can? :read, @project
+      render json: { results: [] }, status: :forbidden
+      return
+    end
+
+    q = params[:q].to_s.strip
+    results = []
+
+    if q.present?
+      begin
+        features = Feature.search_by_project(q, @project.id, limit: 10).records
+        scenarios = Scenario.search_by_project(q, @project.id, limit: 10).records.includes(:feature)
+
+        features.each do |f|
+          results << {
+            type: "feature",
+            title: f.title,
+            subtitle: "Feature",
+            url: project_feature_path(@project, f)
+          }
+        end
+
+        scenarios.each do |s|
+          results << {
+            type: "scenario",
+            title: s.title,
+            subtitle: "Feature: #{s.feature.title}",
+            url: project_feature_path(@project, s.feature)
+          }
+        end
+      rescue StandardError
+        results = []
+      end
+    end
+
+    render json: { results: results }
   end
 
   def history
