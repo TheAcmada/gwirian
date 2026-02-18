@@ -12,7 +12,7 @@ module Shared
     end
 
     def search_url
-      return nil unless @project.present?
+      return nil unless @project.present? && @project.persisted?
 
       search_project_path(@project, format: :json)
     end
@@ -22,7 +22,7 @@ module Shared
       projects = helpers.workspace_projects.order(:name)
       user_workspaces = Current.user&.workspace_members&.current_member&.includes(:workspace) || []
 
-      if @project.present?
+      if @project.present? && @project.persisted?
         if helpers.can?(:create, @project.features.build)
           items << { type: "command", title: "Create new feature", subtitle: "Command", url: project_features_path(@project), method: "post", keywords: "new feature create" }
         end
@@ -67,7 +67,7 @@ module Shared
     end
 
     def placeholder
-      if @project.present?
+      if @project.present? && @project.persisted?
         "Search or run a command..."
       else
         "Type to filter actions and go to..."
