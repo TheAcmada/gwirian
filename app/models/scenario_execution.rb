@@ -1,6 +1,7 @@
 class ScenarioExecution < ApplicationRecord
   include Elasticsearch::Model
   include Elasticsearch::Model::Callbacks
+  include ElasticsearchQuerySanitizer
 
   belongs_to :scenario
   belongs_to :user
@@ -69,20 +70,6 @@ class ScenarioExecution < ApplicationRecord
   end
 
   private
-
-  def self.sanitize_elasticsearch_query(query)
-    return "" if query.blank?
-    # Escape special characters that could be used for injection
-    # Special chars: + - = && || > < ! ( ) { } [ ] ^ " ~ * ? : \ /
-    sanitized = query.to_s.dup
-    # Remove or escape dangerous characters
-    # Using a simpler approach: escape problematic chars individually
-    dangerous_chars = %w[+ - = & | > < ! ( ) { } [ ] ^ " ~ * ? : \ /].map { |c| Regexp.escape(c) }.join("|")
-    sanitized.gsub!(/#{dangerous_chars}/, " ")
-    # Collapse multiple spaces
-    sanitized.gsub!(/\s+/, " ")
-    sanitized.strip
-  end
 
   def pending?
     status == "pending"

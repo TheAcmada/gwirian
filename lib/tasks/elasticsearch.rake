@@ -12,6 +12,16 @@ namespace :elasticsearch do
     puts "Finished indexing all features."
 
     #########################################################
+    puts "Recreating index for Scenario model..."
+    Scenario.__elasticsearch__.client.indices.delete index: Scenario.index_name rescue nil
+    Scenario.__elasticsearch__.client.indices.create(
+      index: Scenario.index_name,
+      body: { settings: Scenario.settings.to_hash, mappings: Scenario.mappings.to_hash }
+    )
+    Scenario.import force: true
+    puts "Finished indexing all scenarios."
+
+    #########################################################
     puts "Recreating index for ScenarioExecution model..."
     ScenarioExecution.__elasticsearch__.client.indices.delete index: ScenarioExecution.index_name rescue nil
     ScenarioExecution.__elasticsearch__.client.indices.create(
