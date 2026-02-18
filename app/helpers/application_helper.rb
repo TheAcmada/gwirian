@@ -1,4 +1,10 @@
 module ApplicationHelper
+  # Platform-aware modifier for keyboard shortcut labels: "⌘" on Mac, "Ctrl" on Windows/Linux.
+  def shortcut_modifier
+    ua = request.user_agent.to_s
+    /Mac|iPod|iPhone|iPad/.match?(ua) ? "⌘" : "Ctrl"
+  end
+
   # Build pagination series array compatible with Pagy (page numbers, :gap, current as Integer).
   # Use when rendering custom pagination; Pagy::Offset does not expose #series publicly.
   def pagy_series(pagy, slots: 7)

@@ -121,6 +121,49 @@
 
   initializeDynamicFeatures();
 
+  // G-nav: "G then letter" for project nav (Linear-style). Only when project bar is present.
+  (function () {
+    let gNavTimeout = null;
+
+    function isEditableTarget(el) {
+      if (!el || !el.closest) return false;
+      const tag = el.tagName && el.tagName.toLowerCase();
+      if (tag === "input" || tag === "textarea") return true;
+      if (el.isContentEditable) return true;
+      return false;
+    }
+
+    document.addEventListener("keydown", function (e) {
+      if (isEditableTarget(document.activeElement)) return;
+
+      const bar = document.getElementById("project-nav-bar");
+      const key = (e.key || "").toLowerCase();
+
+      if (gNavTimeout !== null) {
+        clearTimeout(gNavTimeout);
+        gNavTimeout = null;
+        if (key === "d" || key === "f" || key === "h" || key === "s") {
+          e.preventDefault();
+          if (!bar || !bar.dataset) return;
+          const url =
+            key === "d" ? bar.dataset.dashboardUrl :
+            key === "f" ? bar.dataset.featuresUrl :
+            key === "h" ? bar.dataset.historyUrl :
+            bar.dataset.settingsUrl;
+          if (url) window.location.href = url;
+        }
+        return;
+      }
+
+      if ((key === "g" && !e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey) && bar) {
+        e.preventDefault();
+        gNavTimeout = setTimeout(function () {
+          gNavTimeout = null;
+        }, 1200);
+      }
+    });
+  })();
+
   // Command palette (Ctrl+K) – Alpine.js component used by Shared::CommandPaletteComponent
   document.addEventListener("alpine:init", () => {
     Alpine.data("commandPalette", () => ({
