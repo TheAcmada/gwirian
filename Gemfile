@@ -72,7 +72,7 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   # Use RSpec for testing
-  gem "rspec-rails", "~> 8.0.0"
+  gem "rspec-rails", "~> 8.0.3"
   gem "rails-controller-testing"
 
   # Use FactoryBot for test data
