@@ -1,4 +1,11 @@
-<div class="flex items-center justify-between">
+<div
+  class="flex items-center justify-between"
+  id="project-nav-bar"
+  data-dashboard-url="<%= project_path(project) %>"
+  data-features-url="<%= project_features_path(project) %>"
+  data-history-url="<%= history_project_path(project) %>"
+  data-settings-url="<%= edit_project_path(project) %>"
+>
   <!-- Project info with breadcrumb style -->
   <div class="flex items-center text-sm text-stone-500 dark:text-white/50">
     <svg class="w-4 h-4 mr-1.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

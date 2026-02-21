@@ -56,6 +56,19 @@
     initializeDynamicFeatures();
   });
 
+  /**
+   * After navigation (boosted or G-nav), sync body data-prev/next-feature-url from
+   * response headers so G P / G N keep working (body tag is not replaced by innerHTML swap).
+   */
+  document.body.addEventListener('htmx:afterRequest', function(evt) {
+    const xhr = evt.detail?.xhr;
+    if (!xhr) return;
+    const prevUrl = xhr.getResponseHeader("HX-Prev-Feature-Url");
+    const nextUrl = xhr.getResponseHeader("HX-Next-Feature-Url");
+    if (prevUrl != null) document.body.dataset.prevFeatureUrl = prevUrl;
+    if (nextUrl != null) document.body.dataset.nextFeatureUrl = nextUrl;
+  });
+
   // Alpine-powered HTML <dialog> confirmation
   function showConfirmation(question) {
     return new Promise((resolve) => {
@@ -120,6 +133,196 @@
 
 
   initializeDynamicFeatures();
+
+  // G-nav: "G then letter" for project nav (Linear-style). Only when project bar is present.
+  (function () {
+    let gNavTimeout = null;
+
+    function isEditableTarget(el) {
+      if (!el || !el.closest) return false;
+      const tag = el.tagName && el.tagName.toLowerCase();
+      if (tag === "input" || tag === "textarea") return true;
+      if (el.isContentEditable) return true;
+      return false;
+    }
+
+    document.addEventListener("keydown", function (e) {
+      if (isEditableTarget(document.activeElement)) return;
+
+      const bar = document.getElementById("project-nav-bar");
+      const key = (e.key || "").toLowerCase();
+
+      if (gNavTimeout !== null) {
+        clearTimeout(gNavTimeout);
+        gNavTimeout = null;
+        if (key === "d" || key === "f" || key === "h" || key === "s") {
+          e.preventDefault();
+          if (!bar || !bar.dataset) return;
+          const url =
+            key === "d" ? bar.dataset.dashboardUrl :
+            key === "f" ? bar.dataset.featuresUrl :
+            key === "h" ? bar.dataset.historyUrl :
+            bar.dataset.settingsUrl;
+          if (url) {
+            htmx.ajax("GET", url, {
+              target: document.body,
+              swap: "innerHTML",
+              headers: { "HX-Boosted": "true" }
+            }).then(function () {
+              if (typeof history.pushState === "function") {
+                history.pushState({ htmx: true }, "", url);
+              }
+            });
+          }
+        } else if (key === "p" && document.body.dataset.prevFeatureUrl) {
+          e.preventDefault();
+          const url = document.body.dataset.prevFeatureUrl;
+          htmx.ajax("GET", url, {
+            target: document.body,
+            swap: "innerHTML",
+            headers: { "HX-Boosted": "true" }
+          }).then(function () {
+            if (typeof history.pushState === "function") {
+              history.pushState({ htmx: true }, "", url);
+            }
+          });
+        } else if (key === "n" && document.body.dataset.nextFeatureUrl) {
+          e.preventDefault();
+          const url = document.body.dataset.nextFeatureUrl;
+          htmx.ajax("GET", url, {
+            target: document.body,
+            swap: "innerHTML",
+            headers: { "HX-Boosted": "true" }
+          }).then(function () {
+            if (typeof history.pushState === "function") {
+              history.pushState({ htmx: true }, "", url);
+            }
+          });
+        }
+        return;
+      }
+
+      if ((key === "g" && !e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey) && bar) {
+        e.preventDefault();
+        gNavTimeout = setTimeout(function () {
+          gNavTimeout = null;
+        }, 1200);
+      }
+    });
+  })();
+
+  // Command palette (Ctrl+K) – Alpine.js component used by Shared::CommandPaletteComponent
+  document.addEventListener("alpine:init", () => {
+    Alpine.data("commandPalette", () => ({
+      open: false,
+      query: "",
+      staticItems: [],
+      searchResults: [],
+      selectedIndex: 0,
+      loading: false,
+      searchUrl: null,
+      csrfToken: "",
+      debounceTimer: null,
+      shortcuts: [],
+      metaShortcuts: [],
+
+      get items() {
+        const q = this.query.trim().toLowerCase();
+        if (!q) {
+          return this.staticItems;
+        }
+        const words = q.split(/\s+/).filter(Boolean);
+        const filtered = this.staticItems.filter((item) => {
+          const title = (item.title || "").toLowerCase();
+          const keywords = (item.keywords || "").toLowerCase();
+          const text = `${title} ${keywords}`;
+          return words.every((w) => text.includes(w));
+        });
+        return filtered.concat(this.searchResults);
+      },
+
+      initFromDataset() {
+        try {
+          const raw = this.$el.dataset.config;
+          if (!raw) return;
+          const config = JSON.parse(raw);
+          this.searchUrl = config.searchUrl || null;
+          this.staticItems = config.staticItems || [];
+          this.csrfToken = config.csrfToken || "";
+          this.shortcuts = config.shortcuts || [];
+          this.metaShortcuts = config.metaShortcuts || [];
+        } catch (e) {
+          this.staticItems = [];
+        }
+      },
+
+      runSearch() {
+        clearTimeout(this.debounceTimer);
+        const q = this.query.trim();
+        if (!q) {
+          this.searchResults = [];
+          this.loading = false;
+          this.selectedIndex = 0;
+          return;
+        }
+        if (this.searchUrl) {
+          this.loading = true;
+          this.debounceTimer = setTimeout(() => {
+            fetch(`${this.searchUrl}?q=${encodeURIComponent(q)}`, {
+              method: "GET",
+              headers: { "Accept": "application/json", "X-Requested-With": "XMLHttpRequest" }
+            })
+              .then((res) => res.ok ? res.json() : { results: [] })
+              .then((data) => {
+                this.searchResults = data.results || [];
+                this.selectedIndex = 0;
+              })
+              .catch(() => { this.searchResults = []; })
+              .finally(() => { this.loading = false; });
+          }, 300);
+        } else {
+          this.searchResults = [];
+          this.loading = false;
+        }
+        this.$nextTick(() => {
+          this.selectedIndex = Math.min(this.selectedIndex, Math.max(0, this.items.length - 1));
+        });
+      },
+
+      selectResult(item) {
+        if (!item || !item.url) return;
+        this.open = false;
+        const pushUrl = (url) => {
+          if (typeof history.pushState === "function") {
+            history.pushState({ htmx: true }, "", url);
+          }
+        };
+        const navOpts = {
+          target: document.body,
+          swap: "innerHTML",
+          headers: { "HX-Boosted": "true" }
+        };
+        if (item.method === "post") {
+          htmx.ajax("POST", item.url, {
+            ...navOpts,
+            headers: { ...navOpts.headers, "X-CSRF-Token": this.csrfToken },
+            values: { authenticity_token: this.csrfToken }
+          }).then(() => {});
+          document.body.addEventListener("htmx:afterRequest", function onAfter(e) {
+            document.body.removeEventListener("htmx:afterRequest", onAfter);
+            const finalUrl = e.detail?.xhr?.responseURL;
+            if (finalUrl) pushUrl(finalUrl);
+          }, { once: true });
+        } else {
+          htmx.ajax("GET", item.url, navOpts).then(() => pushUrl(item.url));
+        }
+      },
+
+      typeBadge(type) {
+        return { feature: "Feature", scenario: "Scenario", command: "Command", nav: "Go to" }[type] || type;
+      }
+    }));
+  });
 
   // Make variables available globally
   window.showConfirmation = showConfirmation;

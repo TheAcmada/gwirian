@@ -1,0 +1,45 @@
+<div
+  x-data="{ open: false }"
+  x-cloak
+  @keydown.window="
+    const isQuestion = ($event.key === '?' || ($event.key === '/' && $event.shiftKey));
+    if (isQuestion && !$event.ctrlKey && !$event.metaKey && !$event.altKey) {
+      const tag = (document.activeElement && document.activeElement.tagName) ? document.activeElement.tagName.toLowerCase() : '';
+      if (tag !== 'input' && tag !== 'textarea' && !(document.activeElement && document.activeElement.isContentEditable)) {
+        $event.preventDefault();
+        open = !open;
+      }
+    }
+    if ($event.key === 'Escape') { open = false; }
+  "
+  @shortcuts-overlay:toggle.window="open = !open"
+  x-show="open"
+  x-transition:enter="transition ease-out duration-150"
+  x-transition:enter-start="opacity-0"
+  x-transition:enter-end="opacity-100"
+  x-transition:leave="transition ease-in duration-100"
+  x-transition:leave-start="opacity-100"
+  x-transition:leave-end="opacity-0"
+  class="fixed inset-0 z-50 flex items-start justify-center pt-[20vh] px-4 bg-stone-900/50 dark:bg-black/60 backdrop-blur-sm"
+  @click.self="open = false"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Keyboard shortcuts"
+>
+  <div
+    class="w-full max-w-md rounded-lg bg-white dark:bg-[rgb(37,37,37)] border border-stone-200 dark:border-white/10 shadow-xl overflow-hidden"
+    style="box-shadow: rgba(15, 15, 15, 0.05) 0px 0px 0px 1px, rgba(15, 15, 15, 0.1) 0px 3px 6px, rgba(15, 15, 15, 0.2) 0px 9px 24px;"
+  >
+    <div class="px-4 py-3 border-b border-stone-100 dark:border-white/10">
+      <h2 class="text-sm font-semibold text-stone-800 dark:text-white/90">Keyboard shortcuts</h2>
+    </div>
+    <ul class="px-4 py-3 divide-y divide-stone-100 dark:divide-white/10" role="list">
+      <% shortcuts.each do |item| %>
+        <li class="flex items-center justify-between py-2 first:pt-0 last:pb-0 first:border-none">
+          <span class="text-sm text-stone-700 dark:text-white/90"><%= item[:label] %></span>
+          <kbd class="text-xs font-medium text-stone-500 dark:text-white/50 px-2 py-1 rounded border border-stone-200 dark:border-white/20"><%= item[:keys] %></kbd>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</div>
