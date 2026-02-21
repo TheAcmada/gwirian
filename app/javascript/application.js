@@ -150,13 +150,41 @@
             key === "f" ? bar.dataset.featuresUrl :
             key === "h" ? bar.dataset.historyUrl :
             bar.dataset.settingsUrl;
-          if (url) window.location.href = url;
+          if (url) {
+            htmx.ajax("GET", url, {
+              target: document.body,
+              swap: "innerHTML",
+              headers: { "HX-Boosted": "true" }
+            }).then(function () {
+              if (typeof history.pushState === "function") {
+                history.pushState({ htmx: true }, "", url);
+              }
+            });
+          }
         } else if (key === "p" && document.body.dataset.prevFeatureUrl) {
           e.preventDefault();
-          window.location.href = document.body.dataset.prevFeatureUrl;
+          const url = document.body.dataset.prevFeatureUrl;
+          htmx.ajax("GET", url, {
+            target: document.body,
+            swap: "innerHTML",
+            headers: { "HX-Boosted": "true" }
+          }).then(function () {
+            if (typeof history.pushState === "function") {
+              history.pushState({ htmx: true }, "", url);
+            }
+          });
         } else if (key === "n" && document.body.dataset.nextFeatureUrl) {
           e.preventDefault();
-          window.location.href = document.body.dataset.nextFeatureUrl;
+          const url = document.body.dataset.nextFeatureUrl;
+          htmx.ajax("GET", url, {
+            target: document.body,
+            swap: "innerHTML",
+            headers: { "HX-Boosted": "true" }
+          }).then(function () {
+            if (typeof history.pushState === "function") {
+              history.pushState({ htmx: true }, "", url);
+            }
+          });
         }
         return;
       }
@@ -250,28 +278,30 @@
 
       selectResult(item) {
         if (!item || !item.url) return;
+        this.open = false;
+        const pushUrl = (url) => {
+          if (typeof history.pushState === "function") {
+            history.pushState({ htmx: true }, "", url);
+          }
+        };
+        const navOpts = {
+          target: document.body,
+          swap: "innerHTML",
+          headers: { "HX-Boosted": "true" }
+        };
         if (item.method === "post") {
-          fetch(item.url, {
-            method: "POST",
-            redirect: "manual",
-            headers: {
-              "X-CSRF-Token": this.csrfToken,
-              "Accept": "text/html",
-              "Content-Type": "application/x-www-form-urlencoded",
-              "X-Requested-With": "XMLHttpRequest"
-            }
-          })
-            .then((res) => {
-              const loc = res.headers.get("Location");
-              if (res.type === "opaqueredirect" || (res.status >= 300 && res.status < 400) || loc) {
-                window.location.href = loc || res.url || item.url;
-              } else {
-                window.location.href = item.url;
-              }
-            })
-            .catch(() => { window.location.href = item.url; });
+          htmx.ajax("POST", item.url, {
+            ...navOpts,
+            headers: { ...navOpts.headers, "X-CSRF-Token": this.csrfToken },
+            values: { authenticity_token: this.csrfToken }
+          }).then(() => {});
+          document.body.addEventListener("htmx:afterRequest", function onAfter(e) {
+            document.body.removeEventListener("htmx:afterRequest", onAfter);
+            const finalUrl = e.detail?.xhr?.responseURL;
+            if (finalUrl) pushUrl(finalUrl);
+          }, { once: true });
         } else {
-          window.location.href = item.url;
+          htmx.ajax("GET", item.url, navOpts).then(() => pushUrl(item.url));
         }
       },
 
