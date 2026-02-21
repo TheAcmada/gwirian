@@ -56,6 +56,19 @@
     initializeDynamicFeatures();
   });
 
+  /**
+   * After navigation (boosted or G-nav), sync body data-prev/next-feature-url from
+   * response headers so G P / G N keep working (body tag is not replaced by innerHTML swap).
+   */
+  document.body.addEventListener('htmx:afterRequest', function(evt) {
+    const xhr = evt.detail?.xhr;
+    if (!xhr) return;
+    const prevUrl = xhr.getResponseHeader("HX-Prev-Feature-Url");
+    const nextUrl = xhr.getResponseHeader("HX-Next-Feature-Url");
+    if (prevUrl != null) document.body.dataset.prevFeatureUrl = prevUrl;
+    if (nextUrl != null) document.body.dataset.nextFeatureUrl = nextUrl;
+  });
+
   // Alpine-powered HTML <dialog> confirmation
   function showConfirmation(question) {
     return new Promise((resolve) => {

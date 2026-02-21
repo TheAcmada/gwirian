@@ -21,6 +21,10 @@ class FeaturesController < ApplicationController
       @prev_feature = nil
       @next_feature = nil
     end
+    if request.headers["HX-Request"].present?
+      response.headers["HX-Prev-Feature-Url"] = project_feature_path(@project, @prev_feature) if @prev_feature.present?
+      response.headers["HX-Next-Feature-Url"] = project_feature_path(@project, @next_feature) if @next_feature.present?
+    end
   end
 
   def create
