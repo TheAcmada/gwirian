@@ -41,7 +41,8 @@ Monitor scenario executions to understand which features have been tested and th
 Passwordless magic link authentication via email. Login history tracking ensures your team's work is secure and auditable. Know who accessed what and when.
 
 ### **Modern & Fast**
-Experience a lightning-fast interface built with the latest web technologies. Enjoy smooth interactions with Alpine.js, dynamic updates with htmx, and beautiful styling with Tailwind CSS v4—all without page reloads.
+Experience a lightning-fast interface built with the latest web technologies. Navigation uses **htmx** so links and shortcuts update only the main content—no full page reloads. Enjoy smooth, reactive UI with **Alpine.js**, beautiful styling with **Tailwind CSS v4**, and a **global command palette** (Ctrl+K / ⌘K) for search and quick navigation. The app is keyboard-first: use **G** then a letter for project navigation (Linear-style) and **?** to view all shortcuts.
+
 
 ## Key Features
 
@@ -52,7 +53,9 @@ Experience a lightning-fast interface built with the latest web technologies. En
 - **Steps**: Define detailed steps for each scenario
 - **Executions**: Track scenario execution status and history
 - **Tags**: Organize features and scenarios with flexible tagging
-- **Search**: Full-text search powered by Elasticsearch
+- **Search**: Full-text search powered by Elasticsearch; instant search from the global command palette (Ctrl+K)
+- **Global command palette**: One shortcut (Ctrl+K) for search, navigation, and actions—no full page reloads
+- **Keyboard-first navigation**: G-nav (G + letter) and shortcuts overlay (?); prev/next feature (G P / G N)
 - **API Access**: Workspace-scoped API tokens for programmatic access
 - **MCP Integration**: Model Context Protocol server for AI assistant integration
 
