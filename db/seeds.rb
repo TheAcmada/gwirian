@@ -76,14 +76,19 @@ def seed_project_member(project, email:, role: "editor")
   end
 end
 
-def seed_scenario_execution(scenario, user, status:, executed_at:, notes: nil)
-  ScenarioExecution.create!(
+def seed_scenario_execution(scenario, user, status:, executed_at:, notes: nil, tag_list: nil)
+  execution = ScenarioExecution.create!(
     scenario: scenario,
     user: user,
     status: status,
     executed_at: executed_at,
     notes: notes.presence
   )
+  if tag_list.present?
+    execution.tag_list = tag_list
+    execution.save!
+  end
+  execution
 end
 
 # ---------------------------------------------------------------------------
@@ -147,6 +152,18 @@ EXECUTION_TEMPLATES = [
   [ :passed,  35, 0 ], [ :failed,  42, 5 ], [ :passed,  49, 1 ], [ :pending, 56, 3 ],
   [ :passed,  60, 0 ], [ :failed,  5,  6 ], [ :passed,  12, 5 ], [ :pending, 18, 0 ],
   [ :passed,  25, 2 ], [ :failed,  33, 3 ], [ :passed,  45, nil ], [ :pending, 52, 4 ]
+].freeze
+
+# Tag lists for scenario executions (nil = no tags). Indexed deterministically per execution.
+EXECUTION_TAG_LISTS = [
+  "ci, main",
+  "staging, smoke",
+  "manual, regression",
+  "ci, nightly",
+  "staging",
+  nil,
+  "ci",
+  "manual"
 ].freeze
 
 PROJECTS_SEED = [
@@ -368,12 +385,14 @@ Scenario.includes(:feature).find_each do |scenario|
       arr[note_idx % arr.size] if arr
     end
     user = all_users[(scenario.id + i) % all_users.size]
+    tag_list = EXECUTION_TAG_LISTS[(scenario.id + i) % EXECUTION_TAG_LISTS.size]
     seed_scenario_execution(
       scenario,
       user,
       status: status,
       executed_at: executed_at,
-      notes: notes
+      notes: notes,
+      tag_list: tag_list
     )
   end
 end
