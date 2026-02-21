@@ -2,9 +2,11 @@
 
 module Shared
   class ShortcutsOverlayComponent < ApplicationComponent
-    def initialize(workspace:, project: nil)
+    def initialize(workspace:, project: nil, prev_feature: nil, next_feature: nil)
       @workspace = workspace
       @project = project
+      @prev_feature = prev_feature
+      @next_feature = next_feature
     end
 
     def render?
@@ -24,6 +26,8 @@ module Shared
         list << { keys: "G F", label: "Features" }
         list << { keys: "G H", label: "History" }
         list << { keys: "G S", label: "Settings" }
+        list << { keys: "G P", label: "Previous feature" } if @prev_feature.present?
+        list << { keys: "G N", label: "Next feature" } if @next_feature.present?
       end
       list
     end
