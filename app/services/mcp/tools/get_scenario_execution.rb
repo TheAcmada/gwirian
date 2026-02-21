@@ -41,7 +41,8 @@ module Mcp
             executed_at: execution.executed_at&.iso8601,
             notes: execution.notes,
             user_id: execution.user_id,
-            user_email: safe_user_email(execution.user)
+            user_email: safe_user_email(execution.user),
+            tag_list: execution.tag_list
           }
 
           success_result(result)

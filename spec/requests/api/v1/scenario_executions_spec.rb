@@ -67,6 +67,7 @@ RSpec.describe "Api::V1::ScenarioExecutions", type: :request do
         expect(execution).to have_key("status")
         expect(execution).to have_key("notes")
         expect(execution).to have_key("executed_at")
+        expect(execution).to have_key("tag_list")
         expect(execution).to have_key("created_at")
         expect(execution).to have_key("updated_at")
       end
@@ -145,8 +146,17 @@ RSpec.describe "Api::V1::ScenarioExecutions", type: :request do
         expect(json_response).to have_key("status")
         expect(json_response).to have_key("notes")
         expect(json_response).to have_key("executed_at")
+        expect(json_response).to have_key("tag_list")
         expect(json_response).to have_key("created_at")
         expect(json_response).to have_key("updated_at")
+      end
+
+      it "returns tag_list when execution has tags" do
+        scenario_execution.tag_list = "e2e, smoke"
+        scenario_execution.save!
+        get "/api/v1/projects/#{project.id}/features/#{feature.id}/scenarios/#{scenario.id}/scenario_executions/#{scenario_execution.id}", headers: api_headers(workspace_member.api_token)
+        expect(response).to have_http_status(:ok)
+        expect(json_response["tag_list"]).to contain_exactly("e2e", "smoke")
       end
 
       context "when scenario execution does not exist" do
@@ -217,6 +227,15 @@ RSpec.describe "Api::V1::ScenarioExecutions", type: :request do
           expect(json_response["notes"]).to eq("Execution notes")
           expect(json_response["scenario_id"]).to eq(scenario.id)
           expect(json_response["user_id"]).to eq(user.id)
+          expect(json_response).to have_key("tag_list")
+        end
+
+        it "creates scenario execution with tag_list" do
+          params_with_tags = valid_params.deep_dup
+          params_with_tags[:scenario_execution][:tag_list] = "e2e, v1.2.3"
+          post "/api/v1/projects/#{project.id}/features/#{feature.id}/scenarios/#{scenario.id}/scenario_executions", params: params_with_tags, headers: api_headers(workspace_member.api_token)
+          expect(response).to have_http_status(:created)
+          expect(json_response["tag_list"]).to contain_exactly("e2e", "v1.2.3")
         end
 
         it "automatically sets user_id to current_user" do
@@ -327,6 +346,15 @@ RSpec.describe "Api::V1::ScenarioExecutions", type: :request do
           expect(response).to have_http_status(:ok)
           expect(json_response["status"]).to eq("passed")
           expect(json_response["notes"]).to eq("Updated notes")
+          expect(json_response).to have_key("tag_list")
+        end
+
+        it "updates scenario execution with tag_list" do
+          params_with_tags = update_params.deep_dup
+          params_with_tags[:scenario_execution][:tag_list] = "e2e, bugfix-123"
+          patch "/api/v1/projects/#{project.id}/features/#{feature.id}/scenarios/#{scenario.id}/scenario_executions/#{scenario_execution.id}", params: params_with_tags, headers: api_headers(workspace_member.api_token)
+          expect(response).to have_http_status(:ok)
+          expect(json_response["tag_list"]).to contain_exactly("e2e", "bugfix-123")
         end
 
         context "with validation errors" do

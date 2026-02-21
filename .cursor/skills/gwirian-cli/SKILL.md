@@ -84,19 +84,20 @@ When the user wants to **execute one or more scenarios**:
 3. **Run the actual tests** with the other tool (e.g. Playwright skill or Playwright MCP): navigate to the URLs from context, use accounts from context, perform the steps implied by each scenario’s title/given/when/then.
 
 4. **Record each execution** with the CLI:  
-   `gwirian scenario-executions create <project-id> <feature-id> <scenario-id> --status passed|failed|pending [--executed-at <ISO>] [--notes "..."]`
+   `gwirian scenario-executions create <project-id> <feature-id> <scenario-id> --status passed|failed|pending [--executed-at <ISO>] [--notes "..."] [--tag-list "e2e, v1.2.3"]`  
+   Use `--tag-list` to record test type (e.g. e2e, smoke), version, bugfix, or other tags.
 
 ### 5. List or record scenario executions
 
 | Task | Command |
 |------|---------|
-| List executions for a scenario | `gwirian scenario-executions list <project-id> <feature-id> <scenario-id>` |
-| Show one execution | `gwirian scenario-executions show <project-id> <feature-id> <scenario-id> <execution-id>` |
-| Create execution (record a run) | `gwirian scenario-executions create <project-id> <feature-id> <scenario-id> [--status] [--notes] [--executed-at]` |
-| Update execution | `gwirian scenario-executions update <project-id> <feature-id> <scenario-id> <execution-id> [--status] [--notes] [--executed-at]` |
+| List executions for a scenario | `gwirian scenario-executions list <project-id> <feature-id> <scenario-id>` (response includes `tag_list`) |
+| Show one execution | `gwirian scenario-executions show <project-id> <feature-id> <scenario-id> <execution-id>` (response includes `tag_list`) |
+| Create execution (record a run) | `gwirian scenario-executions create <project-id> <feature-id> <scenario-id> [--status] [--notes] [--executed-at] [--tag-list "tags"]` |
+| Update execution | `gwirian scenario-executions update <project-id> <feature-id> <scenario-id> <execution-id> [--status] [--notes] [--executed-at] [--tag-list "tags"]` |
 | Delete execution | `gwirian scenario-executions delete <project-id> <feature-id> <scenario-id> <execution-id>` |
 
-Status values: `passed`, `failed`, `pending`. Use `--executed-at` in ISO 8601 format when creating or updating.
+Status values: `passed`, `failed`, `pending`. Use `--executed-at` in ISO 8601 format when creating or updating. List and show return `tag_list` (array) on each execution.
 
 ## Reference
 

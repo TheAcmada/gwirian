@@ -131,6 +131,7 @@ class FeaturesController < ApplicationController
       @scenarios = @scenarios.to_a.sort_by { |s| selected_ids.index(s.id) }
     elsif request.post?
       executions_data = execution_params
+      run_tag_list = params[:tag_list].to_s.strip.presence
       executed_count = 0
 
       # Validate that all scenario IDs belong to this feature
@@ -148,13 +149,15 @@ class FeaturesController < ApplicationController
         notes = execution_data[:notes]
         next unless status.present? && %w[passed failed].include?(status)
 
-        ScenarioExecution.create!(
+        execution = ScenarioExecution.new(
           scenario: scenario,
           user: Current.user,
           status: status,
           notes: notes,
           executed_at: Time.current
         )
+        execution.tag_list = run_tag_list if run_tag_list.present?
+        execution.save!
         executed_count += 1
       end
 

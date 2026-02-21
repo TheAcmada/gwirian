@@ -6,12 +6,12 @@ class Api::V1::ScenarioExecutionsController < Api::V1::ApiController
   def index
     @scenario_executions = @scenario.scenario_executions.latest_first
     authorize! :read, ScenarioExecution.new(scenario: @scenario)
-    render json: @scenario_executions.as_json(only: [ :id, :scenario_id, :user_id, :status, :notes, :executed_at, :created_at, :updated_at ])
+    render json: @scenario_executions.map { |e| execution_json(e) }
   end
 
   def show
     authorize! :read, @scenario_execution
-    render json: @scenario_execution.as_json(only: [ :id, :scenario_id, :user_id, :status, :notes, :executed_at, :created_at, :updated_at ])
+    render json: execution_json(@scenario_execution)
   end
 
   def create
@@ -20,7 +20,7 @@ class Api::V1::ScenarioExecutionsController < Api::V1::ApiController
     authorize! :create, @scenario_execution
 
     if @scenario_execution.save
-      render json: @scenario_execution.as_json(only: [ :id, :scenario_id, :user_id, :status, :notes, :executed_at, :created_at, :updated_at ]), status: :created
+      render json: execution_json(@scenario_execution), status: :created
     else
       render json: { errors: @scenario_execution.errors.full_messages }, status: :unprocessable_entity
     end
@@ -30,7 +30,7 @@ class Api::V1::ScenarioExecutionsController < Api::V1::ApiController
     authorize! :update, @scenario_execution
 
     if @scenario_execution.update(scenario_execution_params)
-      render json: @scenario_execution.as_json(only: [ :id, :scenario_id, :user_id, :status, :notes, :executed_at, :created_at, :updated_at ])
+      render json: execution_json(@scenario_execution)
     else
       render json: { errors: @scenario_execution.errors.full_messages }, status: :unprocessable_entity
     end
@@ -61,6 +61,10 @@ class Api::V1::ScenarioExecutionsController < Api::V1::ApiController
   end
 
   def scenario_execution_params
-    params.require(:scenario_execution).permit(:status, :notes, :executed_at)
+    params.require(:scenario_execution).permit(:status, :notes, :executed_at, :tag_list)
+  end
+
+  def execution_json(execution)
+    execution.as_json(only: [ :id, :scenario_id, :user_id, :status, :notes, :executed_at, :created_at, :updated_at ]).merge("tag_list" => execution.tag_list)
   end
 end

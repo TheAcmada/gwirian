@@ -169,6 +169,19 @@
       <% end %>
     </div>
 
+    <!-- Tags for this run -->
+    <div class="mb-6">
+      <label for="tag_list" class="block text-sm font-medium mb-1 text-stone-800 dark:text-white/90">Tags for this run</label>
+      <input
+        type="text"
+        id="tag_list"
+        name="tag_list"
+        placeholder="e.g. e2e, v1.2.3, bugfix-123 (optional)"
+        class="input w-full"
+      />
+      <p class="mt-1 text-xs text-stone-400 dark:text-white/40">Optional: comma-separated tags (test type, version, bugfix, etc.)</p>
+    </div>
+
     <!-- Actions -->
     <div class="flex items-center gap-2 pt-4 border-t border-stone-200 dark:border-white/10">
       <button

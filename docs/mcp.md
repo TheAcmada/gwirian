@@ -105,6 +105,8 @@ Project payloads include an optional `context` field (text) for test context: en
 - `update_scenario_execution` - Update an execution
 - `delete_scenario_execution` - Delete an execution
 
+Executions support an optional `tag_list` (comma-separated string) for test type (e.g. e2e, smoke), version, bugfix info, or other metadata. Create and update tools accept `tag_list`; list and get include `tag_list` in each execution.
+
 ## Testing the Connection
 
 You can test the connection using curl. Replace `YOUR_API_TOKEN` with your actual API token:

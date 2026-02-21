@@ -88,7 +88,7 @@ Config file: `~/.config/gwirian-cli/config.json` (or `$XDG_CONFIG_HOME/gwirian-c
 | `gwirian scenario-executions update <project-id> <feature-id> <scenario-id> <execution-id> [options]` | Update execution |
 | `gwirian scenario-executions delete <project-id> <feature-id> <scenario-id> <execution-id>` | Delete execution |
 
-**Create/update options:** `--status <status>` (`passed` | `failed` | `pending`), `--notes <notes>`, `--executed-at <iso>` (ISO 8601).
+**Create/update options:** `--status <status>` (`passed` | `failed` | `pending`), `--notes <notes>`, `--executed-at <iso>` (ISO 8601), `--tag-list <list>` (comma-separated tags: test type, version, bugfix, etc.). List and show return `tag_list` on each execution.
 
 ---
 

@@ -5,6 +5,7 @@ class ScenarioExecution < ApplicationRecord
 
   belongs_to :scenario
   belongs_to :user
+  acts_as_taggable_on :tags
 
   STATUSES = %w[pending passed failed].freeze
 
@@ -26,6 +27,9 @@ class ScenarioExecution < ApplicationRecord
       indexes :notes, type: "text", analyzer: "english"
       indexes :executed_at, type: "date"
       indexes :project_id, type: "integer"
+      indexes :tags, type: "text", analyzer: "standard" do
+        indexes :keyword, type: "keyword"
+      end
     end
   end
 
@@ -37,7 +41,8 @@ class ScenarioExecution < ApplicationRecord
       status: status,
       notes: notes,
       executed_at: executed_at&.iso8601,
-      project_id: scenario&.feature&.project_id
+      project_id: scenario&.feature&.project_id,
+      tags: tag_list
     }
   end
 
@@ -51,7 +56,7 @@ class ScenarioExecution < ApplicationRecord
             {
               query_string: {
                 query: sanitized_query,
-                fields: [ "feature_title^3", "scenario_title^2", "user_email", "status", "notes" ],
+                fields: [ "feature_title^3", "scenario_title^2", "user_email", "status", "notes", "tags" ],
                 fuzziness: "AUTO",
                 default_operator: "AND",
                 escape: true

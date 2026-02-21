@@ -3,7 +3,7 @@
 module Mcp
   module Tools
     class CreateScenarioExecution < BaseTool
-      description "Create a new scenario execution with scenario_id, status, executed_at, and optional notes"
+      description "Create a new scenario execution with scenario_id, status, executed_at, and optional notes and tag_list"
 
       input_schema(
         {
@@ -26,6 +26,10 @@ module Mcp
             notes: {
               type: "string",
               description: "Optional notes about the execution"
+            },
+            tag_list: {
+              type: "string",
+              description: "Optional comma-separated tags (e.g. test type, version, bugfix)"
             }
           },
           required: [ "scenario_id", "status", "executed_at" ]
@@ -39,7 +43,7 @@ module Mcp
         open_world_hint: false
       )
 
-      def self.call(scenario_id:, status:, executed_at:, notes: nil, server_context:)
+      def self.call(scenario_id:, status:, executed_at:, notes: nil, tag_list: nil, server_context:)
         handle_errors do
           current_user = server_context[:current_user]
           scenario = Scenario.find_by(id: scenario_id)
@@ -62,11 +66,14 @@ module Mcp
             executed_at: parsed_executed_at,
             notes: notes
           )
+          execution.tag_list = tag_list if tag_list.present?
 
           authorize!(current_user, :create, execution)
 
           if execution.save
-            success_result(execution.as_json(only: [ :id, :scenario_id, :status, :executed_at, :notes, :user_id ]))
+            result = execution.as_json(only: [ :id, :scenario_id, :status, :executed_at, :notes, :user_id ])
+            result["tag_list"] = execution.tag_list
+            success_result(result)
           else
             error_result("Validation failed: #{execution.errors.full_messages.join(', ')}", code: -32003)
           end
