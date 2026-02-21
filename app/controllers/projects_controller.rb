@@ -23,24 +23,31 @@ class ProjectsController < ApplicationController
 
     if q.present?
       begin
-        features = Feature.search_by_project(q, @project.id, limit: 10).records
-        scenarios = Scenario.search_by_project(q, @project.id, limit: 10).records.includes(:feature)
+        features = Feature.search_by_project(q, @project.id, limit: 10).records.includes(scenarios: :scenario_executions)
+        scenarios = Scenario.search_by_project(q, @project.id, limit: 10).records.includes(:feature, :scenario_executions)
 
         features.each do |f|
+          statuses = f.scenarios.map(&:current_status)
+          status, status_label = feature_search_status(statuses)
           results << {
             type: "feature",
             title: f.title,
             subtitle: "Feature",
-            url: project_feature_path(@project, f)
+            url: project_feature_path(@project, f),
+            status: status,
+            status_label: status_label
           }
         end
 
         scenarios.each do |s|
+          status = s.current_status
           results << {
             type: "scenario",
             title: s.title,
             subtitle: "Feature: #{s.feature.title}",
-            url: project_feature_path(@project, s.feature)
+            url: project_feature_path(@project, s.feature),
+            status: status,
+            status_label: status_label_for(status)
           }
         end
       rescue StandardError
@@ -219,6 +226,29 @@ class ProjectsController < ApplicationController
   end
 
   private
+
+  def feature_search_status(statuses)
+    return [ nil, nil ] if statuses.empty?
+    total = statuses.size
+    passed = statuses.count("passed")
+    failed = statuses.count("failed")
+    pending = statuses.count("pending")
+    status = failed.positive? ? "failed" : (pending.positive? ? "pending" : "passed")
+    label = if failed.positive?
+      "#{failed} failed"
+    elsif pending.positive? && passed.positive?
+      "#{passed}/#{total} passed"
+    elsif passed == total
+      "#{total} passed"
+    else
+      "#{pending} pending"
+    end
+    [ status, label ]
+  end
+
+  def status_label_for(status)
+    { "passed" => "Passed", "failed" => "Failed", "pending" => "Pending" }.fetch(status, "Pending")
+  end
 
   def render_alert(message)
     redirect_to projects_path, alert: message

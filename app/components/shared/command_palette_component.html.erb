@@ -86,7 +86,19 @@
                 ></span>
                 <span class="min-w-0 flex-1">
                   <span class="block text-sm font-medium text-stone-800 dark:text-white/90 truncate" x-text="item.title"></span>
-                  <span class="block text-xs text-stone-500 dark:text-white/50 truncate" x-text="item.subtitle"></span>
+                  <span class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs text-stone-500 dark:text-white/50 truncate" x-text="item.subtitle"></span>
+                    <span
+                      x-show="item.status"
+                      x-text="item.status_label"
+                      :class="{
+                        'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300': item.status === 'passed',
+                        'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300': item.status === 'failed',
+                        'bg-stone-100 dark:bg-white/10 text-stone-600 dark:text-white/60': item.status === 'pending'
+                      }"
+                      class="shrink-0 text-xs font-medium px-1.5 py-0.5 rounded"
+                    ></span>
+                  </span>
                 </span>
                 <kbd x-show="item.shortcut" x-text="item.shortcut" class="shrink-0 text-xs font-medium px-1.5 py-0.5 rounded border border-stone-200 dark:border-white/20 text-stone-600 dark:text-white/60"></kbd>
               </button>
