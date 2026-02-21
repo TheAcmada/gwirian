@@ -2,9 +2,11 @@
 
 module Shared
   class CommandPaletteComponent < ApplicationComponent
-    def initialize(workspace:, project: nil)
+    def initialize(workspace:, project: nil, prev_feature: nil, next_feature: nil)
       @workspace = workspace
       @project = project
+      @prev_feature = prev_feature
+      @next_feature = next_feature
     end
 
     def render?
@@ -26,10 +28,16 @@ module Shared
         if helpers.can?(:create, @project.features.build)
           items << { type: "command", title: "Create new feature", subtitle: "Command", url: project_features_path(@project), method: "post", keywords: "new feature create" }
         end
-        items << { type: "nav", title: "Dashboard", subtitle: "Project", url: project_path(@project), keywords: "dashboard project" }
-        items << { type: "nav", title: "Features", subtitle: "Project", url: project_features_path(@project), keywords: "features list" }
-        items << { type: "nav", title: "History", subtitle: "Project", url: history_project_path(@project), keywords: "history executions" }
-        items << { type: "nav", title: "Project settings", subtitle: "Members, settings", url: edit_project_path(@project), keywords: "settings members edit" }
+        items << { type: "nav", title: "Dashboard", subtitle: "Project", url: project_path(@project), keywords: "dashboard project", shortcut: "G D" }
+        items << { type: "nav", title: "Features", subtitle: "Project", url: project_features_path(@project), keywords: "features list", shortcut: "G F" }
+        items << { type: "nav", title: "History", subtitle: "Project", url: history_project_path(@project), keywords: "history executions", shortcut: "G H" }
+        items << { type: "nav", title: "Project settings", subtitle: "Members, settings", url: edit_project_path(@project), keywords: "settings members edit", shortcut: "G S" }
+        if @prev_feature.present?
+          items << { type: "nav", title: "Previous feature", subtitle: "Project", url: project_feature_path(@project, @prev_feature), keywords: "previous feature", shortcut: "G P" }
+        end
+        if @next_feature.present?
+          items << { type: "nav", title: "Next feature", subtitle: "Project", url: project_feature_path(@project, @next_feature), keywords: "next feature", shortcut: "G N" }
+        end
         projects.each do |p|
           next if p.id == @project.id
           items << { type: "nav", title: "Go to #{p.name}", subtitle: "Project", url: project_path(p), keywords: "project #{p.name}" }
@@ -58,11 +66,37 @@ module Shared
       items
     end
 
+    def shortcuts
+      list = []
+      modifier = helpers.shortcut_modifier
+      list << { keys: "#{modifier}K", label: "Search" }
+      list << { keys: "?", label: "Keyboard shortcuts" }
+      if @project.present? && @project.persisted?
+        list << { keys: "G D", label: "Dashboard" }
+        list << { keys: "G F", label: "Features" }
+        list << { keys: "G H", label: "History" }
+        list << { keys: "G S", label: "Settings" }
+      end
+      list << { keys: "G P", label: "Previous feature" } if @prev_feature.present?
+      list << { keys: "G N", label: "Next feature" } if @next_feature.present?
+      list
+    end
+
+    def meta_shortcuts
+      modifier = helpers.shortcut_modifier
+      [
+        { keys: "#{modifier}K", label: "Search" },
+        { keys: "?", label: "Keyboard shortcuts" }
+      ]
+    end
+
     def config_json
       {
         searchUrl: search_url,
         staticItems: static_items,
-        csrfToken: helpers.form_authenticity_token
+        csrfToken: helpers.form_authenticity_token,
+        shortcuts: shortcuts,
+        metaShortcuts: meta_shortcuts
       }.to_json
     end
 

@@ -12,6 +12,15 @@ class FeaturesController < ApplicationController
   end
 
   def show
+    features_ordered = @project.features.order(:title).to_a
+    index = features_ordered.index(@feature)
+    if index && features_ordered.size > 1
+      @prev_feature = index.positive? ? features_ordered[index - 1] : features_ordered.last
+      @next_feature = index < features_ordered.size - 1 ? features_ordered[index + 1] : features_ordered.first
+    else
+      @prev_feature = nil
+      @next_feature = nil
+    end
   end
 
   def create

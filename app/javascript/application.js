@@ -151,6 +151,12 @@
             key === "h" ? bar.dataset.historyUrl :
             bar.dataset.settingsUrl;
           if (url) window.location.href = url;
+        } else if (key === "p" && document.body.dataset.prevFeatureUrl) {
+          e.preventDefault();
+          window.location.href = document.body.dataset.prevFeatureUrl;
+        } else if (key === "n" && document.body.dataset.nextFeatureUrl) {
+          e.preventDefault();
+          window.location.href = document.body.dataset.nextFeatureUrl;
         }
         return;
       }
@@ -176,6 +182,8 @@
       searchUrl: null,
       csrfToken: "",
       debounceTimer: null,
+      shortcuts: [],
+      metaShortcuts: [],
 
       get items() {
         const q = this.query.trim().toLowerCase();
@@ -200,6 +208,8 @@
           this.searchUrl = config.searchUrl || null;
           this.staticItems = config.staticItems || [];
           this.csrfToken = config.csrfToken || "";
+          this.shortcuts = config.shortcuts || [];
+          this.metaShortcuts = config.metaShortcuts || [];
         } catch (e) {
           this.staticItems = [];
         }

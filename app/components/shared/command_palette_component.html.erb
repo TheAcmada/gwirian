@@ -88,10 +88,21 @@
                   <span class="block text-sm font-medium text-stone-800 dark:text-white/90 truncate" x-text="item.title"></span>
                   <span class="block text-xs text-stone-500 dark:text-white/50 truncate" x-text="item.subtitle"></span>
                 </span>
+                <kbd x-show="item.shortcut" x-text="item.shortcut" class="shrink-0 text-xs font-medium px-1.5 py-0.5 rounded border border-stone-200 dark:border-white/20 text-stone-600 dark:text-white/60"></kbd>
               </button>
             </li>
           </template>
         </ul>
+      </template>
+    </div>
+
+    <div x-show="metaShortcuts && metaShortcuts.length" class="border-t border-stone-100 dark:border-white/10 px-4 py-2 flex items-center gap-3 text-xs text-stone-500 dark:text-white/50">
+      <template x-for="(s, i) in metaShortcuts" :key="i">
+        <span class="flex items-center gap-1.5">
+          <kbd class="font-medium px-1.5 py-0.5 rounded border border-stone-200 dark:border-white/20 text-stone-600 dark:text-white/60" x-text="s.keys"></kbd>
+          <span x-text="s.label"></span>
+          <span x-show="i < metaShortcuts.length - 1" class="text-stone-300 dark:text-white/30">·</span>
+        </span>
       </template>
     </div>
   </div>

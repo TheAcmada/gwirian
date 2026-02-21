@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
   <%= render "layouts/head" %>
-  <body hx-boost="true" hx-headers='{"X-CSRF-Token": "<%= form_authenticity_token %>"}' class="body">
+  <body hx-boost="true" hx-headers='{"X-CSRF-Token": "<%= form_authenticity_token %>"}' class="body"<%= raw(" data-prev-feature-url=\"#{ERB::Util.html_escape(project_feature_path(@project, @prev_feature))}\"") if defined?(@prev_feature) && @prev_feature.present? %><%= raw(" data-next-feature-url=\"#{ERB::Util.html_escape(project_feature_path(@project, @next_feature))}\"") if defined?(@next_feature) && @next_feature.present? %>>
     <%= render "shared/navbar" %>
     <main>
       <%= yield %>
     </main>
     <%= render partial: "layouts/confirm_dialog" %>
     <%= render partial: "layouts/notification" %>
-    <%= render Shared::CommandPaletteComponent.new(workspace: Current.workspace, project: @project) %>
+    <%= render Shared::CommandPaletteComponent.new(workspace: Current.workspace, project: @project, prev_feature: @prev_feature, next_feature: @next_feature) %>
     <%= render Shared::ShortcutsOverlayComponent.new(workspace: Current.workspace, project: @project) %>
   </body>
 </html>
