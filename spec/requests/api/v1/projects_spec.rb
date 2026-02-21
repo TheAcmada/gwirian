@@ -57,6 +57,7 @@ RSpec.describe "Api::V1::Projects", type: :request do
         expect(project).to have_key("id")
         expect(project).to have_key("name")
         expect(project).to have_key("description")
+        expect(project).to have_key("context")
         expect(project).to have_key("created_at")
         expect(project).to have_key("updated_at")
         expect(project).not_to have_key("project_members")
@@ -121,9 +122,17 @@ RSpec.describe "Api::V1::Projects", type: :request do
         expect(json_response).to have_key("id")
         expect(json_response).to have_key("name")
         expect(json_response).to have_key("description")
+        expect(json_response).to have_key("context")
         expect(json_response).to have_key("created_at")
         expect(json_response).to have_key("updated_at")
         expect(json_response).not_to have_key("project_members")
+      end
+
+      it "returns project context when set" do
+        project.update!(context: "base_url: https://staging.example.com")
+        get "/api/v1/projects/#{project.id}", headers: api_headers(workspace_member.api_token)
+        expect(response).to have_http_status(:ok)
+        expect(json_response["context"]).to eq("base_url: https://staging.example.com")
       end
 
       context "when project does not exist" do

@@ -21,7 +21,7 @@ module Mcp
 
       def self.call(server_context:)
         current_user = server_context[:current_user]
-        projects = current_user.projects.select(:id, :name, :description, :created_at, :updated_at)
+        projects = current_user.projects.select(:id, :name, :description, :context, :created_at, :updated_at)
         success_result(projects)
       end
     end

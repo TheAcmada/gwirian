@@ -70,7 +70,7 @@ module Mcp
             }
           end
 
-          result = project.as_json(only: [ :id, :name, :description, :created_at, :updated_at ])
+          result = project.as_json(only: [ :id, :name, :description, :context, :created_at, :updated_at ])
           result["executions"] = {
             summary: execution_summary,
             recent: recent_executions

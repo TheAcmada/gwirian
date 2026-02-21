@@ -82,6 +82,8 @@ Once connected, you can use the following tools. All operations are scoped to th
 - `list_projects` - List all accessible projects in the workspace
 - `get_project` - Get project details with executions and team members
 
+Project payloads include an optional `context` field (text) for test context: environments and URLs, test accounts and logins, and other hints for scenario execution.
+
 ### Features (Full CRUD)
 - `list_features` - List features for a project
 - `get_feature` - Get feature details with executions

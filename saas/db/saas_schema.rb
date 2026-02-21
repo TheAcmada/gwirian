@@ -16,6 +16,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_18_205556) do
     t.string "plan_key", default: "free", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index [ "workspace_id" ], name: "index_workspace_subscriptions_on_workspace_id", unique: true
+    t.index ["workspace_id"], name: "index_workspace_subscriptions_on_workspace_id", unique: true
   end
 end

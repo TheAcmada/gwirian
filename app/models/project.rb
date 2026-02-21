@@ -7,6 +7,7 @@ class Project < ApplicationRecord
 
   validates :name, presence: true, length: { maximum: 80 }
   validates :description, length: { maximum: 1000 }
+  validates :context, length: { maximum: 10_000 }, allow_blank: true
 
   # Returns the user's role in the project, or nil if not a member
   # This method is optimized to make a single query
