@@ -21,7 +21,7 @@ class FeaturesController < ApplicationController
       @prev_feature = nil
       @next_feature = nil
     end
-    if request.headers["HX-Request"].present?
+    if htmx_request?
       response.headers["HX-Prev-Feature-Url"] = project_feature_path(@project, @prev_feature) if @prev_feature.present?
       response.headers["HX-Next-Feature-Url"] = project_feature_path(@project, @next_feature) if @next_feature.present?
     end
@@ -42,13 +42,13 @@ class FeaturesController < ApplicationController
     authorize! :update, @feature
 
     if @feature.update(feature_params)
-      if request.headers["HX-Request"]
+      if htmx_request?
         render partial: "features/feature_header", locals: { feature: @feature, project: @project }
       else
         redirect_to project_feature_path(@project, @feature), notice: "Feature updated successfully"
       end
     else
-      if request.headers["HX-Request"]
+      if htmx_request?
         render partial: "features/feature_header", locals: { feature: @feature, project: @project }, status: :unprocessable_entity
       else
         render :show, status: :unprocessable_entity
@@ -61,7 +61,7 @@ class FeaturesController < ApplicationController
 
     @feature.destroy
 
-    if request.headers["HX-Request"]
+    if htmx_request?
       @features = @project.features.order(:title)
       render partial: "features/features", locals: { features: @features, project: @project, notice: "Feature deleted successfully" }
     else
@@ -78,7 +78,7 @@ class FeaturesController < ApplicationController
       @feature.save
     end
 
-    if request.headers["HX-Request"]
+    if htmx_request?
       render partial: "features/feature_header", locals: { feature: @feature.reload, project: @project }
     else
       redirect_to project_feature_path(@project, @feature)
@@ -94,7 +94,7 @@ class FeaturesController < ApplicationController
       @feature.save
     end
 
-    if request.headers["HX-Request"]
+    if htmx_request?
       render partial: "features/feature_header", locals: { feature: @feature.reload, project: @project }
     else
       redirect_to project_feature_path(@project, @feature)

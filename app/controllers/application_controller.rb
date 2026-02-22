@@ -32,6 +32,10 @@ class ApplicationController < ActionController::Base
     time.in_time_zone(get_time_zone)
   end
 
+  def htmx_request?
+    request.headers["HX-Request"].present?
+  end
+
   private
 
   def track_workspace_access

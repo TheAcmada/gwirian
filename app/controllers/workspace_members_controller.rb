@@ -26,7 +26,7 @@ class WorkspaceMembersController < ApplicationController
     user = User.find_by(email_address: email)
     if user && Current.workspace.workspace_members.exists?(user_id: user.id)
       alert = "This user is already a member of the workspace"
-      if request.headers["HX-Request"]
+      if htmx_request?
         render_component(alert: alert)
       else
         redirect_to workspace_members_path, alert: alert
@@ -50,7 +50,7 @@ class WorkspaceMembersController < ApplicationController
     if workspace_member.save
       workspace_member.send_invitation_email
       notice = "Invitation sent to #{email}"
-      if request.headers["HX-Request"]
+      if htmx_request?
         render_component(notice: notice)
       else
         redirect_to workspace_members_path, notice: notice
@@ -72,7 +72,7 @@ class WorkspaceMembersController < ApplicationController
 
     if role && workspace_member.update(role: role)
       notice = "Member role updated successfully"
-      if request.headers["HX-Request"]
+      if htmx_request?
         render_tbody(notice: notice)
       else
         redirect_to workspace_members_path, notice: notice
@@ -91,7 +91,7 @@ class WorkspaceMembersController < ApplicationController
 
     if workspace_member.destroy
       notice = "Member removed successfully"
-      if request.headers["HX-Request"]
+      if htmx_request?
         render_tbody(notice: notice)
       else
         redirect_to workspace_members_path, notice: notice
@@ -116,7 +116,7 @@ class WorkspaceMembersController < ApplicationController
     workspace_member.update(last_invitation_sent_at: Time.current)
     workspace_member.send_invitation_email
     notice = "Invitation resent to #{workspace_member.user.email_address}"
-    if request.headers["HX-Request"]
+    if htmx_request?
       render_tbody(notice: notice)
     else
       redirect_to workspace_members_path, notice: notice
@@ -167,7 +167,7 @@ class WorkspaceMembersController < ApplicationController
   def generate_api_token
     workspace_member = find_workspace_member_for_current_user
     unless workspace_member
-      if request.headers["HX-Request"]
+      if htmx_request?
         render html: "<div class='alert alert-danger'>You must be a member of this workspace to generate an API token</div>".html_safe
       else
         redirect_path = Current.workspace ? workspace_members_path : edit_user_path
@@ -182,7 +182,7 @@ class WorkspaceMembersController < ApplicationController
     workspace_member.generate_api_token(expires_in: expires_in)
     workspace_member.reload
 
-    if request.headers["HX-Request"]
+    if htmx_request?
       render WorkspaceMembers::ApiTokenComponent.new(workspace_member: workspace_member), layout: false
     else
       redirect_path = Current.workspace ? workspace_members_path : edit_user_path
@@ -193,7 +193,7 @@ class WorkspaceMembersController < ApplicationController
   def revoke_api_token
     workspace_member = find_workspace_member_for_current_user
     unless workspace_member
-      if request.headers["HX-Request"]
+      if htmx_request?
         render html: "<div class='alert alert-danger'>You must be a member of this workspace to revoke an API token</div>".html_safe
       else
         redirect_path = Current.workspace ? workspace_members_path : edit_user_path
@@ -205,7 +205,7 @@ class WorkspaceMembersController < ApplicationController
     workspace_member.revoke_api_token
     workspace_member.reload
 
-    if request.headers["HX-Request"]
+    if htmx_request?
       render WorkspaceMembers::ApiTokenComponent.new(workspace_member: workspace_member), layout: false
     else
       redirect_path = Current.workspace ? workspace_members_path : edit_user_path
@@ -227,7 +227,7 @@ class WorkspaceMembersController < ApplicationController
   end
 
   def render_alert(message)
-    if request.headers["HX-Request"]
+    if htmx_request?
       render_component(alert: message)
     else
       redirect_to workspace_members_path, alert: message

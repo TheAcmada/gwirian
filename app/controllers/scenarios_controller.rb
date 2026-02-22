@@ -9,13 +9,13 @@ class ScenariosController < ApplicationController
     authorize! :create, @scenario
 
     if @scenario.save
-      if request.headers["HX-Request"]
+      if htmx_request?
         render Scenarios::Component.new(scenario: @scenario, feature: @feature, project: @project), layout: false
       else
         redirect_to project_feature_path(@project, @feature), notice: "Scenario created successfully"
       end
     else
-      if request.headers["HX-Request"]
+      if htmx_request?
         head :unprocessable_entity
       else
         redirect_to project_feature_path(@project, @feature), alert: "Failed to create scenario"
@@ -27,7 +27,7 @@ class ScenariosController < ApplicationController
     authorize! :update, @scenario
 
     if @scenario.update(scenario_params)
-      if request.headers["HX-Request"]
+      if htmx_request?
         # Check if this is a title-only update by checking if only title is in params
         if scenario_params.keys == [ "title" ] || (scenario_params.keys.include?("title") && scenario_params.keys.length == 1)
           render Scenarios::TitleComponent.new(scenario: @scenario, feature: @feature, project: @project), layout: false
@@ -38,7 +38,7 @@ class ScenariosController < ApplicationController
         redirect_to project_feature_path(@project, @feature), notice: "Scenario updated successfully"
       end
     else
-      if request.headers["HX-Request"]
+      if htmx_request?
         if scenario_params.keys == [ "title" ] || (scenario_params.keys.include?("title") && scenario_params.keys.length == 1)
           render Scenarios::TitleComponent.new(scenario: @scenario, feature: @feature, project: @project), layout: false, status: :unprocessable_entity
         else
@@ -54,7 +54,7 @@ class ScenariosController < ApplicationController
     authorize! :destroy, @scenario
     @scenario.destroy!
 
-    if request.headers["HX-Request"]
+    if htmx_request?
       head :ok
     else
       redirect_to project_feature_path(@project, @feature), notice: "Scenario deleted successfully"

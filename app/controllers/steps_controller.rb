@@ -15,7 +15,7 @@ class StepsController < ApplicationController
     end
 
     if @step.save
-      if request.headers["HX-Request"]
+      if htmx_request?
         render Steps::Component.new(
           step: @step,
           scenario: @scenario,
@@ -26,7 +26,7 @@ class StepsController < ApplicationController
         redirect_to project_feature_path(@project, @feature), notice: "Step created successfully"
       end
     else
-      if request.headers["HX-Request"]
+      if htmx_request?
         head :unprocessable_entity
       else
         redirect_to project_feature_path(@project, @feature), alert: "Failed to create step"
@@ -38,13 +38,13 @@ class StepsController < ApplicationController
     authorize! :update, @step
 
     if @step.update(step_params)
-      if request.headers["HX-Request"]
+      if htmx_request?
         head :ok
       else
         redirect_to project_feature_path(@project, @feature), notice: "Step updated successfully"
       end
     else
-      if request.headers["HX-Request"]
+      if htmx_request?
         head :unprocessable_entity
       else
         redirect_to project_feature_path(@project, @feature), alert: "Failed to update step"
@@ -56,7 +56,7 @@ class StepsController < ApplicationController
     authorize! :destroy, @step
     @step.destroy!
 
-    if request.headers["HX-Request"]
+    if htmx_request?
       head :ok
     else
       redirect_to project_feature_path(@project, @feature), notice: "Step deleted successfully"

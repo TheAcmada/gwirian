@@ -145,7 +145,7 @@ class ProjectsController < ApplicationController
     user = User.find_by(email_address: email)
     unless user && Current.workspace.workspace_members.current_member.exists?(user_id: user.id)
       alert = "This user is not a member of the workspace"
-      if request.headers["HX-Request"]
+      if htmx_request?
         render partial: "projects/project_members", locals: { project: @project, alert: alert }
       else
         redirect_to projects_path, alert: alert
@@ -156,7 +156,7 @@ class ProjectsController < ApplicationController
     # Check if the email is already in the project
     if @project.project_members.exists?(email: email)
       alert = "The member is already in the project"
-      if request.headers["HX-Request"]
+      if htmx_request?
         render partial: "projects/project_members", locals: { project: @project, alert: alert }
       else
         redirect_to projects_path, alert: alert
@@ -178,7 +178,7 @@ class ProjectsController < ApplicationController
     end
 
     if member.save
-      if request.headers["HX-Request"]
+      if htmx_request?
         render partial: "projects/project_members", locals: { project: @project, notice: "The member has been added successfully" }
       else
         redirect_to projects_path, notice: "The member has been added successfully"
@@ -197,7 +197,7 @@ class ProjectsController < ApplicationController
     end
 
     if member&.destroy
-      if request.headers["HX-Request"]
+      if htmx_request?
         render partial: "projects/project_members", locals: { project: @project, notice: "The member has been removed successfully" }
       else
         redirect_to projects_path, notice: "The member has been removed successfully"
@@ -215,7 +215,7 @@ class ProjectsController < ApplicationController
     end
 
     if member&.update(member_update_params)
-      if request.headers["HX-Request"]
+      if htmx_request?
         render partial: "projects/project_members", locals: { project: @project, notice: "The member has been updated successfully" }
       else
         redirect_to projects_path, notice: "The member has been updated successfully"
