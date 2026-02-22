@@ -290,7 +290,7 @@ Gwirian uses **Kamal** for zero-downtime deployments. Kamal provides a simple, D
 
 ### Deployment Guide
 
-For a complete walkthrough, see the [Kamal deployment guide](docs/kamal-deployment.md).
+For a complete walkthrough, see the [Kamal deployment guide](docs/kamal-deployment.md) or the [Docker deployment guide](docs/docker-deployment.md).
 
 ### Quick Deploy
 
