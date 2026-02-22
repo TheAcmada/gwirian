@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_21_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_22_130000) do
   create_table "features", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -71,8 +71,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_21_120000) do
     t.datetime "executed_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["executed_at"], name: "index_scenario_executions_on_executed_at"
     t.index ["scenario_id", "executed_at"], name: "index_scenario_executions_on_scenario_id_and_executed_at"
     t.index ["scenario_id"], name: "index_scenario_executions_on_scenario_id"
+    t.index ["status"], name: "index_scenario_executions_on_status"
     t.index ["user_id"], name: "index_scenario_executions_on_user_id"
   end
 
@@ -85,6 +87,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_21_120000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "position"
+    t.index ["feature_id", "position"], name: "index_scenarios_on_feature_id_and_position"
     t.index ["feature_id"], name: "index_scenarios_on_feature_id"
   end
 

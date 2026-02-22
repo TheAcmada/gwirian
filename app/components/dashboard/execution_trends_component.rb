@@ -40,10 +40,23 @@ module Dashboard
       executions = []
       pass_rates = []
 
-      (days.days.ago.to_date..Date.current).each do |date|
-        day_executions = project.scenario_executions.where(executed_at: date.all_day)
-        total = day_executions.count
-        passed = day_executions.passed.count
+      start_date = days.days.ago.to_date
+      end_date = Date.current
+      range = start_date.beginning_of_day..end_date.end_of_day
+
+      # Single query: fetch executed_at and status for the whole range, then aggregate in Ruby
+      rows = project.scenario_executions.where(executed_at: range).pluck(:executed_at, :status)
+      by_date = Hash.new { |h, d| h[d] = { total: 0, passed: 0 } }
+      rows.each do |executed_at, status|
+        d = executed_at.to_date
+        by_date[d][:total] += 1
+        by_date[d][:passed] += 1 if status == "passed"
+      end
+
+      (start_date..end_date).each do |date|
+        day_stats = by_date[date]
+        total = day_stats[:total]
+        passed = day_stats[:passed]
 
         dates << date.strftime("%b %d")
         executions << total

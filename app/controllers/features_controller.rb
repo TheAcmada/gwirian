@@ -5,9 +5,9 @@ class FeaturesController < ApplicationController
 
   def index
     if params[:q].present?
-      @features = Feature.search_by_project(params[:q], @project.id).records.order(:title)
+      @features = Feature.search_by_project(params[:q], @project.id).records.order(:title).includes(scenarios: :scenario_executions)
     else
-      @features = @project.features.order(:title)
+      @features = @project.features.order(:title).includes(scenarios: :scenario_executions)
     end
   end
 
@@ -110,7 +110,7 @@ class FeaturesController < ApplicationController
     authorize! :execute, @feature
 
     if request.get?
-      @scenarios = @feature.scenarios.order(:position)
+      @scenarios = @feature.scenarios.order(:position).includes(:scenario_executions)
     elsif request.post?
       selected_ids = params[:scenario_ids] || []
       scenario_ids = selected_ids.map(&:to_i)
@@ -127,7 +127,7 @@ class FeaturesController < ApplicationController
 
     if request.get?
       selected_ids = session[:selected_scenario_ids] || []
-      @scenarios = @feature.scenarios.where(id: selected_ids).order(:position)
+      @scenarios = @feature.scenarios.where(id: selected_ids).order(:position).includes(:scenario_executions)
       @scenarios = @scenarios.to_a.sort_by { |s| selected_ids.index(s.id) }
     elsif request.post?
       executions_data = execution_params
@@ -173,7 +173,7 @@ class FeaturesController < ApplicationController
   end
 
   def set_feature
-    @feature = @project.features.find(params[:id])
+    @feature = @project.features.includes(scenarios: :scenario_executions).find(params[:id])
   end
 
   def feature_params
