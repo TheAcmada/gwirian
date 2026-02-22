@@ -1,6 +1,6 @@
-# Gwirian CLI — Command reference
+# Gwirian CLI — API reference
 
-This file lists all **gwirian** commands for use by agents. Run from the gwirian-cli project root as `node dist/cli.js <command> ...` (after `npm run build`) or as `gwirian <command> ...` if the CLI is on PATH.
+Commands and options only. For task-oriented usage, examples, and recommendations, see [SKILL.md](SKILL.md).
 
 ## Global options
 
@@ -44,9 +44,7 @@ Config file: `~/.config/gwirian-cli/config.json` (or `$XDG_CONFIG_HOME/gwirian-c
 | Command | Description |
 |---------|-------------|
 | `gwirian projects list` | List all projects |
-| `gwirian projects show <project-id>` | Show one project (includes `context` when present) |
-
-**Project context (required for scenario execution):** The API returns a `context` attribute on the project (environments/URLs, accounts, logins, etc.). **When executing scenarios, you must always** fetch the project with `gwirian projects show <project-id> --json`, read `context`, and use it to run the tests (URLs, accounts). Do not run scenario execution without using the project context.
+| `gwirian projects show <project-id>` | Show one project; response includes `context` when present |
 
 ---
 
@@ -88,28 +86,4 @@ Config file: `~/.config/gwirian-cli/config.json` (or `$XDG_CONFIG_HOME/gwirian-c
 | `gwirian scenario-executions update <project-id> <feature-id> <scenario-id> <execution-id> [options]` | Update execution |
 | `gwirian scenario-executions delete <project-id> <feature-id> <scenario-id> <execution-id>` | Delete execution |
 
-**Create/update options:** `--status <status>` (`passed` | `failed` | `pending`), `--notes <notes>`, `--executed-at <iso>` (ISO 8601), `--tag-list <list>` (comma-separated tags: test type, version, bugfix, etc.). List and show return `tag_list` on each execution.
-
----
-
-## Examples
-
-```bash
-# List projects as JSON (for parsing)
-gwirian --json projects list
-
-# Get project details including context (required before executing scenarios)
-gwirian --json projects show 1
-
-# Create a feature
-gwirian features create 1 --title "Login" --description "User can sign in"
-
-# Create a scenario
-gwirian scenarios create 1 2 --title "Successful login" --given "user has an account" --when "user submits valid credentials" --then "user is redirected to dashboard"
-
-# Record a scenario execution (e.g. after Playwright run)
-gwirian scenario-executions create 1 2 3 --status passed --executed-at "2025-02-21T10:00:00Z" --notes "Playwright E2E"
-
-# Override base URL for one run
-gwirian --base-url https://staging.example.com features list 1
-```
+**Create/update options:** `--status <status>` (`passed` | `failed` | `pending`), `--notes <notes>` (optional), `--executed-at <iso>` (optional; ISO 8601, defaults to current time on create), `--tag-list <list>` (optional; comma-separated). List and show return `tag_list` on each execution.

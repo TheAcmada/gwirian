@@ -4,6 +4,7 @@ class Api::V1::ApiController < ActionController::Base
   include Authentication::ViaApiToken
   include ProjectAccessible
 
+  skip_before_action :verify_authenticity_token
   before_action :set_project, if: -> { params[:project_id].present? }
 
   rescue_from ActiveRecord::RecordNotFound do |e|

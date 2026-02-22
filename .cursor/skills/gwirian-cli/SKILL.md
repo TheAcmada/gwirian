@@ -85,7 +85,7 @@ When the user wants to **execute one or more scenarios**:
 
 4. **Record each execution** with the CLI:  
    `gwirian scenario-executions create <project-id> <feature-id> <scenario-id> --status passed|failed|pending [--executed-at <ISO>] [--notes "..."] [--tag-list "e2e, v1.2.3"]`  
-   Use `--tag-list` to record test type (e.g. e2e, smoke), version, bugfix, or other tags.
+   Use optional `--tag-list` to record test type (e.g. e2e, smoke), version, bugfix, or other tags.
 
 ### 5. List or record scenario executions
 
@@ -97,11 +97,36 @@ When the user wants to **execute one or more scenarios**:
 | Update execution | `gwirian scenario-executions update <project-id> <feature-id> <scenario-id> <execution-id> [--status] [--notes] [--executed-at] [--tag-list "tags"]` |
 | Delete execution | `gwirian scenario-executions delete <project-id> <feature-id> <scenario-id> <execution-id>` |
 
-Status values: `passed`, `failed`, `pending`. Use `--executed-at` in ISO 8601 format when creating or updating. List and show return `tag_list` (array) on each execution.
+Options: `--status`, `--notes` (optional; **recommended when status is failed** to capture the failure reason), `--executed-at` (optional; defaults to now on create), `--tag-list` (optional). List and show return `tag_list` on each execution.
+
+## Examples
+
+```bash
+# List projects as JSON (for parsing)
+gwirian --json projects list
+
+# Get project details including context (required before executing scenarios)
+gwirian --json projects show 1
+
+# Create a feature
+gwirian features create 1 --title "Login" --description "User can sign in"
+
+# Create a scenario
+gwirian scenarios create 1 2 --title "Successful login" --given "user has an account" --when "user submits valid credentials" --then "user is redirected to dashboard"
+
+# Record a scenario execution (e.g. after Playwright run); omit --executed-at to use current time
+gwirian scenario-executions create 1 2 3 --status passed --notes "Playwright E2E"
+
+# Record a failed run with notes (recommended)
+gwirian scenario-executions create 1 2 3 --status failed --notes "AssertionError: expected 'Dashboard' in title"
+
+# Override base URL for one run
+gwirian --base-url https://staging.example.com features list 1
+```
 
 ## Reference
 
-- **Full command list and examples:** [reference.md](reference.md) in this skill folder.
+- **Full API reference (all commands and options):** [reference.md](reference.md) in this skill folder.
 - **Implementation and file layout:** gwirian-cli project **AGENTS.md**.
 
 ## Tips
