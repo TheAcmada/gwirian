@@ -23,33 +23,29 @@ class ProjectsController < ApplicationController
 
     if q.present?
       begin
-        features = Feature.search_by_project(q, @project.id, limit: 10).records.includes(scenarios: :scenario_executions)
-        scenarios = Scenario.search_by_project(q, @project.id, limit: 10).records.includes(:feature, :scenario_executions)
-
-        features.each do |f|
-          statuses = f.scenarios.map(&:current_status)
-          status, status_label = feature_search_status(statuses)
-          results << {
-            type: "feature",
-            title: f.title,
-            subtitle: "Feature",
-            url: project_feature_path(@project, f),
-            status: status,
-            status_label: status_label
-          }
-        end
-
-        scenarios.each do |s|
-          status = s.current_status
-          results << {
-            type: "scenario",
-            title: s.title,
-            subtitle: "Feature: #{s.feature.title}",
-            url: project_feature_path(@project, s.feature),
-            status: status,
-            status_label: status_label_for(status)
-          }
-        end
+        raw = @project.search_content(q, limit: 10)
+        results = raw.map do |r|
+          case r[:type]
+          when "feature"
+            {
+              type: "feature",
+              title: r[:title],
+              subtitle: "Feature",
+              url: project_feature_path(@project, r[:id]),
+              status: r[:status],
+              status_label: r[:status] ? status_label_for(r[:status]) : nil
+            }
+          when "scenario"
+            {
+              type: "scenario",
+              title: r[:title],
+              subtitle: "Feature: #{r[:feature_title]}",
+              url: project_feature_path(@project, r[:feature_id]),
+              status: r[:status],
+              status_label: status_label_for(r[:status])
+            }
+          end
+        end.compact
       rescue StandardError
         results = []
       end
@@ -226,25 +222,6 @@ class ProjectsController < ApplicationController
   end
 
   private
-
-  def feature_search_status(statuses)
-    return [ nil, nil ] if statuses.empty?
-    total = statuses.size
-    passed = statuses.count("passed")
-    failed = statuses.count("failed")
-    pending = statuses.count("pending")
-    status = failed.positive? ? "failed" : (pending.positive? ? "pending" : "passed")
-    label = if failed.positive?
-      "#{failed} failed"
-    elsif pending.positive? && passed.positive?
-      "#{passed}/#{total} passed"
-    elsif passed == total
-      "#{total} passed"
-    else
-      "#{pending} pending"
-    end
-    [ status, label ]
-  end
 
   def status_label_for(status)
     { "passed" => "Passed", "failed" => "Failed", "pending" => "Pending" }.fetch(status, "Pending")

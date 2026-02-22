@@ -12,6 +12,7 @@ module Mcp
         tools: [
           Mcp::Tools::ListProjects,
           Mcp::Tools::GetProject,
+          Mcp::Tools::SearchProject,
           Mcp::Tools::ListFeatures,
           Mcp::Tools::GetFeature,
           Mcp::Tools::CreateFeature,

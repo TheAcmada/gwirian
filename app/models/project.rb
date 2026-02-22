@@ -53,4 +53,47 @@ class Project < ApplicationRecord
   def member?(user)
     user_role(user).present?
   end
+
+  # Search within this project for features and scenarios matching the query (Elasticsearch).
+  # @param [String] query search string
+  # @param [Integer] limit max results per type (default 20)
+  # @return [Array<Hash>] array of hashes with type, id, title, and type-specific fields
+  def search_content(query, limit: 20)
+    results = []
+    return results if query.blank?
+
+    features = Feature.search_by_project(query, id, limit: limit).records
+                     .includes(scenarios: :scenario_executions)
+    scenarios = Scenario.search_by_project(query, id, limit: limit).records
+                       .includes(:feature, :scenario_executions)
+
+    features.each do |f|
+      statuses = f.scenarios.map(&:current_status)
+      status = aggregate_status_from(statuses)
+      results << {
+        type: "feature", id: f.id, title: f.title,
+        description: f.description, project_id: f.project_id,
+        status: status
+      }
+    end
+
+    scenarios.each do |s|
+      results << {
+        type: "scenario", id: s.id, title: s.title,
+        feature_id: s.feature_id, feature_title: s.feature.title,
+        status: s.current_status
+      }
+    end
+
+    results
+  end
+
+  private
+
+  def aggregate_status_from(statuses)
+    return nil if statuses.empty?
+    return "failed" if statuses.include?("failed")
+    return "pending" if statuses.include?("pending")
+    "passed"
+  end
 end
