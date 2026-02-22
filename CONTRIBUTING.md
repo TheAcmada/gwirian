@@ -1,6 +1,6 @@
 # How to contribute to Gwirian
 
-Gwirian uses GitHub [discussions](https://github.com/theacmada/gwirian/discussions) to trackvfeature requests and questions, rather than [the issue tracker](https://github.com/theacmada/gwirian/issues). If you're considering opening an issue or pull request, please open a discussion instead.
+Gwirian uses GitHub [discussions](https://github.com/theacmada/gwirian/discussions) to track feature requests and questions, rather than [the issue tracker](https://github.com/theacmada/gwirian/issues). If you're considering opening an issue or pull request, please open a discussion instead.
 
 Whenever a discussion leads to an actionable and well-understood task, we'll move it to the issue tracker where it can be worked on.
 
