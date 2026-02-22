@@ -13,20 +13,11 @@
   }
 }">
   <!-- Header -->
-  <div class="mb-8">
-    <div class="flex items-center gap-3 mb-2">
-      <a
-        href="<%= select_scenarios_project_feature_path(@project, @feature) %>"
-        class="flex items-center justify-center w-7 h-7 rounded transition-colors text-stone-500 dark:text-white/60 hover:bg-stone-100 dark:hover:bg-white/5 hover:text-stone-800 dark:hover:text-white/90"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-      </a>
-      <h1 class="text-3xl font-bold tracking-tight text-stone-800 dark:text-white/90" style="letter-spacing: -0.02em;">Execute Scenarios</h1>
-    </div>
-    <p class="text-stone-500 dark:text-white/60 ml-10">Mark each scenario as Pass or Fail</p>
-  </div>
+  <%= render Shared::PageHeaderComponent.new(
+    title: "Execute Scenarios",
+    subtitle: "Mark each scenario as Pass or Fail",
+    back_path: select_scenarios_project_feature_path(@project, @feature)
+  ) %>
 
   <form action="<%= execute_scenarios_project_feature_path(@project, @feature) %>" method="post">
     <%= hidden_field_tag :authenticity_token, form_authenticity_token %>

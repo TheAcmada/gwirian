@@ -2,30 +2,19 @@
 
 <div class="max-w-6xl mx-auto px-4 py-8">
   <%# Header %>
-  <div class="mb-8">
-    <div class="flex items-start justify-between gap-4">
-      <div>
-        <h1 class="text-3xl font-bold tracking-tight text-stone-800 dark:text-white" style="letter-spacing: -0.02em;">
-          <%= @project.name %>
-        </h1>
-        <% if @project.description.present? %>
-          <p class="mt-2 text-base text-stone-600 dark:text-stone-300 max-w-2xl">
-            <%= @project.description %>
-          </p>
-        <% end %>
-      </div>
-      
-      <div class="flex items-center gap-2">
-        <%= link_to project_features_path(@project), class: "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-stone-700 dark:text-stone-200 bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors" do %>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-          </svg>
-          <%= t("dashboard.view_features") %>
-        <% end %>
-        
-      </div>
-    </div>
-  </div>
+  <%= render Shared::PageHeaderComponent.new(
+    title: @project.name,
+    subtitle: @project.description.presence
+  ) do |c| %>
+    <% c.with_actions do %>
+      <%= link_to project_features_path(@project), class: "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-stone-700 dark:text-stone-200 bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        <%= t("dashboard.view_features") %>
+      <% end %>
+    <% end %>
+  <% end %>
 
   <%# KPI Stats Row %>
   <div class="mb-8">

@@ -1,0 +1,31 @@
+<div class="mb-8">
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <div class="flex items-center gap-3 mb-1">
+        <% if back_path? %>
+          <a
+            href="<%= back_path %>"
+            class="flex items-center justify-center w-7 h-7 rounded transition-colors text-stone-500 dark:text-white/60 hover:bg-stone-100 dark:hover:bg-white/5 hover:text-stone-800 dark:hover:text-white/90"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </a>
+        <% end %>
+        <h1 class="text-3xl font-bold tracking-tight text-stone-800 dark:text-white/90" style="letter-spacing: -0.02em;">
+          <%= title %>
+        </h1>
+      </div>
+      <% if subtitle? %>
+        <p class="text-base text-stone-500 dark:text-white/60 mt-2 <%= 'ml-10' if back_path? %>">
+          <%= subtitle %>
+        </p>
+      <% end %>
+    </div>
+    <% if actions? %>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <%= actions %>
+      </div>
+    <% end %>
+  </div>
+</div>
