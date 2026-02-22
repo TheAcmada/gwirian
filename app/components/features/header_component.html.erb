@@ -2,11 +2,11 @@
 <div class="mb-6" data-feature-header>
   <div class="flex items-start justify-between gap-4 mb-2">
     <div class="flex-1">
-      <%= render Features::TitleComponent.new(feature: @feature, project: @project) %>
+      <%= render Features::TitleComponent.new(feature: feature, project: project) %>
     </div>
-    <% if can?(:execute, @feature) %>
+    <% if can_execute? %>
       <a
-        href="<%= start_execution_project_feature_path(@project, @feature) %>"
+        href="<%= start_execution_project_feature_path(project, feature) %>"
         class="btn btn-primary"
       >
         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -17,8 +17,8 @@
       </a>
     <% end %>
   </div>
-  <%= render Features::DescriptionComponent.new(feature: @feature, project: @project) %>
+  <%= render Features::DescriptionComponent.new(feature: feature, project: project) %>
   <div class="mt-3">
-    <%= render Features::TagListComponent.new(feature: @feature, project: @project) %>
+    <%= render Features::TagListComponent.new(feature: feature, project: project) %>
   </div>
 </div>

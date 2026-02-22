@@ -43,13 +43,13 @@ class FeaturesController < ApplicationController
 
     if @feature.update(feature_params)
       if htmx_request?
-        render partial: "features/feature_header", locals: { feature: @feature, project: @project }
+        render Features::HeaderComponent.new(feature: @feature, project: @project), layout: false
       else
         redirect_to project_feature_path(@project, @feature), notice: "Feature updated successfully"
       end
     else
       if htmx_request?
-        render partial: "features/feature_header", locals: { feature: @feature, project: @project }, status: :unprocessable_entity
+        render Features::HeaderComponent.new(feature: @feature, project: @project), layout: false, status: :unprocessable_entity
       else
         render :show, status: :unprocessable_entity
       end
@@ -79,7 +79,7 @@ class FeaturesController < ApplicationController
     end
 
     if htmx_request?
-      render partial: "features/feature_header", locals: { feature: @feature.reload, project: @project }
+      render Features::HeaderComponent.new(feature: @feature.reload, project: @project), layout: false
     else
       redirect_to project_feature_path(@project, @feature)
     end
@@ -95,7 +95,7 @@ class FeaturesController < ApplicationController
     end
 
     if htmx_request?
-      render partial: "features/feature_header", locals: { feature: @feature.reload, project: @project }
+      render Features::HeaderComponent.new(feature: @feature.reload, project: @project), layout: false
     else
       redirect_to project_feature_path(@project, @feature)
     end
