@@ -34,11 +34,17 @@ class Plan
     }
   }
 
-  attr_reader :key, :name, :projects_limit, :features_limit, :scenarios_limit, :members_limit
+  PADDLE_PRICE_ENV_KEYS = {
+    starter: "PADDLE_PRICE_STARTER",
+    professional: "PADDLE_PRICE_PROFESSIONAL",
+    team: "PADDLE_PRICE_TEAM"
+  }.freeze
+
+  attr_reader :key, :name, :projects_limit, :features_limit, :scenarios_limit, :members_limit, :paddle_price_id
 
   class << self
     def all
-      @all ||= PLANS.map { |key, properties| new(key: key, **properties) }
+      @all ||= PLANS.map { |key, properties| new(key: key, paddle_price_id: paddle_price_id_for(key), **properties) }
     end
 
     def free
@@ -50,16 +56,27 @@ class Plan
       @all_by_key[key]
     end
 
+    def find_by_paddle_price_id(price_id)
+      return nil if price_id.blank?
+      all.find { |p| p.paddle_price_id == price_id }
+    end
+
+    def paddle_price_id_for(plan_key)
+      env_key = PADDLE_PRICE_ENV_KEYS[plan_key.to_sym]
+      env_key ? ENV[env_key].to_s.presence : nil
+    end
+
     alias [] find
   end
 
-  def initialize(key:, name:, projects_limit:, features_limit:, scenarios_limit:, members_limit:)
+  def initialize(key:, name:, projects_limit:, features_limit:, scenarios_limit:, members_limit:, paddle_price_id: nil)
     @key = key
     @name = name
     @projects_limit = projects_limit
     @features_limit = features_limit
     @scenarios_limit = scenarios_limit
     @members_limit = members_limit
+    @paddle_price_id = paddle_price_id
   end
 
   def free?
