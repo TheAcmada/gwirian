@@ -11,13 +11,17 @@ module Gwirian
 
       initializer "gwirian.saas.mount" do |app|
         app.routes.append do
-          mount Gwirian::Saas::Engine => "/", as: "saas"
-
+          # Subscription routes must be defined before the engine mount so that
+          # /subscription is matched by the host app. Otherwise the mount catches
+          # the request and the engine receives it with a different SCRIPT_NAME,
+          # and generated URLs (e.g. in the navbar) lose the workspace slug.
           resource :subscription, only: [ :show, :create ] do
             post :cancel
             post :resume
             get :portal
           end
+
+          mount Gwirian::Saas::Engine => "/", as: "saas"
         end
       end
 
