@@ -65,6 +65,40 @@ class SubscriptionsController < ApplicationController
     end
   end
 
+  def update_plan
+    workspace = Current.workspace
+    subscription = workspace.workspace_subscription
+
+    unless subscription&.paddle_subscription_id.present? && !subscription.canceled?
+      redirect_to subscription_path, alert: "No active subscription to update"
+      return
+    end
+
+    plan_key = params[:plan_key]
+    plan = Plan.find(plan_key)
+
+    unless plan&.paid? && plan.paddle_price_id.present?
+      redirect_to subscription_path, alert: "Invalid plan selected"
+      return
+    end
+
+    if plan.key == workspace.plan&.key
+      redirect_to subscription_path, notice: "You are already on #{plan.name}."
+      return
+    end
+
+    begin
+      ::Paddle::Subscription.update(
+        id: subscription.paddle_subscription_id,
+        items: [ { price_id: plan.paddle_price_id, quantity: 1 } ],
+        proration_billing_mode: "prorated_immediately"
+      )
+      redirect_to subscription_path, notice: "Your subscription has been updated to #{plan.name}. Changes may take a moment to appear."
+    rescue ::Paddle::Errors::BadRequestError => e
+      redirect_to subscription_path, alert: "Unable to update subscription: #{e.message}"
+    end
+  end
+
   def portal
     workspace = Current.workspace
     subscription = workspace.workspace_subscription

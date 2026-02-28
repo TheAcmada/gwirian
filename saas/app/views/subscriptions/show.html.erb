@@ -90,15 +90,18 @@
                         "@click.prevent": "showConfirmation('This will cancel your subscription at the end of the current billing period. You will keep access to your current plan until then.').then(result => { if (result.isConfirmed) $el.closest('form').submit() })" %>
                 <% end %>
               <% elsif plan.paid? && plan.paddle_price_id.present? %>
-                <button type="button"
-                        class="btn btn-primary btn-sm w-full"
-                        @click="openCheckout('<%= plan.paddle_price_id %>', '<%= @workspace.id %>', '<%= Current.user.email_address %>', '<%= @subscription&.paddle_customer_id %>')">
-                  <% if @plan.free? %>
+                <% if @plan.free? %>
+                  <button type="button"
+                          class="btn btn-primary btn-sm w-full"
+                          @click="openCheckout('<%= plan.paddle_price_id %>', '<%= @workspace.id %>', '<%= Current.user.email_address %>', '<%= @subscription&.paddle_customer_id %>')">
                     Upgrade to <%= plan.name %>
-                  <% else %>
-                    Switch to <%= plan.name %>
-                  <% end %>
-                </button>
+                  </button>
+                <% else %>
+                  <%= button_to "Switch to #{plan.name}",
+                        update_plan_subscription_path(plan_key: plan.key),
+                        method: :post,
+                        class: "btn btn-primary btn-sm w-full" %>
+                <% end %>
               <% end %>
             <% else %>
               <% if @subscription&.canceled? && @subscription.on_grace_period? %>
