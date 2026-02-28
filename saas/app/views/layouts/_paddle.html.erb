@@ -1,0 +1,55 @@
+<% if ENV['PADDLE_CLIENT_TOKEN'].present? %>
+  <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+  <script>
+    document.addEventListener("alpine:init", () => {
+      Alpine.data("paddleCheckout", () => ({
+        initialized: false,
+
+        init() {
+          if (this.initialized || typeof Paddle === "undefined") return;
+          const token = this.$el.dataset.paddleClientToken;
+          const environment = this.$el.dataset.paddleEnvironment;
+          if (!token) return;
+
+          Paddle.Environment.set(environment === "production" ? "production" : "sandbox");
+          Paddle.Initialize({
+            token: token,
+            eventCallback: (event) => {
+              if (event.name === "checkout.completed") {
+                setTimeout(() => { window.location.reload(); }, 2000);
+              }
+            }
+          });
+          this.initialized = true;
+        },
+
+        openCheckout(priceId, workspaceId, email, customerId) {
+          if (typeof Paddle === "undefined") {
+            showError("Payment system is loading. Please try again.");
+            return;
+          }
+
+          const checkoutSettings = {
+            settings: {
+              displayMode: "overlay",
+              variant: "one-page",
+              theme: window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light",
+              successUrl: window.location.href
+            },
+            items: [{ priceId: priceId, quantity: 1 }],
+            customData: { workspace_id: workspaceId },
+            customer: {}
+          };
+
+          if (customerId && customerId !== "") {
+            checkoutSettings.customer.id = customerId;
+          } else if (email) {
+            checkoutSettings.customer.email = email;
+          }
+
+          Paddle.Checkout.open(checkoutSettings);
+        }
+      }));
+    });
+  </script>
+<% end %>

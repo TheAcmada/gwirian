@@ -23,7 +23,7 @@
     <script defer src="/js/alpinejs.3.14.8.js"></script>
     <script src="/js/popper.js"></script>
     <script src="/js/tippy.js"></script>
-
+    <%= render "layouts/paddle" if Gwirian.saas? %>
 
     <script>
       document.addEventListener("alpine:init", () => {

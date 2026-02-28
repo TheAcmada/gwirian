@@ -12,9 +12,14 @@
 <div>
   <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Workspace usage</h2>
   <div class="bg-stone-50 dark:bg-white/5 rounded-lg p-4">
-    <p class="text-stone-800 dark:text-white/90 mb-4">
-      Plan: <strong><%= workspace.plan.name %></strong>
-    </p>
+    <div class="flex items-center justify-between mb-4">
+      <p class="text-stone-800 dark:text-white/90">
+        Plan: <strong><%= workspace.plan.name %></strong>
+      </p>
+      <% if workspace.admin?(Current.user) %>
+        <a href="<%= subscription_path %>" class="link text-xs">Manage plan</a>
+      <% end %>
+    </div>
     <dl class="space-y-3 text-sm">
       <% metrics.each do |label, used, limit, exceeding| %>
         <div class="<%= 'border-l-2 border-red-500 dark:border-red-400 pl-2' if exceeding %>">
@@ -39,7 +44,7 @@
         <p class="text-sm text-stone-600 dark:text-white/60 mb-3">
           One or more of your workspace limits have been reached. You won't be able to add new projects, features, scenarios, or members until you upgrade your plan or reduce usage below the limit.
         </p>
-        <button type="button" disabled class="btn btn-primary opacity-50 cursor-not-allowed">Upgrade plan</button>
+        <a href="<%= subscription_path %>" class="btn btn-primary">Upgrade plan</a>
       </div>
     <% end %>
   </div>

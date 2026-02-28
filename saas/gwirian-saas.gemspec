@@ -22,6 +22,7 @@ Gem::Specification.new do |spec|
   end
 
   spec.add_dependency "rails", ">= 8.0.2"
+  spec.add_dependency "paddle", "~> 2.9"
   spec.add_dependency "sentry-ruby"
   spec.add_dependency "sentry-rails"
 end

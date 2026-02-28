@@ -5,12 +5,19 @@ module Gwirian
     class Engine < ::Rails::Engine
       initializer "gwirian.saas.routes", after: :add_routing_paths do |app|
         app.routes.prepend do
+          post "paddle/webhooks", to: "paddle/webhooks#create"
         end
       end
 
       initializer "gwirian.saas.mount" do |app|
         app.routes.append do
           mount Gwirian::Saas::Engine => "/", as: "saas"
+
+          resource :subscription, only: [ :show, :create ] do
+            post :cancel
+            post :resume
+            get :portal
+          end
         end
       end
 

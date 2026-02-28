@@ -1,0 +1,121 @@
+<% content_for :title, "Subscription" %>
+<div class="max-w-3xl mx-auto px-4 py-12">
+  <%= render Shared::PageHeaderComponent.new(
+    title: "Subscription",
+    subtitle: "Manage your workspace plan and billing"
+  ) %>
+
+  <div class="space-y-8">
+    <!-- Current Plan -->
+    <div>
+      <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Current plan</h2>
+      <div class="bg-stone-50 dark:bg-white/5 rounded-lg p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-stone-800 dark:text-white/90 font-medium text-lg"><%= @plan.name %></p>
+            <% if @subscription&.paid? %>
+              <p class="text-xs text-stone-500 dark:text-white/40 mt-1">
+                <% if @subscription.active? %>
+                  Active
+                  <% if @subscription.current_period_ends_at.present? %>
+                    &middot; Renews <%= @subscription.current_period_ends_at.strftime("%B %d, %Y") %>
+                  <% end %>
+                <% elsif @subscription.canceled? && @subscription.on_grace_period? %>
+                  Cancels on <%= @subscription.current_period_ends_at.strftime("%B %d, %Y") %>
+                <% elsif @subscription.canceled? %>
+                  Canceled
+                <% elsif @subscription.paused? %>
+                  Paused
+                <% elsif @subscription.past_due? %>
+                  Past due &mdash; please update your payment method
+                <% end %>
+              </p>
+            <% else %>
+              <p class="text-xs text-stone-500 dark:text-white/40 mt-1">Free plan with limited resources</p>
+            <% end %>
+          </div>
+          <% if @subscription&.paddle_customer_id.present? %>
+            <a href="<%= portal_subscription_path %>" class="btn btn-secondary btn-sm" data-turbo="false">Manage billing</a>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Usage -->
+    <%= render "workspaces/usage", workspace: @workspace %>
+
+    <!-- Plans -->
+    <div>
+      <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Available plans</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4"
+           x-data="paddleCheckout()"
+           data-paddle-client-token="<%= ENV['PADDLE_CLIENT_TOKEN'] %>"
+           data-paddle-environment="<%= ENV['PADDLE_ENVIRONMENT'] || 'sandbox' %>">
+        <% @plans.each do |plan| %>
+          <div class="rounded-lg p-5 <%= plan.key == @plan.key ? 'bg-accent-50 dark:bg-accent-900/20 ring-1 ring-accent-500/30' : 'bg-stone-50 dark:bg-white/5' %>">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-medium text-stone-800 dark:text-white/90"><%= plan.name %></h3>
+              <% if plan.key == @plan.key %>
+                <span class="badge badge-accent badge-sm">Current</span>
+              <% end %>
+            </div>
+
+            <dl class="space-y-1 text-xs text-stone-500 dark:text-white/50 mb-4">
+              <div class="flex justify-between">
+                <dt>Projects</dt>
+                <dd><%= plan_limit_display(plan.projects_limit) %></dd>
+              </div>
+              <div class="flex justify-between">
+                <dt>Features</dt>
+                <dd><%= plan_limit_display(plan.features_limit) %></dd>
+              </div>
+              <div class="flex justify-between">
+                <dt>Scenarios</dt>
+                <dd><%= plan_limit_display(plan.scenarios_limit) %></dd>
+              </div>
+              <div class="flex justify-between">
+                <dt>Members</dt>
+                <dd><%= plan_limit_display(plan.members_limit) %></dd>
+              </div>
+            </dl>
+
+            <% if plan.key != @plan.key %>
+              <% if plan.free? %>
+                <% if @subscription&.paddle_subscription_id.present? && !@subscription.canceled? %>
+                  <%= button_to "Downgrade to Free",
+                        cancel_subscription_path,
+                        method: :post,
+                        class: "btn btn-secondary btn-sm w-full",
+                        "x-data": "{}",
+                        "@click.prevent": "showConfirmation('This will cancel your subscription at the end of the current billing period. You will keep access to your current plan until then.').then(result => { if (result.isConfirmed) $el.closest('form').submit() })" %>
+                <% end %>
+              <% elsif plan.paid? && plan.paddle_price_id.present? %>
+                <button type="button"
+                        class="btn btn-primary btn-sm w-full"
+                        @click="openCheckout('<%= plan.paddle_price_id %>', '<%= @workspace.id %>', '<%= Current.user.email_address %>', '<%= @subscription&.paddle_customer_id %>')">
+                  <% if @plan.free? %>
+                    Upgrade to <%= plan.name %>
+                  <% else %>
+                    Switch to <%= plan.name %>
+                  <% end %>
+                </button>
+              <% end %>
+            <% else %>
+              <% if @subscription&.canceled? && @subscription.on_grace_period? %>
+                <%= button_to "Keep this plan",
+                      resume_subscription_path,
+                      method: :post,
+                      class: "btn btn-primary btn-sm w-full" %>
+              <% elsif @subscription&.paused? %>
+                <%= button_to "Resume plan",
+                      resume_subscription_path,
+                      method: :post,
+                      class: "btn btn-primary btn-sm w-full" %>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
