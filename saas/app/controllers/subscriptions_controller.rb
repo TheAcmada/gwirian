@@ -5,6 +5,7 @@ class SubscriptionsController < ApplicationController
   before_action :require_admin
 
   def show
+    sync_subscriptions
     @workspace = Current.workspace
     @subscription = @workspace.workspace_subscription
     @plan = @workspace.plan
@@ -120,6 +121,24 @@ class SubscriptionsController < ApplicationController
   end
 
   private
+
+  def sync_subscriptions
+    workspace = Current.workspace
+    subscription = workspace.workspace_subscription
+    return false unless subscription&.paddle_subscription_id.present?
+
+    paddle_data = ::Paddle::Subscription.retrieve(id: subscription.paddle_subscription_id)
+    data = paddle_data.is_a?(Hash) ? paddle_data : paddle_data.to_h
+    data = data["data"] if data.key?("data") && data["data"].present?
+    attrs = ::Paddle::WebhookProcessorService.attributes_from_paddle_data(data, current_plan_key: subscription.plan_key)
+    return false if attrs[:paddle_subscription_id].blank?
+
+    subscription.assign_attributes(attrs)
+    subscription.save!
+    true
+  rescue ::Paddle::Errors::BadRequestError, ::Paddle::Errors::ForbiddenError
+    false
+  end
 
   def require_admin
     unless Current.workspace.admin?(Current.user)

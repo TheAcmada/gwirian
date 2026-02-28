@@ -2,6 +2,43 @@
 
 module Paddle
   class WebhookProcessorService
+    # Builds WorkspaceSubscription attributes from Paddle subscription payload (API or webhook).
+    # Use current_plan_key when the price cannot be mapped to a plan (keeps existing plan).
+    def self.attributes_from_paddle_data(data, current_plan_key: nil)
+      data = data.to_h.with_indifferent_access if data.respond_to?(:to_h)
+      data = data.with_indifferent_access if data.is_a?(Hash) && !data.is_a?(ActiveSupport::HashWithIndifferentAccess)
+      price_id = data["items"].present? ? (data["items"].first&.dig("price", "id") || data["items"].first&.dig("price_id")) : nil
+      plan = Plan.find_by_paddle_price_id(price_id)
+      {
+        paddle_subscription_id: data["id"],
+        paddle_customer_id: data["customer_id"],
+        paddle_plan_price_id: price_id,
+        plan_key: plan&.key || current_plan_key,
+        status: map_status(data["status"]),
+        current_period_starts_at: parse_time(data.dig("current_billing_period", "starts_at")),
+        current_period_ends_at: parse_time(data.dig("current_billing_period", "ends_at")),
+        canceled_at: parse_time(data["canceled_at"]),
+        paused_at: parse_time(data["paused_at"])
+      }.compact
+    end
+
+    def self.map_status(paddle_status)
+      case paddle_status
+      when "active", "trialing" then "active"
+      when "canceled" then "canceled"
+      when "paused" then "paused"
+      when "past_due" then "past_due"
+      else paddle_status || "active"
+      end
+    end
+
+    def self.parse_time(value)
+      return nil if value.blank?
+      Time.parse(value.to_s)
+    rescue ArgumentError
+      nil
+    end
+
     SUBSCRIPTION_EVENTS = %w[
       subscription.created
       subscription.updated
@@ -35,8 +72,6 @@ module Paddle
 
     def process_subscription_event
       subscription_id = @data["id"]
-      customer_id = @data["customer_id"]
-      status = @data["status"]
       custom_data = @data["custom_data"] || {}
       workspace_id = custom_data["workspace_id"]
 
@@ -46,21 +81,8 @@ module Paddle
       subscription ||= WorkspaceSubscription.find_by(workspace_id: workspace_id)
       subscription ||= WorkspaceSubscription.new(workspace_id: workspace_id)
 
-      price_id = extract_price_id
-      plan = Plan.find_by_paddle_price_id(price_id)
-
-      subscription.assign_attributes(
-        paddle_subscription_id: subscription_id,
-        paddle_customer_id: customer_id,
-        paddle_plan_price_id: price_id,
-        plan_key: plan&.key || subscription.plan_key,
-        status: map_status(status),
-        current_period_starts_at: parse_time(@data["current_billing_period"]&.dig("starts_at")),
-        current_period_ends_at: parse_time(@data["current_billing_period"]&.dig("ends_at")),
-        canceled_at: parse_time(@data["canceled_at"]),
-        paused_at: parse_time(@data["paused_at"])
-      )
-
+      attrs = self.class.attributes_from_paddle_data(@data, current_plan_key: subscription.plan_key)
+      subscription.assign_attributes(attrs)
       subscription.save!
       Rails.logger.info "[Paddle Webhook] #{@event_type} processed for workspace #{workspace_id} (plan: #{subscription.plan_key})"
     end
@@ -78,25 +100,15 @@ module Paddle
     def extract_price_id
       items = @data["items"]
       return nil if items.blank?
-
       items.first&.dig("price", "id") || items.first&.dig("price_id")
     end
 
     def map_status(paddle_status)
-      case paddle_status
-      when "active", "trialing" then "active"
-      when "canceled" then "canceled"
-      when "paused" then "paused"
-      when "past_due" then "past_due"
-      else paddle_status || "active"
-      end
+      self.class.map_status(paddle_status)
     end
 
     def parse_time(value)
-      return nil if value.blank?
-      Time.parse(value)
-    rescue ArgumentError
-      nil
+      self.class.parse_time(value)
     end
   end
 end
