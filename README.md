@@ -139,7 +139,7 @@ Get up and running in minutes:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/frocher/gwirian.git
+git clone https://github.com/TheAcmada/gwirian.git
 cd gwirian
 
 # 2. Install dependencies
@@ -358,8 +358,8 @@ RAILS_ENV=development
 
 ### Community
 
-- [GitHub Issues](https://github.com/frocher/gwirian/issues)
-- [GitHub Discussions](https://github.com/frocher/gwirian/discussions)
+- [GitHub Issues](https://github.com/TheAcmada/gwirian/issues)
+- [GitHub Discussions](https://github.com/TheAcmada/gwirian/discussions)
 
 ---
 
