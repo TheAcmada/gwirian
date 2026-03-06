@@ -76,7 +76,7 @@ jobs:
             org.opencontainers.image.source=${{ env.SOURCE_URL }}
 
       - name: Build and push (${{ matrix.platform }})
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: Dockerfile
