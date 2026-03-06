@@ -1,6 +1,6 @@
 ---
 name: gwirian-feature-tests
-description: Runs E2E tests for one or more Gwirian features using playwright-cli for browser automation (required), and records results via the gwirian-cli skill. Use when the user wants to test features, run scenario tests, execute BDD scenarios, or "lancer les tests" for specific features.
+description: Runs E2E tests for one or more Gwirian features using playwright-cli for browser automation (required), and records results via the gwirian-cli skill. Use when the user wants to test features, run scenario tests, execute BDD scenarios, run the tests, run feature tests, run E2E for Gwirian, execute scenarios against the app, or run the test suite for specific features.
 ---
 
 # Run Gwirian feature tests
@@ -20,18 +20,18 @@ Run E2E tests for one or more features from a **spec project** (where features/s
 - **Local:** `http://localhost:3000` (app must be running locally)
 - **Production:** `https://app.gwirian.com`
 
-Use the chosen base URL for all navigation (e.g. `<base>/session/new`, `<base>/frocher/projects/2`, …). If the user does not specify, ask.
+Use the chosen base URL for all navigation (e.g. `<base>/session/new`, `<base>/frocher/projects/2`, …). If the user does not specify, ask; optionally default to local when in a dev workspace.
 
 ## When to use
 
 - User asks to run tests for one or more features (by name or id)
-- User says "lancer les tests" (d'une ou plusieurs features)
+- User asks to run the tests, run feature tests, run E2E, or run the test suite for one or more features
 - User wants to execute the BDD scenarios against the app (local or production)
 
 ## Prerequisites
 
 - **gwirian-cli** skill: use the **gwirian** CLI in the terminal. Run `gwirian --json projects list` to list projects, `gwirian features list <project-id>` to list features, `gwirian scenarios list <project-id> <feature-id>` to list scenarios, and `gwirian scenario-executions create <project-id> <feature-id> <scenario-id> --status passed|failed|pending [--notes "..."]` to record each run. Optionally run `gwirian projects show <project-id> --json` to read project **context** (accounts, environments). The CLI must be configured with `gwirian auth` beforehand.
-- **Browser automation:** **Always use playwright-cli.** Run `playwright-cli` in the terminal (open, goto, snapshot, click, fill, type, check, press, etc.) and use refs from snapshot output (e.g. snapshot files under `.playwright-cli/`). Do not use the browser MCP for executing Gwirian scenario tests.
+- **Browser automation:** See "Browser automation: always use playwright-cli" above (playwright-cli only; no browser MCP). Screenshot only on failure (see same section).
 - **Spec project** and **test project** resolved via `gwirian --json projects list` (match by name or ask user); **test account** (e.g. frocher@gwirian.com); user may provide email and will provide magic link code when prompted
 
 ## Workflow
@@ -63,7 +63,7 @@ Produce one ordered list of `(project_id, feature_id, scenario_id, title)` and e
 
 ### 3. Login and open Test project
 
-Use **playwright-cli** only: `playwright-cli open <base_url>/session/new` (or `playwright-cli open` then `playwright-cli goto <base_url>/session/new`), `playwright-cli snapshot` to get refs (and read the snapshot YAML under `.playwright-cli/` if needed), then `playwright-cli fill` / `playwright-cli click` with those refs.
+Use playwright-cli only (see "Browser automation" above): `playwright-cli open <base_url>/session/new` (or `playwright-cli open` then `playwright-cli goto <base_url>/session/new`), `playwright-cli snapshot` to get refs (and read the snapshot YAML under `.playwright-cli/` if needed), then `playwright-cli fill` / `playwright-cli click` with those refs.
 
 Common steps:
 - Navigate to `<base_url>/session/new` (base_url = environment chosen in "Target environment").
@@ -73,7 +73,7 @@ Common steps:
 
 ### 4. Execute scenarios
 
-Use **playwright-cli** only: `playwright-cli snapshot` to get refs (from the current page or the latest `.playwright-cli/page-*.yml`), then `playwright-cli click`, `playwright-cli fill`, `playwright-cli type`, `playwright-cli check`, etc. with those refs.
+Use playwright-cli only (see "Browser automation" above): `playwright-cli snapshot` to get refs (from the current page or the latest `.playwright-cli/page-*.yml`), then `playwright-cli click`, `playwright-cli fill`, `playwright-cli type`, `playwright-cli check`, etc. with those refs.
 
 For each scenario in the computed order, infer the UI actions from the **scenario title and description** (and feature context):
 
@@ -88,7 +88,7 @@ For each scenario in the computed order, infer the UI actions from the **scenari
 
 Snapshot after important steps to confirm success and get refs for the next action.
 
-**Screenshots:** Capture a screenshot **only when a scenario fails** (unexpected result, error, or skipped step). Use `playwright-cli screenshot --filename=.playwright-cli/failed-<feature_id>-<scenario_id>-<short-slug>.png`. Do not screenshot on passed or intentionally skipped (pending) scenarios. In the final report, mention where failure screenshots were saved if any.
+**Screenshots:** See "Browser automation" above (screenshot only on failure). In the final report, mention where failure screenshots were saved if any.
 
 ### 5. Record results in Gwirian
 
@@ -108,7 +108,7 @@ Return a short table: Feature name, scenario titles, Passed/Failed/Skipped, and 
 
 - Project resolution and defaults: [reference.md](reference.md). Do not hardcode project, feature, or scenario ids; resolve via gwirian-cli and user input.
 - **Gwirian data:** Use the **gwirian-cli** skill—run `gwirian` in the terminal (`gwirian --json projects list`, `gwirian features list <project-id>`, `gwirian scenarios list <project-id> <feature-id>`, `gwirian scenario-executions create ... --status passed|failed|pending`). Do not use the Gwirian MCP server.
-- **Browser automation: always playwright-cli.** Run `playwright-cli` in the terminal (open, goto, snapshot, click, fill, type, check, press, screenshot, etc.). Capture a screenshot only when a scenario fails (`playwright-cli screenshot --filename=.playwright-cli/failed-<feature_id>-<scenario_id>-<slug>.png`). Do not use the browser MCP for this workflow.
+- **Browser automation:** See "Browser automation: always use playwright-cli" above (playwright-cli only; screenshot only on failure).
 
 ## Tips
 
@@ -116,4 +116,4 @@ Return a short table: Feature name, scenario titles, Passed/Failed/Skipped, and 
 - **Delete project:** Only run "Deleting the project" if the user explicitly accepts that the Test project will be destroyed.
 - If a playwright-cli browser is already open on the app (same base URL) and logged in, skip login and go straight to the Test project and scenario steps (use snapshot to get refs).
 - **Local:** Ensure the Rails app is running on port 3000 before starting (e.g. `bin/rails s`).
-- **Screenshots:** Capture a screenshot only when a scenario fails, with `playwright-cli screenshot --filename=.playwright-cli/failed-<feature_id>-<scenario_id>-<slug>.png`. No screenshots on passed or pending scenarios.
+- **Screenshots:** See "Browser automation" above (screenshot only on failure).
