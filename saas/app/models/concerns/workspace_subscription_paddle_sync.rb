@@ -32,13 +32,11 @@ module WorkspaceSubscriptionPaddleSync
     def to_subscription_attributes(current_plan_key:)
       status = mapped_status
       period_ends_at = parse_time(data.dig("current_billing_period", "ends_at"))
-      effective_plan_key = if status == "canceled" && period_ends_at.present? && period_ends_at <= Time.current
-        "free"
-      else
-        mapped_plan_key(current_plan_key)
-      end
+      # When Paddle reports status "canceled", the subscription has ended; revert to free.
+      # (Paddle often omits current_billing_period for canceled subs, so we don't rely on period_ends_at.)
+      effective_plan_key = (status == "canceled") ? "free" : mapped_plan_key(current_plan_key)
 
-      {
+      attrs = {
         paddle_subscription_id: subscription_id,
         paddle_customer_id: data["customer_id"],
         paddle_plan_price_id: price_id,
@@ -48,7 +46,9 @@ module WorkspaceSubscriptionPaddleSync
         current_period_ends_at: period_ends_at,
         canceled_at: parse_time(data["canceled_at"]),
         paused_at: parse_time(data["paused_at"])
-      }.compact
+      }
+      attrs.delete_if { |k, v| v.nil? && !%i[canceled_at paused_at].include?(k) }
+      attrs
     end
 
     private
@@ -99,11 +99,11 @@ module WorkspaceSubscriptionPaddleSync
   ].freeze
 
   class_methods do
-    def process_paddle_webhook!(event_type:, data:)
+    def process_paddle_webhook!(event_type:, data:, occurred_at: nil)
       payload = PaddlePayload.new(data)
 
       if SUBSCRIPTION_EVENTS.include?(event_type)
-        process_subscription_webhook!(event_type: event_type, payload: payload)
+        process_subscription_webhook!(event_type: event_type, payload: payload, occurred_at: occurred_at)
       elsif TRANSACTION_EVENTS.include?(event_type)
         process_transaction_webhook!(payload: payload)
       else
@@ -119,7 +119,7 @@ module WorkspaceSubscriptionPaddleSync
 
     private
 
-    def process_subscription_webhook!(event_type:, payload:)
+    def process_subscription_webhook!(event_type:, payload:, occurred_at: nil)
       subscription_id = payload.subscription_id
       workspace_id = payload.workspace_id
 
@@ -131,6 +131,12 @@ module WorkspaceSubscriptionPaddleSync
         record.status ||= "active"
       end
 
+      event_time = parse_occurred_at(occurred_at)
+      if event_time && subscription.updated_at && subscription.updated_at > event_time
+        Rails.logger.info "[Paddle Webhook] Skipping older event #{event_type} (event: #{event_time}, record: #{subscription.updated_at})"
+        return
+      end
+
       attrs = payload.to_subscription_attributes(current_plan_key: subscription.plan_key)
       subscription.with_lock do
         subscription.assign_attributes(attrs)
@@ -138,6 +144,14 @@ module WorkspaceSubscriptionPaddleSync
       end
 
       Rails.logger.info "[Paddle Webhook] #{event_type} processed for workspace #{workspace_id} (plan: #{subscription.plan_key})"
+    end
+
+    def parse_occurred_at(value)
+      return nil if value.blank?
+
+      Time.parse(value.to_s)
+    rescue ArgumentError
+      nil
     end
 
     def process_transaction_webhook!(payload:)

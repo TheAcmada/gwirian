@@ -105,7 +105,7 @@
             <% else %>
               <% if @subscription&.canceled? && @subscription.on_grace_period? %>
                 <%= button_to "Keep this plan",
-                      resume_subscription_path,
+                      keep_plan_subscription_path,
                       method: :post,
                       class: "btn btn-primary btn-sm w-full" %>
               <% elsif @subscription&.paused? %>

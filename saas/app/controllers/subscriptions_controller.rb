@@ -7,6 +7,7 @@ class SubscriptionsController < ApplicationController
 
   def show
     @subscription.sync_with_paddle!
+    @plan = @subscription.plan
     @plans = Plan.all
   end
 
@@ -46,6 +47,15 @@ class SubscriptionsController < ApplicationController
     redirect_to subscription_path, alert: "Unable to resume subscription: #{e.message}"
   end
 
+  def keep_plan
+    @subscription.keep_plan!
+    redirect_to subscription_path, notice: "Your subscription will continue. The scheduled cancellation has been removed."
+  rescue ArgumentError => e
+    redirect_to subscription_path, alert: e.message
+  rescue ::Paddle::Errors::BadRequestError => e
+    redirect_to subscription_path, alert: "Unable to keep subscription: #{e.message}"
+  end
+
   def update_plan
     plan_key = params[:plan_key]
     plan = Plan.find(plan_key)
@@ -55,7 +65,7 @@ class SubscriptionsController < ApplicationController
       return
     end
 
-    if plan.key == @workspace.plan&.key
+    if plan.key == @subscription.plan.key
       redirect_to subscription_path, notice: "You are already on #{plan.name}."
       return
     end

@@ -78,6 +78,14 @@ class WorkspaceSubscription < SaasRecord
     sync_with_paddle!
   end
 
+  def keep_plan!
+    raise ArgumentError, "No subscription to keep" if paddle_subscription_id.blank?
+    raise ArgumentError, "Subscription is not scheduled to cancel" unless canceled? && on_grace_period?
+
+    Paddle::Subscription.update(id: paddle_subscription_id, scheduled_change: nil)
+    sync_with_paddle!
+  end
+
   def change_plan_to!(plan:)
     raise ArgumentError, "No active subscription to update" if paddle_subscription_id.blank? || canceled?
     raise ArgumentError, "Plan must be paid" unless plan&.paid?

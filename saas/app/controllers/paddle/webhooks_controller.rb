@@ -12,15 +12,19 @@ module Paddle
 
       return head :ok if PaddleWebhookEvent.exists?(event_id: event_id)
 
-      WorkspaceSubscription.process_paddle_webhook!(event_type: event_type, data: params[:data])
+      WorkspaceSubscription.process_paddle_webhook!(
+        event_type: event_type,
+        data: params[:data],
+        occurred_at: params[:occurred_at]
+      )
       PaddleWebhookEvent.create!(event_id: event_id)
 
       head :ok
     rescue ActiveRecord::RecordNotUnique
       head :ok
     rescue StandardError => e
-      Rails.logger.error "[Paddle Webhook] Error processing #{event_type}: #{e.message}"
-      head :ok
+      Rails.logger.error "[Paddle Webhook] Error processing #{event_type}: #{e.message}\n#{e.backtrace.first(5).join("\n")}"
+      head :internal_server_error
     end
 
     private

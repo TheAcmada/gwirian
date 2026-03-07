@@ -18,6 +18,7 @@ module Gwirian
           resource :subscription, only: [ :show, :create ] do
             post :cancel
             post :resume
+            post :keep_plan
             post :update_plan
             get :portal
           end
