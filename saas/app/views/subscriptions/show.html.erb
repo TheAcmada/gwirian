@@ -15,7 +15,10 @@
             <p class="text-stone-800 dark:text-white/90 font-medium text-lg"><%= @plan.name %></p>
             <% if @subscription&.paid? %>
               <p class="text-xs text-stone-500 dark:text-white/40 mt-1">
-                <% if @subscription.active? %>
+                <% if @subscription.can_undo_scheduled_change? %>
+                  Downgrade to Free scheduled for <%= @subscription.scheduled_change_effective_at.strftime("%B %d, %Y") %>
+                  <span class="block mt-1">You keep <%= @plan.name %> until then. You can undo by clicking <strong>Keep this plan</strong> below.</span>
+                <% elsif @subscription.active? %>
                   Active
                   <% if @subscription.current_period_ends_at.present? %>
                     &middot; Renews <%= @subscription.current_period_ends_at.strftime("%B %d, %Y") %>
@@ -79,7 +82,7 @@
 
             <% if plan.key != @plan.key %>
               <% if plan.free? %>
-                <% if @subscription&.paddle_subscription_id.present? && !@subscription.canceled? %>
+                <% if @subscription&.paddle_subscription_id.present? && !@subscription.canceled? && !@subscription.pending_scheduled_change? %>
                   <%= button_to "Downgrade to Free",
                         cancel_subscription_path,
                         method: :post,
@@ -93,7 +96,7 @@
                         new_subscription_path(plan_key: plan.key),
                         class: "btn btn-primary btn-sm w-full block text-center" %>
                   <p class="text-xs text-stone-500 dark:text-white/50 mt-2">Complete checkout on the next page.</p>
-                <% elsif @subscription.active? && !@subscription.canceled? %>
+                <% elsif @subscription.active? && !@subscription.canceled? && !@subscription.pending_scheduled_change? %>
                   <%= button_to "Switch to #{plan.name}",
                         update_plan_subscription_path(plan_key: plan.key),
                         method: :post,
@@ -101,7 +104,7 @@
                 <% end %>
               <% end %>
             <% else %>
-              <% if @subscription&.canceled? && @subscription.on_grace_period? %>
+              <% if @subscription&.can_undo_scheduled_change? %>
                 <%= button_to "Keep this plan",
                       keep_plan_subscription_path,
                       method: :post,

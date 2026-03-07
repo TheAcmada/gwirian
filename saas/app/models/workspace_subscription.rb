@@ -43,6 +43,18 @@ class WorkspaceSubscription < SaasRecord
     canceled_at.present? && current_period_ends_at.present? && current_period_ends_at > Time.current
   end
 
+  # True when Paddle has a scheduled change (e.g. cancel at period end) that has not yet taken effect.
+  def pending_scheduled_change?
+    scheduled_change_action.present? &&
+      scheduled_change_effective_at.present? &&
+      scheduled_change_effective_at > Time.current
+  end
+
+  # True when the subscription is in a state where "Keep this plan" / undo is allowed.
+  def can_undo_scheduled_change?
+    pending_scheduled_change? || (canceled? && on_grace_period?)
+  end
+
   # Creates a Paddle transaction for inline checkout. Returns a hash with
   # transaction_id and success_url for use by Paddle.js. Preserves custom_data
   # for webhook correlation.
@@ -83,7 +95,7 @@ class WorkspaceSubscription < SaasRecord
 
   def keep_plan!
     raise ArgumentError, "No subscription to keep" if paddle_subscription_id.blank?
-    raise ArgumentError, "Subscription is not scheduled to cancel" unless canceled? && on_grace_period?
+    raise ArgumentError, "Subscription is not scheduled to cancel" unless can_undo_scheduled_change?
 
     Paddle::Subscription.update(id: paddle_subscription_id, scheduled_change: nil)
     sync_with_paddle!

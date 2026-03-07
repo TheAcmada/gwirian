@@ -36,6 +36,10 @@ module WorkspaceSubscriptionPaddleSync
       # (Paddle often omits current_billing_period for canceled subs, so we don't rely on period_ends_at.)
       effective_plan_key = (status == "canceled") ? "free" : mapped_plan_key(current_plan_key)
 
+      scheduled_change = data["scheduled_change"]
+      scheduled_action = scheduled_change.present? ? scheduled_change["action"] : nil
+      scheduled_effective_at = scheduled_change.present? ? parse_time(scheduled_change["effective_at"]) : nil
+
       attrs = {
         paddle_subscription_id: subscription_id,
         paddle_customer_id: data["customer_id"],
@@ -45,9 +49,11 @@ module WorkspaceSubscriptionPaddleSync
         current_period_starts_at: parse_time(data.dig("current_billing_period", "starts_at")),
         current_period_ends_at: period_ends_at,
         canceled_at: parse_time(data["canceled_at"]),
-        paused_at: parse_time(data["paused_at"])
+        paused_at: parse_time(data["paused_at"]),
+        scheduled_change_action: scheduled_action,
+        scheduled_change_effective_at: scheduled_effective_at
       }
-      attrs.delete_if { |k, v| v.nil? && !%i[canceled_at paused_at].include?(k) }
+      attrs.delete_if { |k, v| v.nil? && !%i[canceled_at paused_at scheduled_change_action scheduled_change_effective_at].include?(k) }
       attrs
     end
 

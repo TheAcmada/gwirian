@@ -105,4 +105,68 @@ RSpec.describe "Subscriptions", type: :request do
       end
     end
   end
+
+  describe "GET /subscription (show)" do
+    let(:workspace) { create(:workspace) }
+    let(:user) { create(:user) }
+    let!(:workspace_member) { create(:workspace_member, user: user, workspace: workspace, role: "administrator", status: "current_member") }
+
+    before { sign_in_as(user) }
+
+    context "when subscription has pending scheduled cancellation" do
+      before do
+        create(:workspace_subscription, workspace: workspace, plan_key: "starter", status: "active",
+          paddle_subscription_id: "sub_01", paddle_customer_id: "ctm_01",
+          scheduled_change_action: "cancel", scheduled_change_effective_at: 1.month.from_now,
+          current_period_ends_at: 1.month.from_now)
+        allow_any_instance_of(WorkspaceSubscription).to receive(:sync_with_paddle!).and_return(true)
+      end
+
+      it "renders pending downgrade message and Keep this plan button" do
+        get "/#{workspace.slug}/subscription"
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Downgrade to Free scheduled for")
+        expect(response.body).to include("Keep this plan")
+      end
+
+      it "does not show Downgrade to Free button on Free plan card when cancellation is already scheduled" do
+        get "/#{workspace.slug}/subscription"
+
+        # "Downgrade to Free" appears only in the status line ("Downgrade to Free scheduled for..."), not as a button
+        expect(response.body.scan("Downgrade to Free").size).to eq(1)
+      end
+    end
+
+    context "POST keep_plan when subscription has pending scheduled change" do
+      let(:subscription) do
+        create(:workspace_subscription, workspace: workspace, plan_key: "starter", status: "active",
+          paddle_subscription_id: "sub_01", scheduled_change_action: "cancel",
+          scheduled_change_effective_at: 1.month.from_now)
+      end
+
+      before do
+        subscription
+        allow(::Paddle::Subscription).to receive(:update).with(id: "sub_01", scheduled_change: nil).and_return(true)
+        paddle_response = {
+          "data" => {
+            "id" => "sub_01",
+            "customer_id" => "ctm_01",
+            "status" => "active",
+            "current_billing_period" => { "starts_at" => "2026-03-01T00:00:00Z", "ends_at" => "2026-04-07T00:00:00Z" },
+            "items" => [ { "price_id" => "pri_starter" } ]
+          }
+        }
+        allow(::Paddle::Subscription).to receive(:retrieve).with(id: "sub_01").and_return(paddle_response)
+      end
+
+      it "removes scheduled cancellation and redirects with notice" do
+        post "/#{workspace.slug}/subscription/keep_plan"
+
+        expect(response).to redirect_to(subscription_path)
+        follow_redirect!
+        expect(response.body).to include("scheduled cancellation has been removed")
+      end
+    end
+  end
 end
