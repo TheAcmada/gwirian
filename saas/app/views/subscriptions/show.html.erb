@@ -104,7 +104,7 @@
                 <% end %>
               <% end %>
             <% else %>
-              <% if @subscription&.can_undo_scheduled_change? %>
+              <% if @subscription&.paid? && @subscription&.can_undo_scheduled_change? %>
                 <%= button_to "Keep this plan",
                       keep_plan_subscription_path,
                       method: :post,
