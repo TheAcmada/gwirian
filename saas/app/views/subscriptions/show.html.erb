@@ -1,4 +1,10 @@
 <% content_for :title, "Subscription" %>
+<style>
+  /* Subscription plan action buttons: show loading indicator during htmx request */
+  .subscription-btn-indicator { display: none !important; }
+  .subscription-btn-indicator.htmx-request { display: inline-flex !important; }
+  form.htmx-request .subscription-btn-content { display: none !important; }
+</style>
 <div class="max-w-3xl mx-auto px-4 py-12"
   data-status-url="<%= status_subscription_path %>"
   data-upgrade-pending="<%= @upgrade_pending %>"
@@ -151,11 +157,22 @@
             <% if plan.key != @plan.key %>
               <% if plan.free? %>
                 <% if @subscription&.paddle_subscription_id.present? && !@subscription.canceled? && !@subscription.pending_scheduled_change? %>
-                  <%= button_to "Downgrade to Free",
-                        cancel_subscription_path,
-                        method: :post,
-                        class: "btn btn-secondary btn-sm w-full",
-                        form: { data: { turbo_confirm: "This will cancel your paid subscription at the end of the current billing period. You keep access until that date." } } %>
+                  <% cancel_url = cancel_subscription_path %>
+                  <% downgrade_confirm_msg = "This will cancel your paid subscription at the end of the current billing period. You keep access until that date." %>
+                  <form method="post" action="<%= cancel_url %>" class="w-full"
+                        hx-post="<%= cancel_url %>" hx-target="body" hx-swap="innerHTML" hx-push-url="true"
+                        hx-disabled-elt="button[type=submit]" hx-indicator="#subscription-downgrade-indicator">
+                    <%= tag.input name: "authenticity_token", value: form_authenticity_token, type: "hidden" %>
+                    <button type="submit" class="btn btn-secondary btn-sm w-full"
+                            x-data="{}"
+                            @click.prevent="showConfirmation(<%= downgrade_confirm_msg.to_json %>).then(result => { if (result.isConfirmed) $el.closest('form').requestSubmit() })">
+                      <span class="subscription-btn-content">Downgrade to Free</span>
+                      <span id="subscription-downgrade-indicator" class="subscription-btn-indicator inline-flex items-center gap-2" style="display: none;">
+                        <span class="inline-flex animate-spin h-4 w-4 rounded-full border-2 border-accent-500 border-t-transparent" aria-hidden="true"></span>
+                        Downgrading…
+                      </span>
+                    </button>
+                  </form>
                   <p class="text-xs text-stone-500 dark:text-white/50 mt-2">You'll keep your current plan until the end of the billing period.</p>
                 <% end %>
               <% elsif plan.paid? && plan.paddle_price_id.present? %>
@@ -165,23 +182,50 @@
                         class: "btn btn-primary btn-sm w-full block text-center" %>
                   <p class="text-xs text-stone-500 dark:text-white/50 mt-2">Complete checkout on the next page.</p>
                 <% elsif @subscription.active? && !@subscription.canceled? && !@subscription.pending_scheduled_change? %>
-                  <%= button_to "Switch to #{plan.name}",
-                        update_plan_subscription_path(plan_key: plan.key),
-                        method: :post,
-                        class: "btn btn-primary btn-sm w-full" %>
+                  <% switch_url = update_plan_subscription_path(plan_key: plan.key) %>
+                  <form method="post" action="<%= switch_url %>" class="w-full"
+                        hx-post="<%= switch_url %>" hx-target="body" hx-swap="innerHTML" hx-push-url="true"
+                        hx-disabled-elt="button[type=submit]" hx-indicator="#subscription-switch-indicator-<%= plan.key %>">
+                    <%= tag.input name: "authenticity_token", value: form_authenticity_token, type: "hidden" %>
+                    <button type="submit" class="btn btn-primary btn-sm w-full">
+                      <span class="subscription-btn-content">Switch to <%= plan.name %></span>
+                      <span id="subscription-switch-indicator-<%= plan.key %>" class="subscription-btn-indicator inline-flex items-center gap-2" style="display: none;">
+                        <span class="inline-flex animate-spin h-4 w-4 rounded-full border-2 border-accent-500 border-t-transparent" aria-hidden="true"></span>
+                        Switching…
+                      </span>
+                    </button>
+                  </form>
                 <% end %>
               <% end %>
             <% else %>
               <% if @subscription&.paid? && @subscription&.can_undo_scheduled_change? %>
-                <%= button_to "Keep this plan",
-                      keep_plan_subscription_path,
-                      method: :post,
-                      class: "btn btn-primary btn-sm w-full" %>
+                <% keep_url = keep_plan_subscription_path %>
+                <form method="post" action="<%= keep_url %>" class="w-full"
+                      hx-post="<%= keep_url %>" hx-target="body" hx-swap="innerHTML" hx-push-url="true"
+                      hx-disabled-elt="button[type=submit]" hx-indicator="#subscription-keep-indicator">
+                  <%= tag.input name: "authenticity_token", value: form_authenticity_token, type: "hidden" %>
+                  <button type="submit" class="btn btn-primary btn-sm w-full">
+                    <span class="subscription-btn-content">Keep this plan</span>
+                    <span id="subscription-keep-indicator" class="subscription-btn-indicator inline-flex items-center gap-2" style="display: none;">
+                      <span class="inline-flex animate-spin h-4 w-4 rounded-full border-2 border-accent-500 border-t-transparent" aria-hidden="true"></span>
+                      Keeping…
+                    </span>
+                  </button>
+                </form>
               <% elsif @subscription&.paused? %>
-                <%= button_to "Resume plan",
-                      resume_subscription_path,
-                      method: :post,
-                      class: "btn btn-primary btn-sm w-full" %>
+                <% resume_url = resume_subscription_path %>
+                <form method="post" action="<%= resume_url %>" class="w-full"
+                      hx-post="<%= resume_url %>" hx-target="body" hx-swap="innerHTML" hx-push-url="true"
+                      hx-disabled-elt="button[type=submit]" hx-indicator="#subscription-resume-indicator">
+                  <%= tag.input name: "authenticity_token", value: form_authenticity_token, type: "hidden" %>
+                  <button type="submit" class="btn btn-primary btn-sm w-full">
+                    <span class="subscription-btn-content">Resume plan</span>
+                    <span id="subscription-resume-indicator" class="subscription-btn-indicator inline-flex items-center gap-2" style="display: none;">
+                      <span class="inline-flex animate-spin h-4 w-4 rounded-full border-2 border-accent-500 border-t-transparent" aria-hidden="true"></span>
+                      Resuming…
+                    </span>
+                  </button>
+                </form>
               <% end %>
             <% end %>
           </div>
