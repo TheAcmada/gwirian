@@ -65,8 +65,6 @@ class Plan
       env_key = PADDLE_PRICE_ENV_KEYS[plan_key.to_sym]
       env_key ? ENV[env_key].to_s.presence : nil
     end
-
-    alias [] find
   end
 
   def initialize(key:, name:, projects_limit:, features_limit:, scenarios_limit:, members_limit:, paddle_price_id: nil)

@@ -47,10 +47,7 @@
     <!-- Plans -->
     <div>
       <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Available plans</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4"
-           x-data="paddleCheckout()"
-           data-paddle-client-token="<%= ENV['PADDLE_CLIENT_TOKEN'] %>"
-           data-paddle-environment="<%= ENV['PADDLE_ENVIRONMENT'] || 'sandbox' %>">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <% @plans.each do |plan| %>
           <div class="rounded-lg p-5 <%= plan.key == @plan.key ? 'bg-accent-50 dark:bg-accent-900/20 ring-1 ring-accent-500/30' : 'bg-stone-50 dark:bg-white/5' %>">
             <div class="flex items-center justify-between mb-3">
@@ -86,16 +83,15 @@
                         cancel_subscription_path,
                         method: :post,
                         class: "btn btn-secondary btn-sm w-full",
-                        "x-data": "{}",
-                        "@click.prevent": "showConfirmation('This will cancel your subscription at the end of the current billing period. You will keep access to your current plan until then.').then(result => { if (result.isConfirmed) $el.closest('form').submit() })" %>
+                        form: { data: { turbo_confirm: "This will cancel your paid subscription at the end of the current billing period. You keep access until that date." } } %>
                 <% end %>
               <% elsif plan.paid? && plan.paddle_price_id.present? %>
                 <% if @plan.free? %>
-                  <button type="button"
-                          class="btn btn-primary btn-sm w-full"
-                          @click="openCheckout('<%= plan.paddle_price_id %>', '<%= @workspace.id %>', '<%= Current.user.email_address %>', '<%= @subscription&.paddle_customer_id %>')">
-                    Upgrade to <%= plan.name %>
-                  </button>
+                  <%= button_to "Upgrade to #{plan.name}",
+                        subscription_path(plan_key: plan.key),
+                        method: :post,
+                        class: "btn btn-primary btn-sm w-full",
+                        form: { data: { turbo: false } } %>
                 <% else %>
                   <%= button_to "Switch to #{plan.name}",
                         update_plan_subscription_path(plan_key: plan.key),

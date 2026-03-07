@@ -12,11 +12,6 @@
 <div>
   <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Workspace usage</h2>
   <div class="bg-stone-50 dark:bg-white/5 rounded-lg p-4">
-    <div class="flex items-center justify-between mb-4">
-      <p class="text-stone-800 dark:text-white/90">
-        Plan: <strong><%= workspace.plan.name %></strong>
-      </p>
-    </div>
     <dl class="space-y-3 text-sm">
       <% metrics.each do |label, used, limit, exceeding| %>
         <div class="<%= 'border-l-2 border-red-500 dark:border-red-400 pl-2' if exceeding %>">
