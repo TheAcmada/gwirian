@@ -19,4 +19,13 @@ module WorkspaceUsageHelper
     return false if limit.respond_to?(:infinite?) && limit.infinite?
     used >= limit
   end
+
+  # Returns Tailwind class for progress bar fill: accent (healthy), warning (80–99%), or red (at/over limit).
+  def usage_bar_color_class(used, limit)
+    return "bg-stone-300 dark:bg-white/30" if limit.respond_to?(:infinite?) && limit.infinite?
+    return "bg-red-500 dark:bg-red-400" if used >= limit
+    pct = used.to_f / limit * 100
+    return "bg-warning-400 dark:bg-warning-300" if pct >= 80
+    "bg-accent-400 dark:bg-accent-500"
+  end
 end

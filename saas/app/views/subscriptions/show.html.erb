@@ -5,7 +5,7 @@
   .subscription-btn-indicator.htmx-request { display: inline-flex !important; }
   form.htmx-request .subscription-btn-content { display: none !important; }
 </style>
-<div class="max-w-3xl mx-auto px-4 py-12"
+<div class="max-w-5xl mx-auto px-4 py-12"
   data-status-url="<%= status_subscription_path %>"
   data-upgrade-pending="<%= @upgrade_pending %>"
   x-data="subscriptionUpgradePoll($el)"
@@ -84,11 +84,26 @@
     <div>
       <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Current plan</h2>
       <div class="bg-stone-50 dark:bg-white/5 rounded-lg p-4">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-stone-800 dark:text-white/90 font-medium text-lg"><%= @plan.name %></p>
+        <div class="flex items-center justify-between gap-4">
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <p class="text-stone-800 dark:text-white/90 font-medium text-lg"><%= @plan.name %></p>
+              <span class="text-sm text-stone-500 dark:text-white/50"><%= @plan.price %><%= @plan.price_label %></span>
+            </div>
             <% if @subscription&.paid? %>
-              <p class="text-xs text-stone-500 dark:text-white/40 mt-1">
+              <p class="text-xs text-stone-500 dark:text-white/40 mt-1 flex items-center gap-1.5">
+                <%
+                  status_dot = if @subscription.active? && !@subscription.pending_scheduled_change?
+                    "bg-success-500"
+                  elsif @subscription.past_due?
+                    "bg-warning-500"
+                  elsif @subscription.canceled? && !@subscription.on_grace_period?
+                    "bg-error-500"
+                  else
+                    "bg-warning-500"
+                  end
+                %>
+                <span class="inline-flex h-2 w-2 rounded-full <%= status_dot %> flex-shrink-0" aria-hidden="true"></span>
                 <% if @subscription.can_undo_scheduled_change? %>
                   Downgrade to Free scheduled for <%= @subscription.scheduled_change_effective_at.strftime("%B %d, %Y") %>
                   <span class="block mt-1">You keep <%= @plan.name %> until then. You can undo by clicking <strong>Keep this plan</strong> below.</span>
@@ -113,7 +128,10 @@
             <% end %>
           </div>
           <% if @subscription&.paddle_customer_id.present? %>
-            <a href="<%= portal_subscription_path %>" class="btn btn-secondary btn-sm" hx-boost="false">Manage billing</a>
+            <a href="<%= portal_subscription_path %>" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5 flex-shrink-0" hx-boost="false">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+              Manage billing
+            </a>
           <% end %>
         </div>
       </div>
@@ -125,7 +143,7 @@
     <!-- Plans -->
     <div>
       <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Available plans</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <% @plans.each do |plan| %>
           <%= render "subscriptions/plan_card", plan: plan, current_plan: @plan, subscription: @subscription %>
         <% end %>

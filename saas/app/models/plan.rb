@@ -3,6 +3,10 @@ class Plan
     "free" => {
       key: "free",
       name: "Free",
+      price: "$0",
+      price_label: "forever",
+      description: "For individuals getting started",
+      highlighted: false,
       projects_limit: 1,
       features_limit: 5,
       scenarios_limit: 20,
@@ -11,6 +15,10 @@ class Plan
     "starter" => {
       key: "starter",
       name: "Starter",
+      price: "$19",
+      price_label: "/month",
+      description: "For small teams and side projects",
+      highlighted: false,
       projects_limit: 3,
       features_limit: 50,
       scenarios_limit: 200,
@@ -19,6 +27,10 @@ class Plan
     "professional" => {
       key: "professional",
       name: "Professional",
+      price: "$49",
+      price_label: "/month",
+      description: "For growing teams with complex workflows",
+      highlighted: true,
       projects_limit: 10,
       features_limit: 200,
       scenarios_limit: 1000,
@@ -27,6 +39,10 @@ class Plan
     "team" => {
       key: "team",
       name: "Team",
+      price: "$99",
+      price_label: "/month",
+      description: "For organizations at scale",
+      highlighted: false,
       projects_limit: Float::INFINITY,
       features_limit: Float::INFINITY,
       scenarios_limit: Float::INFINITY,
@@ -40,7 +56,7 @@ class Plan
     "team" => "PADDLE_PRICE_TEAM"
   }.freeze
 
-  attr_reader :key, :name, :projects_limit, :features_limit, :scenarios_limit, :members_limit, :paddle_price_id
+  attr_reader :key, :name, :price, :price_label, :description, :projects_limit, :features_limit, :scenarios_limit, :members_limit, :paddle_price_id
 
   class << self
     def all
@@ -68,9 +84,13 @@ class Plan
     end
   end
 
-  def initialize(key:, name:, projects_limit:, features_limit:, scenarios_limit:, members_limit:, paddle_price_id: nil)
+  def initialize(key:, name:, projects_limit:, features_limit:, scenarios_limit:, members_limit:, paddle_price_id: nil, price: "$0", price_label: "", description: "", highlighted: false)
     @key = key
     @name = name
+    @price = price
+    @price_label = price_label
+    @description = description
+    @highlighted = highlighted
     @projects_limit = projects_limit
     @features_limit = features_limit
     @scenarios_limit = scenarios_limit
@@ -80,6 +100,10 @@ class Plan
 
   def free?
     key == "free"
+  end
+
+  def highlighted?
+    @highlighted
   end
 
   def paid?

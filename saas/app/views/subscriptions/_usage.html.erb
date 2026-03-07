@@ -7,6 +7,7 @@
     [ "Scenarios",  workspace.scenarios_count,  workspace.plan.scenarios_limit,  workspace.respond_to?(:exceeding_scenarios_limit?) && workspace.exceeding_scenarios_limit? ],
     [ "Members",    workspace.members_count,   workspace.plan.members_limit,   workspace.respond_to?(:exceeding_members_limit?)   && workspace.exceeding_members_limit? ]
   ]
+  unlimited = ->(limit) { limit.respond_to?(:infinite?) && limit.infinite? }
 %>
 
 <div>
@@ -14,17 +15,26 @@
   <div class="bg-stone-50 dark:bg-white/5 rounded-lg p-4">
     <dl class="space-y-3 text-sm">
       <% metrics.each do |label, used, limit, exceeding| %>
-        <div class="<%= 'border-l-2 border-red-500 dark:border-red-400 pl-2' if exceeding %>">
-          <div class="flex justify-between gap-4">
-            <dt class="text-stone-600 dark:text-white/60"><%= label %></dt>
-            <dd class="<%= 'text-red-600 dark:text-red-400' if exceeding %>">
+        <div class="rounded-md px-3 py-2 <%= exceeding ? 'bg-error-50 dark:bg-error-900/10 border-l-2 border-error-500 dark:border-error-400' : 'bg-white/50 dark:bg-white/5' %>">
+          <div class="flex justify-between items-center gap-4">
+            <dt class="text-stone-600 dark:text-white/60 font-medium"><%= label %></dt>
+            <dd class="<%= 'text-error-600 dark:text-error-400' if exceeding %> flex items-center gap-2">
               <%= number_with_delimiter(used) %> / <%= plan_limit_display(limit) %>
+              <% pct = usage_bar_percentage(used, limit) %>
+              <% if pct %>
+                <span class="text-xs text-stone-500 dark:text-white/50 tabular-nums"><%= pct %>%</span>
+              <% elsif unlimited.(limit) %>
+                <span class="text-xs text-accent-600 dark:text-accent-400 font-medium">No limit</span>
+              <% end %>
             </dd>
           </div>
-          <% pct = usage_bar_percentage(used, limit) %>
-          <% if pct %>
-            <div class="h-2 w-full bg-stone-100 dark:bg-white/10 rounded-full overflow-hidden flex mt-1">
-              <div class="h-full <%= usage_bar_over_limit?(used, limit) ? 'bg-red-500' : 'bg-stone-300 dark:bg-white/30' %>" style="width: <%= pct %>%"></div>
+          <% if unlimited.(limit) %>
+            <div class="h-2 w-full bg-stone-100 dark:bg-white/10 rounded-full overflow-hidden flex mt-1.5">
+              <div class="h-full bg-stone-200 dark:bg-white/20 rounded-full" style="width: 4px; min-width: 4px;" title="Unlimited"></div>
+            </div>
+          <% else %>
+            <div class="h-2 w-full bg-stone-100 dark:bg-white/10 rounded-full overflow-hidden flex mt-1.5">
+              <div class="h-full <%= usage_bar_color_class(used, limit) %> rounded-full transition-[width] duration-200" style="width: <%= pct %>%"></div>
             </div>
           <% end %>
         </div>
@@ -33,9 +43,11 @@
 
     <% if workspace.respond_to?(:exceeding_limits?) && workspace.exceeding_limits? %>
       <div class="mt-4 pt-4 border-t border-stone-200 dark:border-white/10">
-        <p class="text-sm text-stone-600 dark:text-white/60 mb-3">
-          One or more of your workspace limits have been reached. You won't be able to add new projects, features, scenarios, or members until you upgrade your plan or reduce usage below the limit.
-        </p>
+        <div class="p-4 rounded-lg bg-warning-50 dark:bg-warning-900/20 ring-1 ring-warning-500/30">
+          <p class="text-sm text-stone-700 dark:text-white/80">
+            One or more of your workspace limits have been reached. You won't be able to add new projects, features, scenarios, or members until you upgrade your plan or reduce usage below the limit.
+          </p>
+        </div>
       </div>
     <% end %>
   </div>

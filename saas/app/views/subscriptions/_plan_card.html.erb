@@ -1,37 +1,56 @@
 <%# locals: plan, current_plan, subscription %>
-<div class="rounded-lg p-5 <%= plan.key == current_plan.key ? 'bg-accent-50 dark:bg-accent-900/20 ring-1 ring-accent-500/30' : 'bg-stone-50 dark:bg-white/5' %>">
-  <div class="flex items-center justify-between mb-3">
-    <h3 class="font-medium text-stone-800 dark:text-white/90"><%= plan.name %></h3>
-    <% if plan.key == current_plan.key %>
-      <span class="badge badge-accent badge-sm">Current</span>
+<%
+  is_current = plan.key == current_plan.key
+  card_classes = [
+    "rounded-lg",
+    plan.highlighted? ? "p-6" : "p-5",
+    is_current ? "bg-accent-50 dark:bg-accent-900/20 ring-1 ring-accent-500/30" : "bg-stone-50 dark:bg-white/5"
+  ]
+  card_classes << "ring-2 ring-accent-500/50" if plan.highlighted? && !is_current
+%>
+<div class="<%= card_classes.join(" ") %> flex flex-col h-full">
+  <div class="flex items-center justify-between gap-2">
+    <h3 class="font-medium text-stone-800 dark:text-white/90 truncate min-w-0"><%= plan.name %></h3>
+    <div class="flex items-center gap-1.5 flex-shrink-0">
+      <% if plan.highlighted? && !is_current %>
+        <span class="badge badge-accent badge-sm">Recommended</span>
+      <% end %>
+      <% if is_current %>
+        <span class="badge badge-accent badge-sm">Current</span>
+      <% end %>
+    </div>
+  </div>
+  <% if plan.description.present? %>
+    <p class="text-xs text-stone-500 dark:text-white/50 mt-1 w-full"><%= plan.description %></p>
+  <% end %>
+
+  <div class="mt-3 mb-4">
+    <span class="text-2xl font-semibold text-stone-800 dark:text-white/90"><%= plan.price %></span>
+    <% if plan.price_label.present? %>
+      <span class="text-sm text-stone-500 dark:text-white/50"><%= plan.price_label %></span>
     <% end %>
   </div>
 
-  <dl class="space-y-1 text-xs text-stone-500 dark:text-white/50 mb-4">
-    <div class="flex justify-between">
-      <dt>Projects</dt>
-      <dd><%= plan_limit_display(plan.projects_limit) %></dd>
-    </div>
-    <div class="flex justify-between">
-      <dt>Features</dt>
-      <dd><%= plan_limit_display(plan.features_limit) %></dd>
-    </div>
-    <div class="flex justify-between">
-      <dt>Scenarios</dt>
-      <dd><%= plan_limit_display(plan.scenarios_limit) %></dd>
-    </div>
-    <div class="flex justify-between">
-      <dt>Members</dt>
-      <dd><%= plan_limit_display(plan.members_limit) %></dd>
-    </div>
-  </dl>
+  <ul class="space-y-2 text-xs text-stone-600 dark:text-white/60 mb-4 flex-1">
+    <% [[ "Projects", plan.projects_limit ], [ "Features", plan.features_limit ], [ "Scenarios", plan.scenarios_limit ], [ "Members", plan.members_limit ]].each do |label, limit| %>
+      <li class="flex items-center gap-2">
+        <span class="flex-shrink-0 text-accent-500 dark:text-accent-400" aria-hidden="true">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg>
+        </span>
+        <span class="flex-1"><%= label %></span>
+        <span class="<%= (limit.respond_to?(:infinite?) && limit.infinite?) ? 'text-accent-600 dark:text-accent-400 font-medium' : 'text-stone-500 dark:text-white/50' %>"><%= plan_limit_display(limit) %></span>
+      </li>
+    <% end %>
+  </ul>
 
   <% if plan.key != current_plan.key %>
     <% if plan.free? %>
       <% if subscription&.paddle_subscription_id.present? && !subscription.canceled? && !subscription.pending_scheduled_change? %>
         <% cancel_url = cancel_subscription_path %>
         <% downgrade_confirm_msg = "This will cancel your paid subscription at the end of the current billing period. You keep access until that date." %>
-        <form method="post" action="<%= cancel_url %>" class="w-full"
+        <form method="post" action="<%= cancel_url %>" class="w-full mt-auto"
               hx-post="<%= cancel_url %>" hx-target="body" hx-swap="innerHTML" hx-push-url="true"
               hx-disabled-elt="button[type=submit]" hx-indicator="#subscription-downgrade-indicator">
           <%= tag.input name: "authenticity_token", value: form_authenticity_token, type: "hidden" %>
@@ -51,11 +70,11 @@
       <% if current_plan.free? %>
         <%= link_to "Upgrade to #{plan.name}",
               new_subscription_path(plan_key: plan.key),
-              class: "btn btn-primary btn-sm w-full block text-center" %>
+              class: "btn btn-primary btn-sm w-full block text-center mt-auto" %>
         <p class="text-xs text-stone-500 dark:text-white/50 mt-2">Complete checkout on the next page.</p>
       <% elsif subscription&.active? && !subscription.canceled? && !subscription.pending_scheduled_change? %>
         <% switch_url = update_plan_subscription_path(plan_key: plan.key) %>
-        <form method="post" action="<%= switch_url %>" class="w-full"
+        <form method="post" action="<%= switch_url %>" class="w-full mt-auto"
               hx-post="<%= switch_url %>" hx-target="body" hx-swap="innerHTML" hx-push-url="true"
               hx-disabled-elt="button[type=submit]" hx-indicator="#subscription-switch-indicator-<%= plan.key %>">
           <%= tag.input name: "authenticity_token", value: form_authenticity_token, type: "hidden" %>
@@ -72,7 +91,7 @@
   <% else %>
     <% if subscription&.paid? && subscription&.can_undo_scheduled_change? %>
       <% keep_url = keep_plan_subscription_path %>
-      <form method="post" action="<%= keep_url %>" class="w-full"
+      <form method="post" action="<%= keep_url %>" class="w-full mt-auto"
             hx-post="<%= keep_url %>" hx-target="body" hx-swap="innerHTML" hx-push-url="true"
             hx-disabled-elt="button[type=submit]" hx-indicator="#subscription-keep-indicator">
         <%= tag.input name: "authenticity_token", value: form_authenticity_token, type: "hidden" %>
@@ -86,7 +105,7 @@
       </form>
     <% elsif subscription&.paused? %>
       <% resume_url = resume_subscription_path %>
-      <form method="post" action="<%= resume_url %>" class="w-full"
+      <form method="post" action="<%= resume_url %>" class="w-full mt-auto"
             hx-post="<%= resume_url %>" hx-target="body" hx-swap="innerHTML" hx-push-url="true"
             hx-disabled-elt="button[type=submit]" hx-indicator="#subscription-resume-indicator">
         <%= tag.input name: "authenticity_token", value: form_authenticity_token, type: "hidden" %>
