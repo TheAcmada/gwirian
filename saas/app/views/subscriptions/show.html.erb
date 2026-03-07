@@ -22,6 +22,7 @@
                   <% end %>
                 <% elsif @subscription.canceled? && @subscription.on_grace_period? %>
                   Cancels on <%= @subscription.current_period_ends_at.strftime("%B %d, %Y") %>
+                  <span class="block mt-1">You keep <%= @plan.name %> until then. You can undo by clicking <strong>Keep this plan</strong> below.</span>
                 <% elsif @subscription.canceled? %>
                   Canceled
                 <% elsif @subscription.paused? %>
@@ -84,6 +85,7 @@
                         method: :post,
                         class: "btn btn-secondary btn-sm w-full",
                         form: { data: { turbo_confirm: "This will cancel your paid subscription at the end of the current billing period. You keep access until that date." } } %>
+                  <p class="text-xs text-stone-500 dark:text-white/50 mt-2">You'll keep your current plan until the end of the billing period.</p>
                 <% end %>
               <% elsif plan.paid? && plan.paddle_price_id.present? %>
                 <% if @plan.free? %>
@@ -92,7 +94,8 @@
                         method: :post,
                         class: "btn btn-primary btn-sm w-full",
                         form: { data: { turbo: false } } %>
-                <% else %>
+                  <p class="text-xs text-stone-500 dark:text-white/50 mt-2">You'll be redirected to our secure checkout.</p>
+                <% elsif @subscription.active? && !@subscription.canceled? %>
                   <%= button_to "Switch to #{plan.name}",
                         update_plan_subscription_path(plan_key: plan.key),
                         method: :post,

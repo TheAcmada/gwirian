@@ -30,14 +30,22 @@ module WorkspaceSubscriptionPaddleSync
     end
 
     def to_subscription_attributes(current_plan_key:)
+      status = mapped_status
+      period_ends_at = parse_time(data.dig("current_billing_period", "ends_at"))
+      effective_plan_key = if status == "canceled" && period_ends_at.present? && period_ends_at <= Time.current
+        "free"
+      else
+        mapped_plan_key(current_plan_key)
+      end
+
       {
         paddle_subscription_id: subscription_id,
         paddle_customer_id: data["customer_id"],
         paddle_plan_price_id: price_id,
-        plan_key: mapped_plan_key(current_plan_key),
-        status: mapped_status,
+        plan_key: effective_plan_key,
+        status: status,
         current_period_starts_at: parse_time(data.dig("current_billing_period", "starts_at")),
-        current_period_ends_at: parse_time(data.dig("current_billing_period", "ends_at")),
+        current_period_ends_at: period_ends_at,
         canceled_at: parse_time(data["canceled_at"]),
         paused_at: parse_time(data["paused_at"])
       }.compact
