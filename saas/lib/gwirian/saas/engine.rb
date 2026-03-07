@@ -15,7 +15,7 @@ module Gwirian
           # /subscription is matched by the host app. Otherwise the mount catches
           # the request and the engine receives it with a different SCRIPT_NAME,
           # and generated URLs (e.g. in the navbar) lose the workspace slug.
-          resource :subscription, only: [ :show, :create ] do
+          resource :subscription, only: [ :show, :new ] do
             post :cancel
             post :resume
             post :keep_plan

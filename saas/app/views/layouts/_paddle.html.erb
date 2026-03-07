@@ -1,7 +1,81 @@
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script type="text/javascript">
   Paddle.Environment.set("<%= Rails.env.production? ? "production" : "sandbox" %>");
-    Paddle.Initialize({
+  Paddle.Initialize({
     token: "<%= ENV["PADDLE_CLIENT_TOKEN"] %>"
   });
+</script>
+<script type="text/javascript">
+  (function() {
+    function openPaddleCheckout(wrapper) {
+      if (!wrapper || wrapper.dataset.paddleOpened === "true") return;
+      if (typeof Paddle === "undefined") {
+        if (wrapper) wrapper.dispatchEvent(new CustomEvent("paddle:checkout:error"));
+        return;
+      }
+      var transactionId = wrapper.dataset.checkoutTransactionId;
+      var successUrl = wrapper.dataset.checkoutSuccessUrl;
+      if (!transactionId) {
+        wrapper.dispatchEvent(new CustomEvent("paddle:checkout:error"));
+        return;
+      }
+      wrapper.dataset.paddleOpened = "true";
+      var container = wrapper.querySelector ? wrapper.querySelector(".checkout-container") : null;
+      if (container && typeof MutationObserver !== "undefined") {
+        var observer = new MutationObserver(function() {
+          if (container.querySelector("iframe") || container.children.length > 0) {
+            wrapper.dataset.paddleLoaded = "true";
+            window.dispatchEvent(new CustomEvent("paddle:checkout:loaded"));
+            observer.disconnect();
+          }
+        });
+        observer.observe(container, { childList: true, subtree: true });
+      }
+      Paddle.Checkout.open({
+        transactionId: transactionId,
+        settings: {
+          displayMode: "inline",
+          frameTarget: "checkout-container",
+          frameInitialHeight: "450",
+          frameStyle: "width: 100%; min-width: 312px; background-color: transparent; border: none;",
+          successUrl: successUrl
+        },
+        eventCallback: function(event) {
+          if (event.name === "checkout.loaded") {
+            wrapper.dataset.paddleLoaded = "true";
+            window.dispatchEvent(new CustomEvent("paddle:checkout:loaded"));
+          }
+          if (event.name === "checkout.error") {
+            window.dispatchEvent(new CustomEvent("paddle:checkout:error", { detail: event.data }));
+          }
+          if (event.name === "checkout.closed") {
+            window.dispatchEvent(new CustomEvent("paddle:checkout:closed"));
+          }
+          if (event.name === "checkout.completed") {
+            if (successUrl) window.location.href = successUrl;
+          }
+        }
+      });
+    }
+    function tryOpenCheckout() {
+      var wrapper = document.querySelector("[data-checkout-transaction-id]:not([data-paddle-opened])");
+      if (wrapper) openPaddleCheckout(wrapper);
+    }
+    function attachListeners() {
+      tryOpenCheckout();
+      if (document.body) {
+        document.body.addEventListener("htmx:afterSettle", function(evt) {
+          var target = evt.detail && evt.detail.target;
+          if (target && (target.querySelector && target.querySelector("[data-checkout-transaction-id]") || target.hasAttribute("data-checkout-transaction-id"))) {
+            tryOpenCheckout();
+          }
+        });
+      }
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", attachListeners);
+    } else {
+      attachListeners();
+    }
+  })();
 </script>

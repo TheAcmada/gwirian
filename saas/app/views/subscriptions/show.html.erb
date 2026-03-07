@@ -89,12 +89,10 @@
                 <% end %>
               <% elsif plan.paid? && plan.paddle_price_id.present? %>
                 <% if @plan.free? %>
-                  <%= button_to "Upgrade to #{plan.name}",
-                        subscription_path(plan_key: plan.key),
-                        method: :post,
-                        class: "btn btn-primary btn-sm w-full",
-                        form: { "hx-boost" => "false" } %>
-                  <p class="text-xs text-stone-500 dark:text-white/50 mt-2">You'll be redirected to our secure checkout.</p>
+                  <%= link_to "Upgrade to #{plan.name}",
+                        new_subscription_path(plan_key: plan.key),
+                        class: "btn btn-primary btn-sm w-full block text-center" %>
+                  <p class="text-xs text-stone-500 dark:text-white/50 mt-2">Complete checkout on the next page.</p>
                 <% elsif @subscription.active? && !@subscription.canceled? %>
                   <%= button_to "Switch to #{plan.name}",
                         update_plan_subscription_path(plan_key: plan.key),

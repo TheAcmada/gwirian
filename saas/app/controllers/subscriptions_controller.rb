@@ -11,7 +11,7 @@ class SubscriptionsController < ApplicationController
     @plans = Plan.all
   end
 
-  def create
+  def new
     plan_key = params[:plan_key]
     plan = Plan.find(plan_key)
 
@@ -20,9 +20,15 @@ class SubscriptionsController < ApplicationController
       return
     end
 
-    checkout_url = @subscription.start_checkout_for!(plan: plan)
+    if @subscription.paid? && @subscription.active? && !@subscription.canceled?
+      redirect_to subscription_path, alert: "You already have an active subscription. Use the plan cards to switch plans."
+      return
+    end
 
-    redirect_to checkout_url, allow_other_host: true
+    @checkout = @subscription.prepare_inline_checkout!(plan: plan).merge(
+      success_url: subscription_url
+    )
+    @plan = plan
   rescue ArgumentError => e
     redirect_to subscription_path, alert: e.message
   rescue ::Paddle::Errors::BadRequestError => e

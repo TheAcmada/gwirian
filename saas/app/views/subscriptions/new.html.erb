@@ -1,1 +1,12 @@
-<div class="checkout-container"></div>
+<% content_for :title, "Checkout — #{@plan.name}" %>
+
+<div class="max-w-3xl mx-auto px-4 py-12">
+  <%= render Shared::PageHeaderComponent.new(
+    title: "Checkout",
+    subtitle: "Complete your upgrade to #{@plan.name}",
+    back_path: subscription_path
+  ) %>
+
+  <%= render "subscriptions/checkout_summary", plan: @plan %>
+  <%= render "subscriptions/checkout_mount", checkout: @checkout %>
+</div>

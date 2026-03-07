@@ -43,7 +43,10 @@ class WorkspaceSubscription < SaasRecord
     canceled_at.present? && current_period_ends_at.present? && current_period_ends_at > Time.current
   end
 
-  def start_checkout_for!(plan:)
+  # Creates a Paddle transaction for inline checkout. Returns a hash with
+  # transaction_id and success_url for use by Paddle.js. Preserves custom_data
+  # for webhook correlation.
+  def prepare_inline_checkout!(plan:)
     raise ArgumentError, "Plan must be paid" unless plan&.paid?
     raise ArgumentError, "Plan is missing Paddle price ID" if plan.paddle_price_id.blank?
 
@@ -61,7 +64,7 @@ class WorkspaceSubscription < SaasRecord
     )
     save! if changed?
 
-    checkout_url_from!(transaction)
+    { transaction_id: transaction.id }
   end
 
   def cancel_at_period_end!
@@ -119,14 +122,4 @@ class WorkspaceSubscription < SaasRecord
   end
 
   private
-
-  def checkout_url_from!(transaction)
-    url = transaction&.checkout&.url
-    url = transaction&.checkout&.dig("url") if url.blank? && transaction&.checkout.respond_to?(:dig)
-    url = transaction&.dig("checkout", "url") if url.blank? && transaction.respond_to?(:dig)
-
-    raise ArgumentError, "Paddle did not return a checkout URL" if url.blank?
-
-    url
-  end
 end
