@@ -188,4 +188,108 @@ RSpec.describe WorkspaceSubscription, type: :model do
       }.to raise_error(ArgumentError, "Subscription is not scheduled to cancel")
     end
   end
+
+  describe "#reconcile_after_checkout!" do
+    let(:workspace) { create(:workspace) }
+
+    context "when paddle_subscription_id is present" do
+      let(:subscription) do
+        create(:workspace_subscription, workspace: workspace, plan_key: "starter", status: "active",
+          paddle_subscription_id: "sub_01", paddle_transaction_id: "txn_01")
+      end
+
+      before do
+        paddle_response = {
+          "data" => {
+            "id" => "sub_01",
+            "customer_id" => "ctm_01",
+            "status" => "active",
+            "current_billing_period" => { "starts_at" => "2026-03-01T00:00:00Z", "ends_at" => "2026-04-07T00:00:00Z" },
+            "items" => [ { "price_id" => "pri_starter" } ]
+          }
+        }
+        allow(::Paddle::Subscription).to receive(:retrieve).with(id: "sub_01").and_return(paddle_response)
+      end
+
+      it "calls sync_with_paddle! and returns true" do
+        result = subscription.reconcile_after_checkout!
+
+        expect(result).to be true
+        expect(::Paddle::Subscription).to have_received(:retrieve).with(id: "sub_01")
+      end
+    end
+
+    context "when only paddle_transaction_id is present and transaction has subscription_id" do
+      let(:subscription) do
+        create(:workspace_subscription, workspace: workspace, plan_key: "free", status: "active",
+          paddle_transaction_id: "txn_01", paddle_subscription_id: nil)
+      end
+
+      let(:paddle_transaction) { double("Paddle::Transaction", subscription_id: "sub_new", id: "txn_01") }
+      let(:paddle_sub_response) do
+        {
+          "data" => {
+            "id" => "sub_new",
+            "customer_id" => "ctm_01",
+            "status" => "active",
+            "current_billing_period" => { "starts_at" => "2026-03-01T00:00:00Z", "ends_at" => "2026-04-07T00:00:00Z" },
+            "items" => [ { "price_id" => "pri_starter" } ]
+          }
+        }
+      end
+
+      before do
+        allow(::Paddle::Transaction).to receive(:retrieve).with(id: "txn_01").and_return(paddle_transaction)
+        allow(::Paddle::Subscription).to receive(:retrieve).with(id: "sub_new").and_return(paddle_sub_response)
+        allow(Plan).to receive(:find_by_paddle_price_id).with("pri_starter").and_return(double("Plan", key: "starter"))
+      end
+
+      it "retrieves transaction, sets paddle_subscription_id, syncs and returns true" do
+        result = subscription.reconcile_after_checkout!
+
+        expect(result).to be true
+        expect(::Paddle::Transaction).to have_received(:retrieve).with(id: "txn_01")
+        expect(::Paddle::Subscription).to have_received(:retrieve).with(id: "sub_new")
+        subscription.reload
+        expect(subscription.paddle_subscription_id).to eq("sub_new")
+        expect(subscription.plan_key).to eq("starter")
+      end
+    end
+
+    context "when only paddle_transaction_id is present and transaction has no subscription_id yet" do
+      let(:subscription) do
+        create(:workspace_subscription, workspace: workspace, plan_key: "free", status: "active",
+          paddle_transaction_id: "txn_01", paddle_subscription_id: nil)
+      end
+
+      let(:paddle_transaction) { double("Paddle::Transaction", subscription_id: nil, id: "txn_01") }
+
+      before do
+        allow(::Paddle::Transaction).to receive(:retrieve).with(id: "txn_01").and_return(paddle_transaction)
+        allow(::Paddle::Subscription).to receive(:retrieve)
+      end
+
+      it "returns false and does not call Subscription.retrieve" do
+        result = subscription.reconcile_after_checkout!
+
+        expect(result).to be false
+        expect(::Paddle::Subscription).not_to have_received(:retrieve)
+        subscription.reload
+        expect(subscription.paddle_subscription_id).to be_nil
+      end
+    end
+
+    context "when neither paddle_subscription_id nor paddle_transaction_id is present" do
+      let(:subscription) do
+        create(:workspace_subscription, workspace: workspace, plan_key: "free", status: "active",
+          paddle_transaction_id: nil, paddle_subscription_id: nil)
+      end
+
+      it "returns false" do
+        result = subscription.reconcile_after_checkout!
+
+        expect(result).to be false
+      end
+    end
+  end
 end

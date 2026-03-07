@@ -52,7 +52,11 @@
             window.dispatchEvent(new CustomEvent("paddle:checkout:closed"));
           }
           if (event.name === "checkout.completed") {
-            if (successUrl) window.location.href = successUrl;
+            if (successUrl) {
+              var url = new URL(successUrl, window.location.origin);
+              url.searchParams.set("checkout", "success");
+              window.location.href = url.toString();
+            }
           }
         }
       });

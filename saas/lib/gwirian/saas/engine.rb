@@ -16,6 +16,7 @@ module Gwirian
           # the request and the engine receives it with a different SCRIPT_NAME,
           # and generated URLs (e.g. in the navbar) lose the workspace slug.
           resource :subscription, only: [ :show, :new ] do
+            get :status
             post :cancel
             post :resume
             post :keep_plan

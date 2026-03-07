@@ -114,6 +114,32 @@ class WorkspaceSubscription < SaasRecord
     sync_with_paddle!
   end
 
+  # After checkout completion, sync from Paddle. If we only have a transaction ID,
+  # fetch the transaction to get subscription_id, then sync. Returns true if we have
+  # a paid subscription synced; false otherwise (caller can show "finalizing" UX).
+  def reconcile_after_checkout!
+    if paddle_subscription_id.present?
+      return sync_with_paddle!
+    end
+
+    if paddle_transaction_id.present?
+      tx = Paddle::Transaction.retrieve(id: paddle_transaction_id)
+      sub_id = subscription_id_from_transaction(tx)
+      if sub_id.present?
+        with_lock do
+          assign_attributes(paddle_subscription_id: sub_id)
+          save! if changed?
+        end
+        @plan = nil
+        return sync_with_paddle!
+      end
+    end
+
+    false
+  rescue Paddle::Errors::BadRequestError, Paddle::Errors::ForbiddenError
+    false
+  end
+
   def sync_with_paddle!
     return false if paddle_subscription_id.blank?
 
@@ -134,4 +160,13 @@ class WorkspaceSubscription < SaasRecord
   end
 
   private
+
+  def subscription_id_from_transaction(tx)
+    return nil if tx.blank?
+
+    id = tx.subscription_id if tx.respond_to?(:subscription_id)
+    id ||= tx["subscription_id"] if tx.respond_to?(:[])
+    id ||= tx.to_h["subscription_id"] if tx.respond_to?(:to_h)
+    id.presence
+  end
 end

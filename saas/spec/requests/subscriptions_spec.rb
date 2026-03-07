@@ -168,5 +168,71 @@ RSpec.describe "Subscriptions", type: :request do
         expect(response.body).to include("scheduled cancellation has been removed")
       end
     end
+
+    context "GET subscription with checkout=success when reconciliation succeeds" do
+      before do
+        create(:workspace_subscription, workspace: workspace, plan_key: "free", status: "active",
+          paddle_transaction_id: "txn_01", paddle_subscription_id: nil)
+        paddle_tx = double("Paddle::Transaction", subscription_id: "sub_01", id: "txn_01")
+        allow(::Paddle::Transaction).to receive(:retrieve).with(id: "txn_01").and_return(paddle_tx)
+        paddle_sub = {
+          "data" => {
+            "id" => "sub_01",
+            "customer_id" => "ctm_01",
+            "status" => "active",
+            "current_billing_period" => { "starts_at" => "2026-03-01T00:00:00Z", "ends_at" => "2026-04-07T00:00:00Z" },
+            "items" => [ { "price_id" => "pri_starter" } ]
+          }
+        }
+        allow(::Paddle::Subscription).to receive(:retrieve).with(id: "sub_01").and_return(paddle_sub)
+        allow(Plan).to receive(:find_by_paddle_price_id).with("pri_starter").and_return(double("Plan", key: "starter"))
+      end
+
+      it "reconciles and renders paid plan immediately" do
+        get "/#{workspace.slug}/subscription", params: { checkout: "success" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Starter")
+        expect(response.body).not_to include("Finalizing your plan upgrade")
+      end
+    end
+
+    context "GET subscription with checkout=success when reconciliation not yet possible" do
+      before do
+        create(:workspace_subscription, workspace: workspace, plan_key: "free", status: "active",
+          paddle_transaction_id: "txn_01", paddle_subscription_id: nil)
+        paddle_tx = double("Paddle::Transaction", subscription_id: nil, id: "txn_01")
+        allow(::Paddle::Transaction).to receive(:retrieve).with(id: "txn_01").and_return(paddle_tx)
+      end
+
+      it "shows upgrade pending and finalizing message" do
+        get "/#{workspace.slug}/subscription", params: { checkout: "success" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Payment received")
+        expect(response.body).to include("Finalizing your plan upgrade")
+      end
+    end
+  end
+
+  describe "GET /subscription/status" do
+    let(:workspace) { create(:workspace) }
+    let(:user) { create(:user) }
+    let!(:workspace_member) { create(:workspace_member, user: user, workspace: workspace, role: "administrator", status: "current_member") }
+
+    before { sign_in_as(user) }
+
+    it "returns JSON with paid and plan_key" do
+      create(:workspace_subscription, workspace: workspace, plan_key: "starter", status: "active",
+        paddle_subscription_id: "sub_01")
+      allow_any_instance_of(WorkspaceSubscription).to receive(:reconcile_after_checkout!).and_return(true)
+
+      get "/#{workspace.slug}/subscription/status", as: :json
+
+      expect(response).to have_http_status(:ok)
+      json = response.parsed_body
+      expect(json["paid"]).to be true
+      expect(json["plan_key"]).to eq("starter")
+    end
   end
 end

@@ -6,9 +6,15 @@ class SubscriptionsController < ApplicationController
   before_action :load_workspace_context
 
   def show
-    @subscription.sync_with_paddle!
+    if params[:checkout] == "success"
+      @subscription.reconcile_after_checkout!
+    else
+      @subscription.sync_with_paddle!
+    end
     @plan = @subscription.plan
     @plans = Plan.all
+    @checkout_return = params[:checkout] == "success"
+    @upgrade_pending = @checkout_return && !@subscription.paid?
   end
 
   def new
@@ -26,7 +32,7 @@ class SubscriptionsController < ApplicationController
     end
 
     @checkout = @subscription.prepare_inline_checkout!(plan: plan).merge(
-      success_url: subscription_url
+      success_url: subscription_url(checkout: "success")
     )
     @plan = plan
   rescue ArgumentError => e
@@ -82,6 +88,14 @@ class SubscriptionsController < ApplicationController
     redirect_to subscription_path, alert: e.message
   rescue ::Paddle::Errors::BadRequestError => e
     redirect_to subscription_path, alert: "Unable to update subscription: #{e.message}"
+  end
+
+  def status
+    @subscription.reconcile_after_checkout!
+    render json: {
+      paid: @subscription.paid?,
+      plan_key: @subscription.plan_key
+    }
   end
 
   def portal
