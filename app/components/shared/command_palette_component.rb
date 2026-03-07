@@ -52,7 +52,7 @@ module Shared
         items << { type: "nav", title: "New project", subtitle: "Create", url: new_project_path, keywords: "new project create" }
       end
       if @workspace&.admin?(Current.user)
-        items << { type: "nav", title: "Invite and manage members", subtitle: "Workspace", url: workspace_members_path, keywords: "invite members workspace" }
+        items << { type: "nav", title: "Manage team", subtitle: "Workspace", url: workspace_members_path, keywords: "invite members workspace team" }
       end
       user_workspaces.each do |membership|
         ws = membership.workspace
@@ -60,7 +60,7 @@ module Shared
         items << { type: "nav", title: "Switch to #{ws.name}", subtitle: "Workspace", url: "/#{ws.slug}/projects", keywords: "workspace switch #{ws.name}" }
       end
       if Current.user.present?
-        items << { type: "nav", title: "Account", subtitle: "Profile", url: edit_user_path(Current.user), keywords: "account profile user" }
+        items << { type: "nav", title: "My account", subtitle: "Profile", url: edit_user_path(Current.user), keywords: "account profile user" }
       end
 
       items
