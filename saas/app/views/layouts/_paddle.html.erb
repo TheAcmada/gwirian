@@ -1,0 +1,7 @@
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+<script type="text/javascript">
+  Paddle.Environment.set("<%= Rails.env.production? ? "production" : "sandbox" %>");
+    Paddle.Initialize({
+    token: "<%= ENV["PADDLE_CLIENT_TOKEN"] %>"
+  });
+</script>
