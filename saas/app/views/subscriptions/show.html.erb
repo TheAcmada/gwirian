@@ -36,7 +36,7 @@
             <% end %>
           </div>
           <% if @subscription&.paddle_customer_id.present? %>
-            <a href="<%= portal_subscription_path %>" class="btn btn-secondary btn-sm" data-turbo="false" hx-boost="false">Manage billing</a>
+            <a href="<%= portal_subscription_path %>" class="btn btn-secondary btn-sm" hx-boost="false">Manage billing</a>
           <% end %>
         </div>
       </div>
@@ -93,7 +93,7 @@
                         subscription_path(plan_key: plan.key),
                         method: :post,
                         class: "btn btn-primary btn-sm w-full",
-                        form: { data: { turbo: false } } %>
+                        form: { "hx-boost" => "false" } %>
                   <p class="text-xs text-stone-500 dark:text-white/50 mt-2">You'll be redirected to our secure checkout.</p>
                 <% elsif @subscription.active? && !@subscription.canceled? %>
                   <%= button_to "Switch to #{plan.name}",
