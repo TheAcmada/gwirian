@@ -1,6 +1,6 @@
 class Plan
   PLANS = {
-    free: {
+    "free" => {
       key: "free",
       name: "Free",
       projects_limit: 1,
@@ -8,7 +8,7 @@ class Plan
       scenarios_limit: 20,
       members_limit: 3
     },
-    starter: {
+    "starter" => {
       key: "starter",
       name: "Starter",
       projects_limit: 3,
@@ -16,7 +16,7 @@ class Plan
       scenarios_limit: 200,
       members_limit: 3
     },
-    professional: {
+    "professional" => {
       key: "professional",
       name: "Professional",
       projects_limit: 10,
@@ -24,7 +24,7 @@ class Plan
       scenarios_limit: 1000,
       members_limit: 10
     },
-    team: {
+    "team" => {
       key: "team",
       name: "Team",
       projects_limit: Float::INFINITY,
@@ -32,28 +32,29 @@ class Plan
       scenarios_limit: Float::INFINITY,
       members_limit: 25
     }
-  }
+  }.freeze
 
   PADDLE_PRICE_ENV_KEYS = {
-    starter: "PADDLE_PRICE_STARTER",
-    professional: "PADDLE_PRICE_PROFESSIONAL",
-    team: "PADDLE_PRICE_TEAM"
+    "starter" => "PADDLE_PRICE_STARTER",
+    "professional" => "PADDLE_PRICE_PROFESSIONAL",
+    "team" => "PADDLE_PRICE_TEAM"
   }.freeze
 
   attr_reader :key, :name, :projects_limit, :features_limit, :scenarios_limit, :members_limit, :paddle_price_id
 
   class << self
     def all
-      @all ||= PLANS.map { |key, properties| new(key: key, paddle_price_id: paddle_price_id_for(key), **properties) }
+      @all ||= PLANS.map { |plan_key, properties| new(paddle_price_id: paddle_price_id_for(plan_key), **properties) }
     end
 
     def free
-      @free ||= find(:free)
+      @free ||= find("free")
     end
 
     def find(key)
-      @all_by_key ||= all.index_by(&:key).with_indifferent_access
-      @all_by_key[key]
+      return nil if key.blank?
+      @all_by_key ||= all.index_by(&:key)
+      @all_by_key[key.to_s]
     end
 
     def find_by_paddle_price_id(price_id)
@@ -62,7 +63,7 @@ class Plan
     end
 
     def paddle_price_id_for(plan_key)
-      env_key = PADDLE_PRICE_ENV_KEYS[plan_key.to_sym]
+      env_key = PADDLE_PRICE_ENV_KEYS[plan_key.to_s]
       env_key ? ENV[env_key].to_s.presence : nil
     end
   end
@@ -95,5 +96,9 @@ class Plan
 
   def limit_scenarios?
     !scenarios_limit.infinite?
+  end
+
+  def limit_members?
+    !members_limit.infinite?
   end
 end

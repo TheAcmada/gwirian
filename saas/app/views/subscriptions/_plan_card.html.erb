@@ -1,0 +1,103 @@
+<%# locals: plan, current_plan, subscription %>
+<div class="rounded-lg p-5 <%= plan.key == current_plan.key ? 'bg-accent-50 dark:bg-accent-900/20 ring-1 ring-accent-500/30' : 'bg-stone-50 dark:bg-white/5' %>">
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="font-medium text-stone-800 dark:text-white/90"><%= plan.name %></h3>
+    <% if plan.key == current_plan.key %>
+      <span class="badge badge-accent badge-sm">Current</span>
+    <% end %>
+  </div>
+
+  <dl class="space-y-1 text-xs text-stone-500 dark:text-white/50 mb-4">
+    <div class="flex justify-between">
+      <dt>Projects</dt>
+      <dd><%= plan_limit_display(plan.projects_limit) %></dd>
+    </div>
+    <div class="flex justify-between">
+      <dt>Features</dt>
+      <dd><%= plan_limit_display(plan.features_limit) %></dd>
+    </div>
+    <div class="flex justify-between">
+      <dt>Scenarios</dt>
+      <dd><%= plan_limit_display(plan.scenarios_limit) %></dd>
+    </div>
+    <div class="flex justify-between">
+      <dt>Members</dt>
+      <dd><%= plan_limit_display(plan.members_limit) %></dd>
+    </div>
+  </dl>
+
+  <% if plan.key != current_plan.key %>
+    <% if plan.free? %>
+      <% if subscription&.paddle_subscription_id.present? && !subscription.canceled? && !subscription.pending_scheduled_change? %>
+        <% cancel_url = cancel_subscription_path %>
+        <% downgrade_confirm_msg = "This will cancel your paid subscription at the end of the current billing period. You keep access until that date." %>
+        <form method="post" action="<%= cancel_url %>" class="w-full"
+              hx-post="<%= cancel_url %>" hx-target="body" hx-swap="innerHTML" hx-push-url="true"
+              hx-disabled-elt="button[type=submit]" hx-indicator="#subscription-downgrade-indicator">
+          <%= tag.input name: "authenticity_token", value: form_authenticity_token, type: "hidden" %>
+          <button type="submit" class="btn btn-secondary btn-sm w-full"
+                  x-data="{}"
+                  @click.prevent="showConfirmation(<%= downgrade_confirm_msg.to_json %>).then(result => { if (result.isConfirmed) $el.closest('form').requestSubmit() })">
+            <span class="subscription-btn-content">Downgrade to Free</span>
+            <span id="subscription-downgrade-indicator" class="subscription-btn-indicator inline-flex items-center gap-2" style="display: none;">
+              <span class="inline-flex animate-spin h-4 w-4 rounded-full border-2 border-accent-500 border-t-transparent" aria-hidden="true"></span>
+              Downgrading…
+            </span>
+          </button>
+        </form>
+        <p class="text-xs text-stone-500 dark:text-white/50 mt-2">You'll keep your current plan until the end of the billing period.</p>
+      <% end %>
+    <% elsif plan.paid? && plan.paddle_price_id.present? %>
+      <% if current_plan.free? %>
+        <%= link_to "Upgrade to #{plan.name}",
+              new_subscription_path(plan_key: plan.key),
+              class: "btn btn-primary btn-sm w-full block text-center" %>
+        <p class="text-xs text-stone-500 dark:text-white/50 mt-2">Complete checkout on the next page.</p>
+      <% elsif subscription&.active? && !subscription.canceled? && !subscription.pending_scheduled_change? %>
+        <% switch_url = update_plan_subscription_path(plan_key: plan.key) %>
+        <form method="post" action="<%= switch_url %>" class="w-full"
+              hx-post="<%= switch_url %>" hx-target="body" hx-swap="innerHTML" hx-push-url="true"
+              hx-disabled-elt="button[type=submit]" hx-indicator="#subscription-switch-indicator-<%= plan.key %>">
+          <%= tag.input name: "authenticity_token", value: form_authenticity_token, type: "hidden" %>
+          <button type="submit" class="btn btn-primary btn-sm w-full">
+            <span class="subscription-btn-content">Switch to <%= plan.name %></span>
+            <span id="subscription-switch-indicator-<%= plan.key %>" class="subscription-btn-indicator inline-flex items-center gap-2" style="display: none;">
+              <span class="inline-flex animate-spin h-4 w-4 rounded-full border-2 border-accent-500 border-t-transparent" aria-hidden="true"></span>
+              Switching…
+            </span>
+          </button>
+        </form>
+      <% end %>
+    <% end %>
+  <% else %>
+    <% if subscription&.paid? && subscription&.can_undo_scheduled_change? %>
+      <% keep_url = keep_plan_subscription_path %>
+      <form method="post" action="<%= keep_url %>" class="w-full"
+            hx-post="<%= keep_url %>" hx-target="body" hx-swap="innerHTML" hx-push-url="true"
+            hx-disabled-elt="button[type=submit]" hx-indicator="#subscription-keep-indicator">
+        <%= tag.input name: "authenticity_token", value: form_authenticity_token, type: "hidden" %>
+        <button type="submit" class="btn btn-primary btn-sm w-full">
+          <span class="subscription-btn-content">Keep this plan</span>
+          <span id="subscription-keep-indicator" class="subscription-btn-indicator inline-flex items-center gap-2" style="display: none;">
+            <span class="inline-flex animate-spin h-4 w-4 rounded-full border-2 border-accent-500 border-t-transparent" aria-hidden="true"></span>
+            Keeping…
+          </span>
+        </button>
+      </form>
+    <% elsif subscription&.paused? %>
+      <% resume_url = resume_subscription_path %>
+      <form method="post" action="<%= resume_url %>" class="w-full"
+            hx-post="<%= resume_url %>" hx-target="body" hx-swap="innerHTML" hx-push-url="true"
+            hx-disabled-elt="button[type=submit]" hx-indicator="#subscription-resume-indicator">
+        <%= tag.input name: "authenticity_token", value: form_authenticity_token, type: "hidden" %>
+        <button type="submit" class="btn btn-primary btn-sm w-full">
+          <span class="subscription-btn-content">Resume plan</span>
+          <span id="subscription-resume-indicator" class="subscription-btn-indicator inline-flex items-center gap-2" style="display: none;">
+            <span class="inline-flex animate-spin h-4 w-4 rounded-full border-2 border-accent-500 border-t-transparent" aria-hidden="true"></span>
+            Resuming…
+          </span>
+        </button>
+      </form>
+    <% end %>
+  <% end %>
+</div>

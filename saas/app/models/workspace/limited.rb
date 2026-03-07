@@ -41,6 +41,7 @@ module Workspace::Limited
   end
 
   def can_add_member?
+    return true unless plan.limit_members?
     members_count < plan.members_limit
   end
 
@@ -57,29 +58,10 @@ module Workspace::Limited
   end
 
   def exceeding_members_limit?
-    members_count >= plan.members_limit
+    plan.limit_members? && members_count >= plan.members_limit
   end
 
   def exceeding_limits?
     exceeding_projects_limit? || exceeding_features_limit? || exceeding_scenarios_limit? || exceeding_members_limit?
-  end
-
-  def remaining_projects
-    return Float::INFINITY unless plan.limit_projects?
-    [ plan.projects_limit - projects_count, 0 ].max
-  end
-
-  def remaining_features
-    return Float::INFINITY unless plan.limit_features?
-    [ plan.features_limit - features_count, 0 ].max
-  end
-
-  def remaining_scenarios
-    return Float::INFINITY unless plan.limit_scenarios?
-    [ plan.scenarios_limit - scenarios_count, 0 ].max
-  end
-
-  def remaining_members
-    [ plan.members_limit - members_count, 0 ].max
   end
 end

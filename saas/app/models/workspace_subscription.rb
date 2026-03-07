@@ -20,7 +20,10 @@ class WorkspaceSubscription < SaasRecord
   end
 
   def plan
-    @plan ||= Plan.find(plan_key) || Plan.free
+    if @plan.nil? || @plan.key != plan_key
+      @plan = Plan.find(plan_key) || Plan.free
+    end
+    @plan
   end
 
   def active?
@@ -28,11 +31,11 @@ class WorkspaceSubscription < SaasRecord
   end
 
   def canceled?
-    status == "canceled" || canceled_at.present?
+    status == "canceled"
   end
 
   def paused?
-    status == "paused" || paused_at.present?
+    status == "paused"
   end
 
   def past_due?
@@ -130,7 +133,6 @@ class WorkspaceSubscription < SaasRecord
           assign_attributes(paddle_subscription_id: sub_id)
           save! if changed?
         end
-        @plan = nil
         return sync_with_paddle!
       end
     end
@@ -151,7 +153,6 @@ class WorkspaceSubscription < SaasRecord
 
     with_lock do
       assign_attributes(attrs)
-      @plan = nil if will_save_change_to_plan_key?
       save! if changed?
     end
     true

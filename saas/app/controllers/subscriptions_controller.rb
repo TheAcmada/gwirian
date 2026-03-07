@@ -13,8 +13,7 @@ class SubscriptionsController < ApplicationController
     end
     @plan = @subscription.plan
     @plans = Plan.all
-    @checkout_return = params[:checkout] == "success"
-    @upgrade_pending = @checkout_return && !@subscription.paid?
+    @upgrade_pending = params[:checkout] == "success" && !@subscription.paid?
   end
 
   def new
@@ -126,6 +125,5 @@ class SubscriptionsController < ApplicationController
   def load_workspace_context
     @workspace = Current.workspace
     @subscription = WorkspaceSubscription.for_workspace(@workspace)
-    @plan = @workspace.plan
   end
 end

@@ -1,5 +1,6 @@
 module Feature::LimitedCreation
   extend ActiveSupport::Concern
+  include Gwirian::Saas::LimitCreationSupport
 
   included do
     before_action :ensure_under_features_limit, only: %i[ create ]
@@ -8,19 +9,6 @@ module Feature::LimitedCreation
   private
 
   def ensure_under_features_limit
-    return unless Current.workspace
-    return if respond_to?(:current_user) && Gwirian::Saas::PlanLimitsBypass.gwirian_com?(current_user)
-
-    if Current.workspace.exceeding_features_limit?
-      message = "You have reached the feature limit for your plan (#{Current.workspace.plan.name}). " \
-                "Please upgrade to create more features."
-      if request.format.json?
-        render json: { error: message }, status: :forbidden
-      elsif request.headers["HX-Request"]
-        render html: "<div class='alert alert-danger'>#{message}</div>".html_safe, status: :forbidden
-      else
-        redirect_to project_features_path(@project), alert: message
-      end
-    end
+    ensure_under_plan_limit!(resource_type: :features, redirect_path: project_features_path(@project))
   end
 end
