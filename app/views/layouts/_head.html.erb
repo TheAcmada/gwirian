@@ -23,8 +23,9 @@
     <script defer src="/js/alpinejs.3.14.8.js"></script>
     <script src="/js/popper.js"></script>
     <script src="/js/tippy.js"></script>
-
-
+    <%if Gwirian.saas? %>
+      <%= render "layouts/paddle" %>
+    <% end %>
     <script>
       document.addEventListener("alpine:init", () => {
         Alpine.store("notifications", {

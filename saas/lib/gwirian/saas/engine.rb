@@ -4,22 +4,26 @@ module Gwirian
   module Saas
     class Engine < ::Rails::Engine
       initializer "gwirian.saas.routes", after: :add_routing_paths do |app|
-        # Routes that rely on the implicit account tenant should go here instead of in +routes.rb+.
         app.routes.prepend do
-          namespace :account do
-            resource :billing_portal, only: :show
-            resource :subscription do
-              scope module: :subscriptions do
-                resource :upgrade, only: :create
-                resource :downgrade, only: :create
-              end
-            end
-          end
+          post "paddle/webhooks", to: "paddle/webhooks#create"
         end
       end
 
       initializer "gwirian.saas.mount" do |app|
         app.routes.append do
+          # Subscription routes must be defined before the engine mount so that
+          # /subscription is matched by the host app. Otherwise the mount catches
+          # the request and the engine receives it with a different SCRIPT_NAME,
+          # and generated URLs (e.g. in the navbar) lose the workspace slug.
+          resource :subscription, only: [ :show, :new ] do
+            get :status
+            post :cancel
+            post :resume
+            post :keep_plan
+            post :update_plan
+            get :portal
+          end
+
           mount Gwirian::Saas::Engine => "/", as: "saas"
         end
       end

@@ -16,8 +16,6 @@
       </div>
     </div>
 
-    <%= render "workspaces/usage", workspace: Current.workspace if Gwirian.saas? && Current.workspace %>
-
     <!-- API Token Section -->
     <% if Current.workspace %>
       <% current_workspace_member = @user.workspace_members.find_by(workspace: Current.workspace) %>

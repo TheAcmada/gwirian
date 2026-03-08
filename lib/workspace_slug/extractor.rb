@@ -10,6 +10,7 @@ module WorkspaceSlug
       /project_members
       /workspaces
       /workspace_members
+      /paddle
     ].freeze
 
     def initialize(app)

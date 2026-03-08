@@ -3,5 +3,7 @@ eval_gemfile "Gemfile"
 
 gem "gwirian-saas", path: "saas"
 
+gem "paddle"
 gem "sentry-ruby"
 gem "sentry-rails"
+

@@ -1,0 +1,33 @@
+<div
+  data-checkout-transaction-id="<%= checkout[:transaction_id] %>"
+  data-checkout-success-url="<%= checkout[:success_url] %>"
+  x-data="{ checkoutStatus: 'loading' }"
+  x-init="
+    window.addEventListener('paddle:checkout:loaded', () => { checkoutStatus = 'loaded' });
+    window.addEventListener('paddle:checkout:error', () => { checkoutStatus = 'error' });
+    window.addEventListener('paddle:checkout:closed', () => { checkoutStatus = 'closed' });
+    if ($el.dataset.paddleLoaded === 'true') checkoutStatus = 'loaded';
+  "
+>
+  <div x-show="checkoutStatus === 'loading'" class="flex items-center justify-center py-12 text-stone-500 dark:text-white/50" x-cloak>
+    <span class="inline-flex items-center gap-2">
+      <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      Loading secure checkout…
+    </span>
+  </div>
+
+  <div class="checkout-container min-h-[450px]"></div>
+
+  <div x-show="checkoutStatus === 'error'" class="mt-4 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 text-sm" x-cloak>
+    <p>Something went wrong while loading checkout. Please try again or contact support.</p>
+    <%= link_to "Back to subscription", subscription_path, class: "mt-2 inline-block font-medium underline hover:no-underline" %>
+  </div>
+
+  <div x-show="checkoutStatus === 'closed'" class="mt-4 p-4 rounded-lg bg-stone-100 dark:bg-white/10 text-stone-600 dark:text-white/70 text-sm" x-cloak>
+    <p>Checkout was closed. You can start again from the subscription page.</p>
+    <%= link_to "Back to subscription", subscription_path, class: "mt-2 inline-block font-medium underline hover:no-underline" %>
+  </div>
+</div>

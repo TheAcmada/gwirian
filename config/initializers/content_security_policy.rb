@@ -12,6 +12,8 @@
 #     policy.object_src  :none
 #     policy.script_src  :self, :https
 #     policy.style_src   :self, :https
+#     # Allow Paddle inline checkout iframe (SaaS)
+#     # policy.frame_src  :self, :https, "https://buy.paddle.com", "https://sandbox-buy.paddle.com"
 #     # Specify URI for violation reports
 #     # policy.report_uri "/csp-violation-report-endpoint"
 #   end

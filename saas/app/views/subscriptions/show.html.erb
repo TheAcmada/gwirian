@@ -1,0 +1,153 @@
+<% content_for :title, "Subscription" %>
+<style>
+  /* Subscription plan action buttons: show loading indicator during htmx request */
+  .subscription-btn-indicator { display: none !important; }
+  .subscription-btn-indicator.htmx-request { display: inline-flex !important; }
+  form.htmx-request .subscription-btn-content { display: none !important; }
+</style>
+<div class="max-w-5xl mx-auto px-4 py-12"
+  data-status-url="<%= status_subscription_path %>"
+  data-upgrade-pending="<%= @upgrade_pending %>"
+  x-data="subscriptionUpgradePoll($el)"
+  x-init="init()">
+  <%= render Shared::PageHeaderComponent.new(
+    title: "Subscription",
+    subtitle: "Manage your workspace plan and billing"
+  ) %>
+
+  <% if @upgrade_pending %>
+    <div class="mb-6 p-4 rounded-lg bg-accent-50 dark:bg-accent-900/20 ring-1 ring-accent-500/30" x-show="polling" x-cloak>
+      <p class="text-sm text-stone-700 dark:text-white/80 flex items-center gap-2">
+        <span class="inline-flex animate-spin h-4 w-4 rounded-full border-2 border-accent-500 border-t-transparent" aria-hidden="true"></span>
+        Payment received. Finalizing your plan upgrade…
+      </p>
+    </div>
+    <div class="mb-6 p-4 rounded-lg bg-stone-100 dark:bg-white/10 text-stone-600 dark:text-white/70 text-sm" x-show="timedOut" x-cloak style="display: none;">
+      <p>If your plan doesn't update, <a href="<%= subscription_path %>" class="font-medium underline hover:no-underline">refresh the page</a> or contact support.</p>
+    </div>
+  <% end %>
+
+  <script>
+    function registerSubscriptionUpgradePoll() {
+      Alpine.data('subscriptionUpgradePoll', function(el) {
+        return {
+          polling: false,
+          timedOut: false,
+          statusUrl: el && el.dataset && el.dataset.statusUrl,
+          pending: el && el.dataset && el.dataset.upgradePending === 'true',
+          intervalId: null,
+          timeoutId: null,
+          init() {
+            if (!this.pending || !this.statusUrl) return;
+            this.polling = true;
+            var self = this;
+            var deadline = Date.now() + 20000;
+            function poll() {
+              if (Date.now() >= deadline) {
+                self.polling = false;
+                self.timedOut = true;
+                return;
+              }
+              fetch(self.statusUrl, { headers: { 'Accept': 'application/json' }, credentials: 'same-origin' })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                  if (data && data.paid) {
+                    window.location.reload();
+                    return;
+                  }
+                  self.intervalId = setTimeout(poll, 2500);
+                })
+                .catch(function() {
+                  self.intervalId = setTimeout(poll, 2500);
+                });
+            }
+            this.intervalId = setTimeout(poll, 2000);
+            this.timeoutId = setTimeout(function() {
+              if (self.polling) {
+                self.polling = false;
+                self.timedOut = true;
+              }
+            }, 20000);
+          }
+        };
+      });
+    }
+    if (window.Alpine) {
+      registerSubscriptionUpgradePoll();
+    } else {
+      document.addEventListener('alpine:init', registerSubscriptionUpgradePoll);
+    }
+  </script>
+
+  <div class="space-y-8">
+    <!-- Current Plan -->
+    <div>
+      <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Current plan</h2>
+      <div class="bg-stone-50 dark:bg-white/5 rounded-lg p-4">
+        <div class="flex items-center justify-between gap-4">
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <p class="text-stone-800 dark:text-white/90 font-medium text-lg"><%= @plan.name %></p>
+              <span class="text-sm text-stone-500 dark:text-white/50"><%= @plan.price %><%= @plan.price_label %></span>
+            </div>
+            <% if @subscription&.paid? %>
+              <p class="text-xs text-stone-500 dark:text-white/40 mt-1 flex items-center gap-1.5">
+                <%
+                  status_dot = if @subscription.active? && !@subscription.pending_scheduled_change?
+                    "bg-success-500"
+                  elsif @subscription.past_due?
+                    "bg-warning-500"
+                  elsif @subscription.canceled? && !@subscription.on_grace_period?
+                    "bg-error-500"
+                  else
+                    "bg-warning-500"
+                  end
+                %>
+                <span class="inline-flex h-2 w-2 rounded-full <%= status_dot %> flex-shrink-0" aria-hidden="true"></span>
+                <% if @subscription.can_undo_scheduled_change? %>
+                  Downgrade to Free scheduled for <%= @subscription.scheduled_change_effective_at.strftime("%B %d, %Y") %>
+                  <span class="block mt-1">You keep <%= @plan.name %> until then. You can undo by clicking <strong>Keep this plan</strong> below.</span>
+                <% elsif @subscription.active? %>
+                  Active
+                  <% if @subscription.current_period_ends_at.present? %>
+                    &middot; Renews <%= @subscription.current_period_ends_at.strftime("%B %d, %Y") %>
+                  <% end %>
+                <% elsif @subscription.canceled? && @subscription.on_grace_period? %>
+                  Cancels on <%= @subscription.current_period_ends_at.strftime("%B %d, %Y") %>
+                  <span class="block mt-1">You keep <%= @plan.name %> until then. You can undo by clicking <strong>Keep this plan</strong> below.</span>
+                <% elsif @subscription.canceled? %>
+                  Canceled
+                <% elsif @subscription.paused? %>
+                  Paused
+                <% elsif @subscription.past_due? %>
+                  Past due &mdash; please update your payment method
+                <% end %>
+              </p>
+            <% else %>
+              <p class="text-xs text-stone-500 dark:text-white/40 mt-1">Free plan with limited resources</p>
+            <% end %>
+          </div>
+          <% if @subscription&.paddle_customer_id.present? %>
+            <a href="<%= portal_subscription_path %>" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5 flex-shrink-0" hx-boost="false">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+              Manage billing
+            </a>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Usage -->
+    <%= render "subscriptions/usage", workspace: @workspace %>
+
+    <!-- Plans -->
+    <div>
+      <h2 class="text-sm font-medium mb-4 text-stone-500 dark:text-white/60">Available plans</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <% @plans.each do |plan| %>
+          <%= render "subscriptions/plan_card", plan: plan, current_plan: @plan, subscription: @subscription %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

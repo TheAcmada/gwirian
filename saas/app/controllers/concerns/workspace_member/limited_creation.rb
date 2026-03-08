@@ -1,5 +1,6 @@
 module WorkspaceMember::LimitedCreation
   extend ActiveSupport::Concern
+  include Gwirian::Saas::LimitCreationSupport
 
   included do
     before_action :ensure_under_members_limit, only: %i[ create ]
@@ -8,19 +9,6 @@ module WorkspaceMember::LimitedCreation
   private
 
   def ensure_under_members_limit
-    return unless Current.workspace
-    return if respond_to?(:current_user) && Gwirian::Saas::PlanLimitsBypass.gwirian_com?(current_user)
-
-    if Current.workspace.exceeding_members_limit?
-      message = "You have reached the team member limit for your plan (#{Current.workspace.plan.name}). " \
-                "Please upgrade to invite more members."
-      if request.format.json?
-        render json: { error: message }, status: :forbidden
-      elsif request.headers["HX-Request"]
-        render html: "<div class='alert alert-danger'>#{message}</div>".html_safe, status: :forbidden
-      else
-        redirect_to workspace_members_path, alert: message
-      end
-    end
+    ensure_under_plan_limit!(resource_type: :members, redirect_path: workspace_members_path)
   end
 end
