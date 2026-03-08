@@ -53,6 +53,7 @@ Rails.application.routes.draw do
       end
     end
     member do
+      get :export_bdd
       get :search
       get :history
       post :add_member

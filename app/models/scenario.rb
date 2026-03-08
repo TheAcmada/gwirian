@@ -47,6 +47,24 @@ class Scenario < ApplicationRecord
     scenario_executions.count
   end
 
+  # Returns the Gherkin block for this scenario (Scenario: title + Given/When/Then lines).
+  def to_gherkin
+    lines = [ "Scenario: #{gherkin_escape_line(title)}" ]
+    lines << "  Given #{gherkin_escape_line(given)}" if given.present?
+    lines << "  When #{gherkin_escape_line(self.when)}" if self.when.present?
+    lines << "  Then #{gherkin_escape_line(self.then)}" if self.then.present?
+    lines.join("\n")
+  end
+
+  private
+
+  def gherkin_escape_line(text)
+    return "" if text.blank?
+    text.to_s.strip.gsub(/\r\n|\r/, "\n")
+  end
+
+  public
+
   def self.search_by_project(query, project_id, limit: 100)
     sanitized_query = sanitize_elasticsearch_query(query)
     search({

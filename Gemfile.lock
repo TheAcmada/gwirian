@@ -478,6 +478,7 @@ DEPENDENCIES
   rails-controller-testing
   rspec-rails (~> 8.0.0)
   rubocop-rails-omakase
+  rubyzip
   selenium-webdriver
   solid_cable
   solid_cache

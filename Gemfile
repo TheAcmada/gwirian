@@ -58,6 +58,9 @@ gem "mcp"
 # Use pagy for fast, efficient pagination
 gem "pagy"
 
+# ZIP file generation for BDD export
+gem "rubyzip"
+
 # Use view_component for building reusable UI components
 gem "view_component"
 

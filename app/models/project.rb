@@ -54,6 +54,37 @@ class Project < ApplicationRecord
     user_role(user).present?
   end
 
+  # Returns the full Gherkin for the whole project (project header + all features).
+  def to_gherkin
+    header = gherkin_project_header
+    features_gherkin = features.includes(:scenarios, :taggings).order(:title).map(&:to_gherkin).join("\n\n")
+    [ header, features_gherkin ].reject(&:blank?).join("\n\n")
+  end
+
+  # Returns an array of [ filename, content ] for building the BDD export ZIP.
+  # First entry is project_info.md, then one .feature file per feature (slug from title, duplicates suffixed with id).
+  def gherkin_export_entries
+    entries = []
+    entries << [ "project_info.md", gherkin_project_info_content ]
+    features_list = features.includes(:scenarios, :taggings).order(:title).to_a
+    used_basenames = {}
+    features_list.each do |feature|
+      base = feature.title.present? ? feature.title.parameterize : "feature"
+      base = "feature" if base.blank?
+      basename = base.dup
+      if used_basenames[basename]
+        n = used_basenames[basename]
+        used_basenames[basename] = n + 1
+        basename = "#{base}-#{n}"
+      else
+        used_basenames[basename] = 1
+      end
+      filename = "#{basename}.feature"
+      entries << [ filename, feature.to_gherkin ]
+    end
+    entries
+  end
+
   # Search within this project for features and scenarios matching the query (Elasticsearch).
   # @param [String] query search string
   # @param [Integer] limit max results per type (default 20)
@@ -89,6 +120,38 @@ class Project < ApplicationRecord
   end
 
   private
+
+  def gherkin_project_header
+    lines = []
+    lines << "# Project: #{name}"
+    lines << "# Description: #{description}" if description.present?
+    if context.present?
+      lines << "# Context (environments, URLs, etc.):"
+      context.to_s.strip.split("\n").each { |line| lines << "# #{line.strip}" }
+    end
+    lines.join("\n")
+  end
+
+  def gherkin_project_info_content
+    lines = []
+    lines << "# #{name}"
+    lines << ""
+    if description.present?
+      lines << "## Description"
+      lines << ""
+      lines << description.to_s.strip
+      lines << ""
+    end
+    if context.present?
+      lines << "## Context (environments, URLs, etc.)"
+      lines << ""
+      lines << "```"
+      lines << context.to_s.strip
+      lines << "```"
+      lines << ""
+    end
+    lines.join("\n")
+  end
 
   def aggregate_status_from(statuses)
     return nil if statuses.empty?

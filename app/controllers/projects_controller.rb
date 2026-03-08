@@ -1,6 +1,8 @@
+require "zip"
+
 class ProjectsController < ApplicationController
   before_action :require_workspace
-  before_action :set_project, only: [ :show, :search, :history, :edit, :update, :destroy, :add_member, :remove_member, :update_member ]
+  before_action :set_project, only: [ :show, :search, :history, :edit, :update, :destroy, :export_bdd, :add_member, :remove_member, :update_member ]
 
   def index
     @projects = workspace_projects.order(:name).includes(scenarios: :scenario_executions)
@@ -52,6 +54,28 @@ class ProjectsController < ApplicationController
     end
 
     render json: { results: results }
+  end
+
+  def export_bdd
+    unless can? :read, @project
+      render_alert("You are not authorized to export this project")
+      return
+    end
+
+    entries = @project.gherkin_export_entries
+    zip_filename = "#{@project.name.parameterize.presence || 'project'}.zip"
+
+    buffer = Zip::OutputStream.write_buffer do |zio|
+      entries.each do |filename, content|
+        zio.put_next_entry(filename)
+        zio.write(content)
+      end
+    end
+
+    send_data buffer.string,
+              type: "application/zip",
+              disposition: "attachment",
+              filename: zip_filename
   end
 
   def history
