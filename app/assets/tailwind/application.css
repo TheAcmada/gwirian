@@ -379,11 +379,17 @@
   .btn-primary {
     background: rgb(55, 53, 47);
     color: white;
+    transition: background-color 0.075s ease, color 0.075s ease, transform 0.15s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.15s ease;
   }
 
   .btn-primary:hover {
     background: rgb(80, 78, 72);
     color: white;
+    transform: translateY(-1px);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
   }
 
   .btn-primary:focus-visible {
@@ -400,7 +406,13 @@
     .btn-primary:hover {
       background: rgb(235, 235, 235);
       color: rgb(55, 53, 47);
+      transform: translateY(-1px);
     }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+  }
 
     .btn-primary:focus-visible {
       box-shadow: 0 0 0 2px rgb(255, 255, 255), 0 0 0 4px rgb(35, 131, 226);
@@ -844,6 +856,22 @@
   .alert-container,
   .error-container {
     @apply fixed bottom-4 right-4 z-50 max-w-sm;
+  }
+
+  /* Empty state entrance – gentle fade + slide (delight) */
+  .empty-state-entrance {
+    animation: empty-state-in 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  }
+
+  @keyframes empty-state-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   /* ========================================
