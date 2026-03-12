@@ -1,10 +1,12 @@
 <% content_for :title, @project.name %>
 
-<div class="max-w-6xl mx-auto px-4 py-8">
-  <%# Header %>
+<div class="max-w-6xl mx-auto px-4 py-8 sm:py-10">
+  <%# Header — generous bottom space for rhythm %>
+  <div class="mb-10">
   <%= render Shared::PageHeaderComponent.new(
     title: @project.name,
-    subtitle: @project.description.presence
+    subtitle: @project.description.presence,
+    size: :large
   ) do |c| %>
     <% c.with_actions do %>
       <%= link_to project_features_path(@project), class: "btn btn-primary inline-flex items-center gap-2", title: "Open the list of features and scenarios for this project" do %>
@@ -23,14 +25,15 @@
       <% end %>
     <% end %>
   <% end %>
+  </div>
 
-  <%# KPI Stats Row %>
-  <div class="mb-8">
+  <%# KPI Stats Row — hero pass rate + supporting metrics %>
+  <div class="mb-10">
     <%= render Dashboard::StatsComponent.new(project: @project) %>
   </div>
 
   <%# Main Grid %>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
     <%# Failing Tests %>
     <%= render Dashboard::FailingTestsComponent.new(project: @project) %>
     
@@ -39,12 +42,12 @@
   </div>
 
   <%# Execution Trends (Full Width) %>
-  <div class="mb-8">
+  <div class="mb-10">
     <%= render Dashboard::ExecutionTrendsComponent.new(project: @project) %>
   </div>
 
   <%# Bottom Row %>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-2">
     <%# Recent Executions %>
     <%= render Dashboard::RecentExecutionsComponent.new(project: @project) %>
     

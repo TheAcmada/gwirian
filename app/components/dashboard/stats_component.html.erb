@@ -1,31 +1,32 @@
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-  <%# Pass Rate %>
-  <%= render Shared::KpiCardComponent.new(
-    value: pass_rate,
-    suffix: "%",
-    label: t("dashboard.stats.pass_rate"),
-    trend: pass_rate_trend,
-    trend_value: pass_rate_trend_value,
-    trend_previous_value: pass_rate_trend_value.present? ? pass_rate_trend_previous_value : nil,
-    trend_period_label: pass_rate_trend_value.present? ? "vs previous 7 days" : nil,
-    color: pass_rate_color
-  ) %>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+  <%# Hero: Pass rate (dominant focal metric) %>
+  <div class="sm:col-span-2 lg:col-span-2">
+    <%= render Shared::KpiCardComponent.new(
+      value: pass_rate,
+      suffix: "%",
+      label: t("dashboard.stats.pass_rate"),
+      trend: pass_rate_trend,
+      trend_value: pass_rate_trend_value,
+      trend_previous_value: pass_rate_trend_value.present? ? pass_rate_trend_previous_value : nil,
+      trend_period_label: pass_rate_trend_value.present? ? "vs previous 7 days" : nil,
+      color: pass_rate_color,
+      hero: true
+    ) %>
+  </div>
 
-  <%# Total Scenarios %>
+  <%# Supporting metrics %>
   <%= render Shared::KpiCardComponent.new(
     value: total_scenarios,
     label: t("dashboard.stats.total_scenarios"),
     color: :default
   ) %>
 
-  <%# Failed Tests %>
   <%= render Shared::KpiCardComponent.new(
     value: failed_count,
     label: t("dashboard.stats.failed_tests"),
     color: failed_color
   ) %>
 
-  <%# Untested %>
   <%= render Shared::KpiCardComponent.new(
     value: untested_count,
     label: t("dashboard.stats.untested"),
