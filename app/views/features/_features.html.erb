@@ -1,8 +1,8 @@
 <div id="features">
   <% if features.any? %>
     <div class="space-y-2">
-      <% features.each do |feature| %>
-        <%= render Features::CardComponent.new(feature: feature, project: project) %>
+      <% features.each_with_index do |feature, index| %>
+        <%= render Features::CardComponent.new(feature: feature, project: project, stagger_index: index) %>
       <% end %>
     </div>
   <% else %>

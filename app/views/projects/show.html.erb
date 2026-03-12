@@ -2,7 +2,7 @@
 
 <div class="max-w-6xl mx-auto px-4 py-8 sm:py-10">
   <%# Header — generous bottom space for rhythm %>
-  <div class="mb-10">
+  <div class="mb-10 animate-in-up" style="--i: 0">
   <%= render Shared::PageHeaderComponent.new(
     title: @project.name,
     subtitle: @project.description.presence,
@@ -28,12 +28,12 @@
   </div>
 
   <%# KPI Stats Row — hero pass rate + supporting metrics %>
-  <div class="mb-10">
+  <div class="mb-10 animate-in-up" style="--i: 1">
     <%= render Dashboard::StatsComponent.new(project: @project) %>
   </div>
 
   <%# Main Grid %>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10 animate-in-up" style="--i: 2">
     <%# Failing Tests %>
     <%= render Dashboard::FailingTestsComponent.new(project: @project) %>
     
@@ -42,12 +42,12 @@
   </div>
 
   <%# Execution Trends (Full Width) %>
-  <div class="mb-10">
+  <div class="mb-10 animate-in-up" style="--i: 3">
     <%= render Dashboard::ExecutionTrendsComponent.new(project: @project) %>
   </div>
 
   <%# Bottom Row %>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-2">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-2 animate-in-up" style="--i: 4">
     <%# Recent Executions %>
     <%= render Dashboard::RecentExecutionsComponent.new(project: @project) %>
     

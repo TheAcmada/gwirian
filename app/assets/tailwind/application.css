@@ -7,6 +7,13 @@
   /* Plus Jakarta Sans – distinctive, readable; fallback to system UI (frontend-design: avoid Inter/Roboto defaults) */
   --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
 
+  /* Motion tokens (animate skill + motion-design ref) */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-feedback: 100ms;
+  --duration-state: 200ms;
+  --duration-entrance: 400ms;
+
   /* Neutral aliases - warmer stone palette */
   --color-bg: var(--color-stone-50);
   --color-surface: var(--color-white);
@@ -346,14 +353,19 @@
    * ======================================== */
 
   .btn {
-    @apply inline-flex items-center justify-center text-center px-3 py-1.5 text-sm font-medium cursor-pointer transition-colors duration-75;
+    @apply inline-flex items-center justify-center text-center px-3 py-1.5 text-sm font-medium cursor-pointer;
     border-radius: 4px;
     color: rgb(55, 53, 47);
     background: rgba(55, 53, 47, 0.08);
+    transition: background-color var(--duration-feedback) ease, color var(--duration-feedback) ease, transform var(--duration-feedback) var(--ease-out-quart);
   }
 
   .btn:hover {
     background: rgba(55, 53, 47, 0.16);
+  }
+
+  .btn:active {
+    transform: scale(0.98);
   }
 
   .btn:focus-visible {
@@ -389,7 +401,7 @@
   }
 
   .btn-primary:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.98);
   }
 
   .btn-primary:focus-visible {
@@ -412,7 +424,6 @@
     .btn-primary:active {
       transform: translateY(0);
     }
-  }
 
     .btn-primary:focus-visible {
       box-shadow: 0 0 0 2px rgb(255, 255, 255), 0 0 0 4px rgb(35, 131, 226);
@@ -423,10 +434,15 @@
     background: transparent;
     color: rgb(55, 53, 47);
     box-shadow: inset 0 0 0 1px rgba(55, 53, 47, 0.16);
+    transition: background-color var(--duration-state) var(--ease-out-quart), transform var(--duration-feedback) var(--ease-out-quart);
   }
 
   .btn-secondary:hover {
     background: rgba(55, 53, 47, 0.08);
+  }
+
+  .btn-secondary:active {
+    transform: scale(0.98);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -550,10 +566,12 @@
     background: rgb(255, 255, 255);
     border-radius: 4px;
     box-shadow: inset 0 0 0 1px rgba(55, 53, 47, 0.09);
+    transition: background-color var(--duration-state) var(--ease-out-quart), transform var(--duration-state) var(--ease-out-quart), box-shadow var(--duration-state) var(--ease-out-quart);
   }
 
   .card:hover {
     background: rgba(55, 53, 47, 0.03);
+    transform: scale(1.01);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -564,6 +582,27 @@
 
     .card:hover {
       background: rgb(47, 47, 47);
+    }
+  }
+
+  /* ========================================
+   * Entrance animations (staggered reveal)
+   * ======================================== */
+
+  .animate-in-up {
+    animation: animate-in-up var(--duration-entrance) var(--ease-out-quart) forwards;
+    animation-delay: calc(var(--i, 0) * 45ms);
+    opacity: 0;
+  }
+
+  @keyframes animate-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 
