@@ -1,0 +1,6 @@
+<%= render Scenarios::Component.new(scenario: scenario, feature: feature, project: project) %>
+<%# Clear entire empty state block so nothing visible remains (wrapper collapses when empty) %>
+<div id="scenarios-empty-state-wrapper" hx-swap-oob="innerHTML"></div>
+<div id="scenarios-actions" class="mt-3" hx-swap-oob="innerHTML">
+  <%= render Scenarios::AddScenarioLinkComponent.new(project: project, feature: feature) %>
+</div>

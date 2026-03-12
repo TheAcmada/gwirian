@@ -4,7 +4,7 @@
     <div class="flex justify-between items-center h-11">
       <!-- App name/logo on the left -->
       <div class="flex-shrink-0">
-        <%= link_to root_path, class: "flex items-center space-x-2 text-sm font-medium hover:bg-stone-100 dark:hover:bg-white/5 rounded px-2 py-1 -ml-2 transition-colors" do %>
+        <%= link_to root_path, class: "flex items-center space-x-2 text-sm font-medium hover:bg-stone-100 dark:hover:bg-white/5 rounded px-2 py-1 -ml-2 transition-colors duration-200 hover:scale-[1.02] active:scale-[0.98]" do %>
           <img src="/logo.svg" alt="Gwirian Logo" class="h-5 w-5 dark:brightness-150 dark:invert" />
           <span class="text-stone-800 dark:text-white/90">Gwirian</span>
         <% end %>
@@ -15,7 +15,7 @@
       <div class="relative" x-data="{ open: false }">
         <button
           @click="open = !open"
-          class="flex items-center gap-2 px-2 py-1 -mr-2 rounded cursor-pointer hover:bg-stone-100 dark:hover:bg-white/5 transition-colors"
+          class="flex items-center gap-2 px-2 py-1 -mr-2 rounded cursor-pointer hover:bg-stone-100 dark:hover:bg-white/5 transition-colors duration-200 hover:scale-[1.02] active:scale-[0.98]"
           aria-expanded="false"
           aria-haspopup="true"
         >
