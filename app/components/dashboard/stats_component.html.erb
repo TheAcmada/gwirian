@@ -1,36 +1,113 @@
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-  <%# Hero: Pass rate (dominant focal metric) %>
-  <div class="sm:col-span-2 lg:col-span-2">
-    <%= render Shared::KpiCardComponent.new(
-      value: pass_rate,
-      suffix: "%",
-      label: t("dashboard.stats.pass_rate"),
-      trend: pass_rate_trend,
-      trend_value: pass_rate_trend_value,
-      trend_previous_value: pass_rate_trend_value.present? ? pass_rate_trend_previous_value : nil,
-      trend_period_label: pass_rate_trend_value.present? ? "vs previous 7 days" : nil,
-      color: pass_rate_color,
-      hero: true
-    ) %>
+<%# Single full-width Project Health panel: left = pass rate gauge, right = Project Pulse %>
+<div class="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 overflow-hidden">
+  <div class="flex flex-col lg:flex-row">
+    <%# Left: Pass Rate Gauge (ring without label + number + trend + bar + legend) %>
+    <div class="<%= pass_rate_card_color_classes[:bg] %> flex-1 flex flex-col gap-4 p-6 lg:p-8 lg:min-w-0">
+      <div class="flex flex-wrap items-center gap-6">
+        <div class="flex-shrink-0">
+          <%= render Shared::ProgressRingComponent.new(
+            percent: pass_rate,
+            size: 80,
+            stroke_width: 8,
+            color: pass_rate_color,
+            show_label: false
+          ) %>
+        </div>
+        <div class="flex flex-col gap-1 min-w-0">
+          <span class="font-medium uppercase tracking-wide <%= pass_rate_card_color_classes[:label] %> text-xs lg:text-sm">
+            <%= t("dashboard.stats.pass_rate") %>
+          </span>
+          <div class="flex items-baseline gap-2 flex-wrap">
+            <span class="font-bold tracking-tight tabular-nums <%= pass_rate_card_color_classes[:text] %> text-4xl lg:text-5xl">
+              <%= pass_rate %>%
+            </span>
+            <% if show_pass_rate_trend? && pass_rate_trend_data %>
+              <span class="flex items-center gap-0.5 text-sm font-medium <%= pass_rate_trend_data[:color] %>">
+                <span><%= pass_rate_trend_data[:icon] %></span>
+                <span><%= pass_rate_trend_value %></span>
+              </span>
+            <% end %>
+          </div>
+          <% if show_pass_rate_trend_context? %>
+            <div class="text-xs <%= pass_rate_card_color_classes[:label] %> mt-1">
+              <% if pass_rate_trend_previous_value.present? %>
+                <span>was <%= pass_rate_trend_previous_value %>%</span>
+              <% end %>
+              <% if pass_rate_trend_period_label.present? %>
+                <span><%= pass_rate_trend_previous_value.present? ? ' • ' : '' %><%= pass_rate_trend_period_label %></span>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <% if total_scenarios.positive? %>
+        <div class="h-2 flex rounded-full overflow-hidden bg-stone-100 dark:bg-stone-700">
+          <% if passed_percentage > 0 %>
+            <div class="bg-emerald-500 transition-all" style="width: <%= passed_percentage %>%"></div>
+          <% end %>
+          <% if failed_percentage > 0 %>
+            <div class="bg-red-500 transition-all" style="width: <%= failed_percentage %>%"></div>
+          <% end %>
+          <% if untested_percentage > 0 %>
+            <div class="bg-stone-300 dark:bg-stone-500 transition-all" style="width: <%= untested_percentage %>%"></div>
+          <% end %>
+        </div>
+        <div class="flex items-center gap-4 text-xs text-stone-500 dark:text-stone-400">
+          <span class="flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <%= passed_count %> <%= t("dashboard.stats.passed") %>
+          </span>
+          <span class="flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-red-500"></span>
+            <%= failed_count %> <%= t("dashboard.stats.failed") %>
+          </span>
+          <span class="flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-stone-300 dark:bg-stone-500"></span>
+            <%= untested_count %> <%= t("dashboard.stats.untested") %>
+          </span>
+        </div>
+      <% end %>
+    </div>
+
+    <%# Right: Project Pulse — contextual metrics with icons %>
+    <div class="border-t lg:border-t-0 lg:border-l border-stone-200 dark:border-stone-800 flex flex-col justify-center gap-4 px-6 py-5 lg:py-8 lg:px-8 lg:w-80 flex-shrink-0 bg-white dark:bg-stone-900">
+      <div class="flex items-center gap-3">
+        <div class="flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+          </svg>
+        </div>
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-stone-900 dark:text-white">
+            <%= t("dashboard.stats.scenarios_across_features", scenarios: total_scenarios, features: features_count) %>
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-stone-900 dark:text-white">
+            <%= last_tested_at ? t("dashboard.stats.last_tested") + " " + last_tested_ago : t("dashboard.stats.last_tested_never") %>
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-stone-900 dark:text-white">
+            <%= t("dashboard.stats.weekly_activity", count: weekly_executions_count) %>
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <%# Supporting metrics %>
-  <%= render Shared::KpiCardComponent.new(
-    value: total_scenarios,
-    label: t("dashboard.stats.total_scenarios"),
-    color: :default
-  ) %>
-
-  <%= render Shared::KpiCardComponent.new(
-    value: failed_count,
-    label: t("dashboard.stats.failed_tests"),
-    color: failed_color
-  ) %>
-
-  <%= render Shared::KpiCardComponent.new(
-    value: untested_count,
-    label: t("dashboard.stats.untested"),
-    color: untested_color
-  ) %>
 </div>
-

@@ -45,6 +45,14 @@ en:
       total_scenarios: "Total Scenarios"
       failed_tests: "Failed Tests"
       untested: "Untested"
+      passed: "passed"
+      failed: "failed"
+      scenarios_across_features: "%{scenarios} scenarios across %{features} features"
+      last_tested: "Last tested"
+      last_tested_never: "Never tested"
+      weekly_activity:
+        one: "1 run this week"
+        other: "%{count} runs this week"
     
     failing_tests:
       title: "Failing Tests"
