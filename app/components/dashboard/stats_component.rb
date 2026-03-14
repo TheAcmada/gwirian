@@ -2,6 +2,8 @@
 
 module Dashboard
   class StatsComponent < ApplicationComponent
+    include ActionView::Helpers::DateHelper
+
     def initialize(project:)
       @project = project
     end
@@ -39,20 +41,64 @@ module Dashboard
       scenarios.count { |s| s.current_status == "failed" }
     end
 
-    def failed_color
-      failed_count.zero? ? :success : :error
-    end
-
     def untested_count
       scenarios.count { |s| s.scenario_executions.empty? }
     end
 
-    def untested_color
-      case untested_count
-      when 0 then :success
-      when 1..5 then :warning
-      else :error
-      end
+    def features_count
+      project.features.size
+    end
+
+    def last_tested_at
+      @last_tested_at ||= project.scenario_executions.latest_first.limit(1).pick(:executed_at)
+    end
+
+    def last_tested_ago
+      return nil unless last_tested_at
+      time_ago_in_words(last_tested_at) + " ago"
+    end
+
+    def weekly_executions_count
+      @weekly_executions_count ||= project.scenario_executions.where(executed_at: 7.days.ago..).count
+    end
+
+    # Percentages for pass rate hero stacked bar (float 0–100, sum = 100)
+    def passed_percentage
+      return 0.0 if total_scenarios.zero?
+      (passed_count.to_f / total_scenarios * 100)
+    end
+
+    def failed_percentage
+      return 0.0 if total_scenarios.zero?
+      (failed_count.to_f / total_scenarios * 100)
+    end
+
+    def untested_percentage
+      return 0.0 if total_scenarios.zero?
+      (untested_count.to_f / total_scenarios * 100)
+    end
+
+    # Color classes for pass rate hero card (matches Shared::KpiCardComponent)
+    def pass_rate_card_color_classes
+      Shared::KpiCardComponent::COLORS.fetch(pass_rate_color, Shared::KpiCardComponent::COLORS[:default])
+    end
+
+    # Trend icon and color for pass rate hero card
+    def pass_rate_trend_data
+      return nil unless pass_rate_trend.present?
+      Shared::KpiCardComponent::TREND_ICONS[pass_rate_trend.to_sym]
+    end
+
+    def show_pass_rate_trend?
+      pass_rate_trend.present? && pass_rate_trend_value.present?
+    end
+
+    def pass_rate_trend_period_label
+      pass_rate_trend_value.present? ? "vs previous 7 days" : nil
+    end
+
+    def show_pass_rate_trend_context?
+      show_pass_rate_trend? && (pass_rate_trend_previous_value.present? || pass_rate_trend_period_label.present?)
     end
 
     # Trend calculations comparing last 7 days to previous 7 days

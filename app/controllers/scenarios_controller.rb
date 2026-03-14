@@ -10,7 +10,7 @@ class ScenariosController < ApplicationController
 
     if @scenario.save
       if htmx_request?
-        render Scenarios::Component.new(scenario: @scenario, feature: @feature, project: @project), layout: false
+        render Scenarios::CreateResponseComponent.new(scenario: @scenario, feature: @feature, project: @project), layout: false
       else
         redirect_to project_feature_path(@project, @feature), notice: "Scenario created successfully"
       end

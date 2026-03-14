@@ -1,21 +1,23 @@
 <% content_for :title, @project.name %>
 
-<div class="max-w-6xl mx-auto px-4 py-8">
-  <%# Header %>
+<div class="max-w-6xl mx-auto px-4 py-8 sm:py-10">
+  <%# Header — generous bottom space for rhythm %>
+  <div class="mb-10 animate-in-up" style="--i: 0">
   <%= render Shared::PageHeaderComponent.new(
     title: @project.name,
-    subtitle: @project.description.presence
+    subtitle: @project.description.presence,
+    size: :large
   ) do |c| %>
     <% c.with_actions do %>
-      <%= link_to project_features_path(@project), class: "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-stone-700 dark:text-stone-200 bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors", title: "Open the list of features and scenarios for this project" do %>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <%= link_to project_features_path(@project), class: "btn btn-primary inline-flex items-center gap-2", title: "Open the list of features and scenarios for this project" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
         </svg>
         <%= t("dashboard.view_features") %>
       <% end %>
       <% if can? :read, @project %>
-        <%= link_to export_bdd_project_path(@project), class: "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-stone-700 dark:text-stone-200 bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors", "hx-boost" => "false", title: "Download this project's features and scenarios as a BDD (Gherkin) file" do %>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <%= link_to export_bdd_project_path(@project), class: "btn btn-secondary inline-flex items-center gap-2", "hx-boost" => "false", title: "Download this project's features and scenarios as a BDD (Gherkin) file" do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
           </svg>
           Export
@@ -23,14 +25,15 @@
       <% end %>
     <% end %>
   <% end %>
+  </div>
 
-  <%# KPI Stats Row %>
-  <div class="mb-8">
+  <%# KPI Stats Row — hero pass rate + supporting metrics %>
+  <div class="mb-10 animate-in-up" style="--i: 1">
     <%= render Dashboard::StatsComponent.new(project: @project) %>
   </div>
 
   <%# Main Grid %>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10 animate-in-up" style="--i: 2">
     <%# Failing Tests %>
     <%= render Dashboard::FailingTestsComponent.new(project: @project) %>
     
@@ -39,12 +42,12 @@
   </div>
 
   <%# Execution Trends (Full Width) %>
-  <div class="mb-8">
+  <div class="mb-10 animate-in-up" style="--i: 3">
     <%= render Dashboard::ExecutionTrendsComponent.new(project: @project) %>
   </div>
 
   <%# Bottom Row %>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-2 animate-in-up" style="--i: 4">
     <%# Recent Executions %>
     <%= render Dashboard::RecentExecutionsComponent.new(project: @project) %>
     

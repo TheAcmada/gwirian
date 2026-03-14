@@ -55,7 +55,7 @@
           x-on:blur="if (!newTagName.trim()) cancelAdd()"
           x-on:keydown.escape.prevent="cancelAdd()"
           x-init="$watch('showAddInput', value => value && $nextTick(() => $refs.tagInput?.focus()))"
-          class="px-2 py-0.5 text-sm border border-zinc-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-zinc-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-accent-500 w-24"
+          class="px-2 py-0.5 text-sm border border-stone-300 dark:border-stone-600 rounded bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-accent-500 w-24"
           placeholder="Tag name"
           autocomplete="off"
           required
@@ -66,7 +66,7 @@
         type="button"
         x-show="!showAddInput"
         x-on:click="showAddInput = true"
-        class="opacity-0 transition-opacity inline-flex items-center justify-center w-5 h-5 rounded border border-zinc-300 dark:border-gray-600 hover:border-zinc-400 dark:hover:border-gray-500 hover:bg-zinc-100 dark:hover:bg-gray-700 text-zinc-600 dark:text-gray-400 hover:text-zinc-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-accent-500 cursor-pointer"
+        class="opacity-0 transition-opacity inline-flex items-center justify-center w-5 h-5 rounded border border-stone-300 dark:border-stone-600 hover:border-stone-400 dark:hover:border-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 focus:outline-none focus:ring-2 focus:ring-accent-500 cursor-pointer"
         aria-label="Add tag"
         title="Add tag"
       >

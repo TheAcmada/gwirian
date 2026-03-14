@@ -1,10 +1,10 @@
-<div class="<%= color_classes[:bg] %> rounded-xl p-5 flex flex-col gap-1">
-  <span class="text-xs font-medium uppercase tracking-wide <%= color_classes[:label] %>">
+<div class="<%= color_classes[:bg] %> rounded-xl flex flex-col gap-1 <%= hero? ? 'p-6 lg:p-8' : 'p-5' %>">
+  <span class="font-medium uppercase tracking-wide <%= color_classes[:label] %> <%= hero? ? 'text-xs lg:text-sm' : 'text-xs' %>">
     <%= label %>
   </span>
   
-  <div class="flex items-baseline gap-2">
-    <span class="text-3xl font-bold tracking-tight <%= color_classes[:text] %>">
+  <div class="flex items-baseline gap-2 flex-wrap">
+    <span class="font-bold tracking-tight tabular-nums <%= color_classes[:text] %> <%= hero? ? 'text-4xl lg:text-5xl' : 'text-3xl' %>">
       <%= value %><%= suffix if suffix.present? %>
     </span>
     
@@ -17,7 +17,7 @@
   </div>
   
   <% if show_trend_context? %>
-    <div class="text-xs <%= color_classes[:label] %> mt-1">
+    <div class="text-xs <%= color_classes[:label] %> <%= hero? ? 'mt-2' : 'mt-1' %>">
       <% if trend_previous_value.present? %>
         <span>was <%= trend_previous_value %><%= suffix if suffix.present? %></span>
       <% end %>

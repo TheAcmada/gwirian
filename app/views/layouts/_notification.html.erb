@@ -5,7 +5,12 @@
         $store.notifications.noticeMessage= '<%= notice %>';
         setTimeout(() => $store.notifications.showNotice = <%= notice.present? %>, 100);
         setTimeout(() => $store.notifications.showNotice = false, 5000)"
-      x-transition.duration.300ms
+      x-transition:enter="transition ease-out duration-250"
+      x-transition:enter-start="opacity-0 translate-y-2"
+      x-transition:enter-end="opacity-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-150"
+      x-transition:leave-start="opacity-100 translate-y-0"
+      x-transition:leave-end="opacity-0 translate-y-1"
       @click="$store.notifications.showNotice = false"
       role="alert"
       aria-live="polite">
@@ -29,7 +34,12 @@
         $store.notifications.alertMessage= '<%= j(alert) %>';
         setTimeout(() => $store.notifications.showAlert = <%= alert.present? %>, 100);
         setTimeout(() => $store.notifications.showAlert = false, 5000);"
-      x-transition.duration.300ms
+      x-transition:enter="transition ease-out duration-250"
+      x-transition:enter-start="opacity-0 translate-y-2"
+      x-transition:enter-end="opacity-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-150"
+      x-transition:leave-start="opacity-100 translate-y-0"
+      x-transition:leave-end="opacity-0 translate-y-1"
       @click="$store.notifications.showAlert = false"
       role="alert"
       aria-live="polite">
@@ -53,7 +63,12 @@
         $store.notifications.errorMessage= '<%= j(error) %>';
         setTimeout(() => $store.notifications.showError = <%= error.present? %>, 100);
         setTimeout(() => $store.notifications.showError = false, 5000)"
-      x-transition.duration.300ms
+      x-transition:enter="transition ease-out duration-250"
+      x-transition:enter-start="opacity-0 translate-y-2"
+      x-transition:enter-end="opacity-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-150"
+      x-transition:leave-start="opacity-100 translate-y-0"
+      x-transition:leave-end="opacity-0 translate-y-1"
       @click="$store.notifications.showError = false"
       role="alert"
       aria-live="polite">

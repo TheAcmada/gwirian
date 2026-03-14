@@ -17,20 +17,37 @@
 
   </div>
 
-  <% if feature.project.editor?(Current.user) || feature.project.admin?(Current.user) %>
-    <div class="mt-3">
-      <a
-        href="<%= project_feature_scenarios_path(project, feature) %>"
-        hx-post="<%= project_feature_scenarios_path(project, feature) %>"
-        hx-target="#scenarios-container"
-        hx-swap="beforeend"
-        class="inline-flex items-center gap-1.5 px-2 py-1 -ml-2 rounded text-sm transition-colors text-stone-500 dark:text-white/60 hover:bg-stone-100 dark:hover:bg-white/5 hover:text-stone-800 dark:hover:text-white/90"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+  <% if feature.scenarios.empty? && (feature.project.editor?(Current.user) || feature.project.admin?(Current.user)) %>
+    <%# Empty state. Wrapper so OOB can clear entire block (innerHTML="") and remove all visible content. %>
+    <div id="scenarios-empty-state-wrapper">
+      <div class="mt-4 py-8 rounded-lg border border-dashed border-stone-200 dark:border-white/10 bg-stone-50/50 dark:bg-stone-900/30 text-center empty-state-entrance">
+        <svg class="w-10 h-10 mx-auto mb-3 text-stone-300 dark:text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
         </svg>
-        <span>Add scenario</span>
-      </a>
+        <p class="text-sm font-medium mb-1 text-stone-700 dark:text-white/80">No scenarios yet</p>
+        <p class="text-sm mb-4 text-stone-500 dark:text-white/60 max-w-sm mx-auto">Scenarios describe Given/When/Then behaviour. Add one to document and run tests.</p>
+        <a
+          href="<%= project_feature_scenarios_path(project, feature) %>"
+          hx-post="<%= project_feature_scenarios_path(project, feature) %>"
+          hx-target="#scenarios-container"
+          hx-swap="beforeend"
+          class="btn btn-primary inline-flex items-center gap-1.5"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Add scenario
+        </a>
+      </div>
+    </div>
+  <% end %>
+
+  <%# Persistent container for "Add scenario" link – empty when 0 scenarios, filled by OOB when first scenario is created (so link appears without refresh) %>
+  <% if feature.project.editor?(Current.user) || feature.project.admin?(Current.user) %>
+    <div id="scenarios-actions" class="mt-3">
+      <% if feature.scenarios.any? %>
+        <%= render Scenarios::AddScenarioLinkComponent.new(project: project, feature: feature) %>
+      <% end %>
     </div>
   <% end %>
 </div>

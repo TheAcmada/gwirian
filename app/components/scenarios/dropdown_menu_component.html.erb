@@ -6,13 +6,13 @@
     @click.stop="open = !open"
     @keydown.escape.window="open = false"
   >
-    <svg class="size-5 text-zinc-500 z-10 dark:text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+    <svg class="size-5 text-stone-500 z-10 dark:text-stone-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
   </button>
   <div
     x-show="open"
     @click.outside="open = false"
     x-transition
-    class="absolute right-0 mt-1 z-10 bg-white dark:bg-gray-800 border border-zinc-200 dark:border-gray-700 rounded-lg shadow-lg py-1 focus:outline-none"
+    class="absolute right-0 mt-1 z-10 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-lg shadow-lg py-1 focus:outline-none"
     style="display: none;"
     role="menu"
     aria-orientation="vertical"
@@ -20,7 +20,7 @@
   >
     <button
       type="button"
-      class="w-full text-left px-4 py-2 text-sm text-error-600 hover:bg-error-50 dark:text-error-300 dark:hover:bg-gray-700 flex items-center gap-2 rounded-md focus-visible:ring-3 focus-visible:ring-error-500 cursor-pointer"
+      class="w-full text-left px-4 py-2 text-sm text-error-600 hover:bg-error-50 dark:text-error-300 dark:hover:bg-stone-800 flex items-center gap-2 rounded-md focus-visible:ring-3 focus-visible:ring-error-500 cursor-pointer"
       hx-delete="<%= delete_path %>"
       hx-target="<%= delete_target %>"
       hx-swap="outerHTML"

@@ -15,9 +15,9 @@
   </form>
 
   <div class="flex items-center gap-2">
-    <span class="flex-shrink-0 text-zinc-400 dark:text-gray-500 text-xs font-mono">#<%= step.position %></span>
+    <span class="flex-shrink-0 text-stone-400 dark:text-stone-500 text-xs font-mono">#<%= step.position %></span>
     <span
-      class="flex-1 text-zinc-600 dark:text-gray-300 leading-relaxed editable-placeholder is-editable"
+      class="flex-1 text-stone-600 dark:text-stone-300 leading-relaxed editable-placeholder is-editable"
       contenteditable="true"
       data-placeholder="Enter step action..."
       x-on:blur="updateAction($event)"
@@ -29,7 +29,7 @@
     <% if helpers.can?(:destroy, step) %>
       <button
         type="button"
-        class="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-400 hover:text-error-600 dark:hover:text-error-400 focus:outline-none"
+        class="opacity-0 group-hover:opacity-100 transition-opacity text-stone-400 hover:text-error-600 dark:hover:text-error-400 focus:outline-none"
         hx-delete="<%= helpers.project_feature_scenario_step_path(project, feature, scenario, step) %>"
         hx-target="#<%= wrapper_id %>"
         hx-swap="outerHTML"

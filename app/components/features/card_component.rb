@@ -1,13 +1,14 @@
 module Features
   class CardComponent < ApplicationComponent
-    def initialize(feature:, project:)
+    def initialize(feature:, project:, stagger_index: 0)
       @feature = feature
       @project = project
+      @stagger_index = stagger_index
     end
 
     private
 
-    attr_reader :feature, :project
+    attr_reader :feature, :project, :stagger_index
 
     def scenarios_count
       feature.scenarios.size

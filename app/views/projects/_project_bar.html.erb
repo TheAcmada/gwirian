@@ -50,7 +50,7 @@
         <span class="hidden sm:inline text-stone-300 dark:text-white/20 mx-0.5">/</span>
       <% end %>
       <%= link_to item[:path],
-          class: "px-2 py-1 text-sm rounded transition-colors flex items-center gap-1.5 #{item[:active] ? 'font-medium text-stone-800 dark:text-white/90 bg-stone-100 dark:bg-white/10' : 'text-stone-500 dark:text-white/50 hover:bg-stone-100 dark:hover:bg-white/5 hover:text-stone-800 dark:hover:text-white/90'}" do %>
+          class: "px-2 py-1 text-sm rounded transition-colors duration-200 flex items-center gap-1.5 hover:scale-[1.02] active:scale-[0.98] #{item[:active] ? 'font-medium text-stone-800 dark:text-white/90 bg-stone-100 dark:bg-white/10' : 'text-stone-500 dark:text-white/50 hover:bg-stone-100 dark:hover:bg-white/5 hover:text-stone-800 dark:hover:text-white/90'}" do %>
         <svg class="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <%= item[:icon].html_safe %>
         </svg>

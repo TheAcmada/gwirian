@@ -1,5 +1,15 @@
 <% content_for :title, "Projects" %>
-<div class="max-w-6xl mx-auto px-4 py-8">
+<div class="max-w-6xl mx-auto px-4 py-8" x-data="{ onboardingDismissed: localStorage.getItem('gwirian-onboarding-projects') === 'true' }">
+  <%# First-time hint (optional, dismissible – onboard skill: show once, respect skip) %>
+  <% if @projects.empty? && can?(:create, Project) %>
+    <div x-show="!onboardingDismissed" x-cloak class="mb-6 rounded-lg border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-900/50 px-4 py-3 flex items-start gap-3 empty-state-entrance">
+      <p class="text-sm text-stone-700 dark:text-white/80 flex-1">
+        <span class="font-medium">New to Gwirian?</span> Create a project to add features and scenarios, then run and record test results.
+      </p>
+      <button type="button" @click="localStorage.setItem('gwirian-onboarding-projects', 'true'); onboardingDismissed = true" class="btn btn-ghost btn-sm flex-shrink-0" aria-label="Dismiss">Got it</button>
+    </div>
+  <% end %>
+
   <div class="flex items-center justify-between mb-6">
     <h1 class="text-4xl font-bold tracking-tight text-stone-800 dark:text-white/90" style="letter-spacing: -0.02em;">Projects</h1>
     <% if can? :create, Project %>
@@ -14,16 +24,16 @@
       <% end %>
     </div>
   <% else %>
-    <div class="flex flex-col items-center justify-center py-16 text-center">
-      <svg class="w-12 h-12 mb-4 text-stone-300 dark:text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="flex flex-col items-center justify-center py-16 text-center empty-state-entrance">
+      <svg class="w-12 h-12 mb-4 text-stone-300 dark:text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
       </svg>
-      <p class="text-sm mb-1 text-stone-500 dark:text-white/60">No projects yet</p>
+      <p class="text-sm font-medium mb-1 text-stone-700 dark:text-white/80">No projects yet</p>
+      <p class="text-sm mb-4 text-stone-500 dark:text-white/60 max-w-sm mx-auto">Projects help you organize BDD features and track scenario runs. Create one to get started.</p>
       <% if can? :create, Project %>
-        <p class="text-sm mb-4 text-stone-400 dark:text-white/40">Get started by creating your first project</p>
         <a href="<%= new_project_path %>" class="btn btn-primary">Create project</a>
       <% else %>
-        <p class="text-sm mb-4 text-stone-400 dark:text-white/40">Ask a workspace administrator to create a project</p>
+        <p class="text-sm text-stone-400 dark:text-white/40">Ask a workspace administrator to create a project.</p>
       <% end %>
     </div>
   <% end %>
