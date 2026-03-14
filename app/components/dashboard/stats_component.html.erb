@@ -80,7 +80,7 @@
         </div>
         <div class="min-w-0">
           <p class="text-sm font-medium text-stone-900 dark:text-white">
-            <%= t("dashboard.stats.scenarios_across_features", scenarios: total_scenarios, features: features_count) %>
+            <%= t("dashboard.stats.scenarios_across_features", scenarios: total_scenarios, features: features_count, scenarios_word: t("dashboard.stats.scenario_count", count: total_scenarios), features_word: t("dashboard.stats.feature_count", count: features_count)) %>
           </p>
         </div>
       </div>

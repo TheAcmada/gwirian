@@ -47,7 +47,13 @@ en:
       untested: "Untested"
       passed: "passed"
       failed: "failed"
-      scenarios_across_features: "%{scenarios} scenarios across %{features} features"
+      scenario_count:
+        one: "scenario"
+        other: "scenarios"
+      feature_count:
+        one: "feature"
+        other: "features"
+      scenarios_across_features: "%{scenarios} %{scenarios_word} across %{features} %{features_word}"
       last_tested: "Last tested"
       last_tested_never: "Never tested"
       weekly_activity:
