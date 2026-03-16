@@ -13,7 +13,9 @@ Gwirian empowers development teams to manage their BDD features with ease. Creat
 - [Requirements](#requirements)
 - [Quick Start](#quick-start)
 - [Development](#development)
+- [Workflow Runbooks](#workflow-runbooks)
 - [Testing](#testing)
+- [Troubleshooting](#troubleshooting)
 - [External Services](#external-services)
 - [MCP Server](#mcp-server)
 - [Deployment](#deployment)
@@ -215,6 +217,80 @@ This task will:
 
 > **Note**: Make sure Elasticsearch is running before executing this command (`docker-compose up -d`).
 
+## Workflow Runbooks
+
+The sections below document the current behavior of frequently used workflows and the exact codepaths involved.
+
+### Create a project and land on Features
+
+**Intent:** Create a project and immediately continue into feature/scenario authoring.
+
+**Codepath:** `ProjectsController#create` (`app/controllers/projects_controller.rb`)
+
+**Behavior:**
+- Requires `can? :create, Project`
+- Creates the project in `Current.workspace`
+- Automatically adds the creator as a project member with role `administrator`
+- Redirects to the project's Features page (not dashboard):
+  - `project_features_path(@project)` → `/:workspace_slug/projects/:id/features`
+
+**Example flow:**
+1. Open `/:workspace_slug/projects/new`
+2. Submit name/description/context
+3. On success, you land on `/:workspace_slug/projects/:id/features`
+
+### Add the first scenario (HTMX + OOB swap)
+
+**Intent:** Keep feature editing responsive without full-page reloads.
+
+**Codepaths:**
+- Controller: `ScenariosController#create`
+- HTMX response component: `Scenarios::CreateResponseComponent`
+- Scenario list partial: `app/views/scenarios/_scenarios.html.erb`
+
+**Behavior (HTMX request):**
+- `POST /:workspace_slug/projects/:project_id/features/:feature_id/scenarios`
+- Appends the new scenario to `#scenarios-container`
+- Clears the empty-state wrapper using out-of-band swap:
+  - `#scenarios-empty-state-wrapper` with `hx-swap-oob="innerHTML"`
+- Populates `#scenarios-actions` with `Scenarios::AddScenarioLinkComponent`
+
+**Constraint:** OOB updates depend on stable DOM IDs (`scenarios-empty-state-wrapper`, `scenarios-actions`, `scenarios-container`).
+
+### Project dashboard pass rate semantics
+
+**Intent:** Surface project health as scenario-level status, not raw execution volume.
+
+**Codepath:** `Dashboard::StatsComponent` (`app/components/dashboard/stats_component.rb`)
+
+**Current metric definitions:**
+- **Pass Rate** = `passed_scenarios / total_scenarios * 100` (rounded)
+- Scenario status is derived from each scenario's latest execution (`Scenario#current_status`)
+- Scenarios with no executions are treated as `pending` and counted as **untested**
+- Weekly activity is execution count in the last 7 days
+
+**Trend logic (shown as `+/-N%`):**
+- Compares pass rate of **last 7 days** vs **previous 7 days**
+- For each scenario in a period, status is taken from the latest execution at or before the end of that period
+
+### Export BDD as ZIP
+
+**Intent:** Produce portable Gherkin artifacts for sharing and automation.
+
+**Codepaths:**
+- Route: `GET /:workspace_slug/projects/:id/export_bdd`
+- Controller: `ProjectsController#export_bdd`
+- Model export builder: `Project#gherkin_export_entries`
+
+**Output format:**
+- Attachment filename: `<project-name>.zip`
+- Always includes:
+  - `project_info.md`
+  - One `.feature` file per feature (title slug)
+- Duplicate feature-title slugs are suffixed to avoid overwrite (`login.feature`, `login-1.feature`, ...)
+
+**Authorization constraint:** Export is only available to users who can read the project in the current workspace context.
+
 ## Testing
 
 Gwirian uses both RSpec and Rails' built-in test framework:
@@ -241,6 +317,33 @@ bundle exec rspec --parallel
 
 - **FactoryBot**: Used for generating test data in RSpec
 - **Fixtures**: Used for Rails tests
+
+## Troubleshooting
+
+### "Project created, but I expected to land on dashboard"
+
+This is expected. Successful project creation redirects to the **Features** page by design (`ProjectsController#create`).
+
+### "Pass rate looks lower than execution pass percentage"
+
+Pass rate is scenario-based (latest status per scenario), not execution-based. A single failed latest run on a scenario marks that scenario as failed until a newer passed run exists.
+
+### "Add scenario button/state doesn't update without refresh"
+
+Check HTMX and OOB swap targets in the feature page DOM:
+- `#scenarios-container`
+- `#scenarios-empty-state-wrapper`
+- `#scenarios-actions`
+
+If any ID changes, the first-scenario create response can no longer clear/replace the right blocks.
+
+### "Project search/history returns empty results unexpectedly"
+
+Search-backed views rely on Elasticsearch indices. Reindex after large data changes:
+
+```bash
+bin/rails elasticsearch:reindex
+```
 
 ## External Services
 
