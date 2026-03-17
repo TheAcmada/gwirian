@@ -145,9 +145,16 @@ EXECUTION_NOTE_TEMPLATES = {
 }.freeze
 
 # One entry per execution to add per scenario: [status, days_ago, note_index_in_templates].
-# Spread of dates (0 = today) and mix of statuses. Note index can be nil (no note) or 0, 1, ...
+# Heavy bias toward recent (0–7 days); then spread up to ~60 days. Note index can be nil or 0, 1, ...
 EXECUTION_TEMPLATES = [
-  [ :passed,  0,  0 ], [ :passed,  1,  1 ], [ :failed,  3,  0 ], [ :passed,  7,  2 ],
+  # Recent: today and last 2 days (many runs)
+  [ :passed,  0,  0 ], [ :passed,  0,  1 ], [ :failed,  0,  0 ], [ :passed,  0,  2 ], [ :passed,  0, nil ],
+  [ :passed,  1,  1 ], [ :passed,  1,  3 ], [ :failed,  1,  2 ], [ :pending,  1,  1 ], [ :passed,  1,  0 ],
+  [ :passed,  2,  2 ], [ :failed,  2,  0 ], [ :passed,  2,  4 ], [ :passed,  2,  1 ], [ :passed,  2,  5 ],
+  # Last week
+  [ :passed,  3,  0 ], [ :failed,  3,  3 ], [ :passed,  4,  1 ], [ :passed,  4,  2 ], [ :failed,  5,  6 ],
+  [ :passed,  5,  5 ], [ :pending,  6,  0 ], [ :passed,  6,  3 ], [ :passed,  7,  2 ], [ :failed,  7,  4 ],
+  # 2–4 weeks and older
   [ :pending, 10, 1 ], [ :passed,  14, 3 ], [ :failed,  21,  2 ], [ :passed,  28, 4 ],
   [ :passed,  35, 0 ], [ :failed,  42, 5 ], [ :passed,  49, 1 ], [ :pending, 56, 3 ],
   [ :passed,  60, 0 ], [ :failed,  5,  6 ], [ :passed,  12, 5 ], [ :pending, 18, 0 ],
@@ -163,7 +170,13 @@ EXECUTION_TAG_LISTS = [
   "staging",
   nil,
   "ci",
-  "manual"
+  "manual",
+  "ci, pr",
+  "staging, e2e",
+  "manual",
+  "ci, release",
+  "playwright",
+  "smoke"
 ].freeze
 
 PROJECTS_SEED = [
@@ -177,14 +190,16 @@ PROJECTS_SEED = [
           { title: "Update item quantity", given: "the user has items in the cart", when: "the user changes the quantity of an item", then: "the cart total is recalculated and displayed" },
           { title: "Remove item from cart", given: "the user has multiple items in the cart", when: "the user clicks the remove button on an item", then: "the item is removed and the cart total updates" },
           { title: "Apply discount code", given: "the user has items in the cart and a valid promo code exists", when: "the user enters the code and applies it", then: "the discount is applied and the cart total reflects the reduced price" },
-          { title: "Cart persists across sessions", given: "the user added items to the cart while logged in", when: "the user returns to the site in a new session", then: "the cart still contains the previously added items" }
+          { title: "Cart persists across sessions", given: "the user added items to the cart while logged in", when: "the user returns to the site in a new session", then: "the cart still contains the previously added items" },
+          { title: "Cart icon shows total count", given: "the user has two items in the cart", when: "the user views any page with the header", then: "the cart icon badge displays 2" }
         ] },
       { title: "Payment Processing", description: "Secure payment processing with support for credit cards, PayPal, and other payment methods.", tag_list: "critical-path, payment, security, checkout",
         scenarios: [
           { title: "Successful credit card payment", given: "the user has items in the cart and is on the checkout page", when: "the user enters valid credit card details and clicks 'Pay'", then: "the payment is processed and the order confirmation is displayed" },
           { title: "Payment declined", given: "the user is on the checkout page", when: "the user enters an invalid credit card number", then: "an error message is displayed and the user can retry" },
           { title: "Pay with PayPal", given: "the user has items in the cart and selected PayPal at checkout", when: "the user completes authentication in the PayPal popup", then: "the payment is processed and the order confirmation is displayed" },
-          { title: "Save card for future use", given: "the user is on the checkout page", when: "the user checks 'Save this card' and completes payment", then: "the card is stored and available for future checkouts" }
+          { title: "Save card for future use", given: "the user is on the checkout page", when: "the user checks 'Save this card' and completes payment", then: "the card is stored and available for future checkouts" },
+          { title: "3D Secure verification", given: "the user's card requires 3DS", when: "the user completes the bank challenge in the modal", then: "payment proceeds and order is confirmed" }
         ] },
       { title: "Product Search", description: "Advanced search functionality with filters for category, price range, and ratings.", tag_list: "search, functionality, user-experience",
         scenarios: [
@@ -204,6 +219,25 @@ PROJECTS_SEED = [
           { title: "Submit review after purchase", given: "the user has received a purchased product", when: "the user goes to the product page and submits a rating with comment", then: "the review is saved and marked as verified purchase" },
           { title: "Filter reviews by rating", given: "the user is viewing a product with many reviews", when: "the user selects '4 stars and up'", then: "only reviews with 4 or 5 stars are displayed" },
           { title: "Upload photo with review", given: "the user is writing a product review", when: "the user attaches one or more photos", then: "the photos are uploaded and appear in the published review" }
+        ] },
+      { title: "Wishlist", description: "Save items for later with a personal wishlist that syncs across devices.", tag_list: "wishlist, user-experience, conversion",
+        scenarios: [
+          { title: "Add product to wishlist", given: "the user is viewing a product page", when: "the user clicks the heart or 'Add to wishlist' button", then: "the product is added to the wishlist and the counter updates" },
+          { title: "Move wishlist item to cart", given: "the user has items in their wishlist", when: "the user clicks 'Add to cart' on a wishlist item", then: "the item is added to the cart and can be removed from wishlist" },
+          { title: "Share wishlist", given: "the user has a non-empty wishlist", when: "the user clicks 'Share wishlist' and copies the link", then: "the link opens a read-only view of the wishlist for others" },
+          { title: "Wishlist persists when logged in", given: "the user is logged in and added items to wishlist", when: "the user returns later from another device", then: "the same wishlist items are visible" }
+        ] },
+      { title: "Guest Checkout", description: "Allow one-time purchases without creating an account.", tag_list: "checkout, conversion, critical-path",
+        scenarios: [
+          { title: "Checkout as guest with email", given: "the user has items in the cart and is not logged in", when: "the user selects 'Checkout as guest' and enters email and shipping details", then: "the order is placed and a confirmation email is sent" },
+          { title: "Guest offered account creation after order", given: "the user just completed a guest checkout", when: "the order confirmation page is shown", then: "an option to create an account with the same email is offered" },
+          { title: "Guest cannot access order history", given: "the user completed a guest checkout", when: "the user returns to the site without logging in", then: "there is no order history; they must use the confirmation link or email" }
+        ] },
+      { title: "Returns and Refunds", description: "Self-service returns and refund processing within policy window.", tag_list: "returns, customer-service, payments",
+        scenarios: [
+          { title: "Initiate return within window", given: "the user has an order delivered within the return window", when: "the user opens the order and clicks 'Start return'", then: "the return is created and a prepaid label can be printed" },
+          { title: "Refund to original payment method", given: "a return has been received and approved", when: "the warehouse marks the return as accepted", then: "the refund is issued to the original payment method within 5–10 days" },
+          { title: "Return outside window rejected", given: "the user's order is past the return window", when: "the user tries to start a return", then: "a message explains the window has passed and suggests contacting support" }
         ] }
     ]
   },
@@ -216,7 +250,8 @@ PROJECTS_SEED = [
           { title: "Create new article", given: "the user is logged in as an editor", when: "the user clicks 'New Article' and fills in the title and content", then: "the article is saved as a draft" },
           { title: "Add image to article", given: "the user is editing an article", when: "the user clicks the image button and selects a file", then: "the image is uploaded and inserted at the cursor position" },
           { title: "Publish scheduled article", given: "the user has an article saved as draft with a future publish date", when: "the publish date and time are reached", then: "the article is automatically published and visible to readers" },
-          { title: "Preview before publish", given: "the user is editing an article", when: "the user clicks 'Preview'", then: "a read-only preview opens in a new tab showing how the article will appear" }
+          { title: "Preview before publish", given: "the user is editing an article", when: "the user clicks 'Preview'", then: "a read-only preview opens in a new tab showing how the article will appear" },
+          { title: "Autosave draft", given: "the user is editing an article", when: "the user types and pauses for a few seconds", then: "the draft is saved automatically and a saved indicator is shown" }
         ] },
       { title: "Role-Based Access Control", description: "Manage user permissions with roles like admin, editor, author, and viewer.", tag_list: "security, rbac, permissions, access-control",
         scenarios: [
@@ -242,6 +277,18 @@ PROJECTS_SEED = [
           { title: "Edit meta title and description", given: "the user is editing a page or article", when: "the user fills in the SEO meta title and description fields", then: "the values are saved and used for search result snippets" },
           { title: "Customize URL slug", given: "the user is creating a new page", when: "the user changes the URL slug from the auto-generated value", then: "the page is accessible at the custom URL" },
           { title: "Preview search result snippet", given: "the user has set meta title and description for a page", when: "the user clicks 'Preview snippet'", then: "a preview of how the page may appear in search results is shown" }
+        ] },
+      { title: "Version History", description: "Track and restore previous versions of articles and pages.", tag_list: "versioning, audit, content-safety",
+        scenarios: [
+          { title: "View version history", given: "the user is editing an article that has been saved before", when: "the user opens the version history panel", then: "a list of previous versions with date and author is shown" },
+          { title: "Restore previous version", given: "the user is viewing version history", when: "the user selects a past version and clicks 'Restore'", then: "the content is reverted to that version and a new version entry is created" },
+          { title: "Compare two versions", given: "the user has version history open", when: "the user selects two versions and clicks 'Compare'", then: "a diff view shows added, removed, and changed content" }
+        ] },
+      { title: "Multi-language Content", description: "Create and manage content in multiple languages with fallbacks.", tag_list: "i18n, localization, content",
+        scenarios: [
+          { title: "Add translation for article", given: "the user has an article in the default language", when: "the user selects 'Add translation' and chooses a language", then: "a new draft is created for that language linked to the original" },
+          { title: "View site in alternate language", given: "translations exist for a page", when: "a visitor switches language via the locale selector", then: "the page content is shown in the selected language or fallback" },
+          { title: "Missing translation shows fallback", given: "a translation is missing for a given language", when: "the user views the page in that language", then: "the default language content is shown with a fallback indicator" }
         ] }
     ]
   },
@@ -273,6 +320,24 @@ PROJECTS_SEED = [
           { title: "View transaction list", given: "the user is logged in", when: "the user opens Transaction History", then: "transactions are listed with date, description, and amount" },
           { title: "Filter by date range", given: "the user is viewing transaction history", when: "the user selects 'Last 30 days'", then: "only transactions in that range are shown" },
           { title: "Export transactions", given: "the user has filtered or viewed transactions", when: "the user taps 'Export' and chooses CSV", then: "a file is generated and offered for download or share" }
+        ] },
+      { title: "Biometric Login", description: "Sign in with Face ID or fingerprint for faster, secure access.", tag_list: "mobile, security, authentication",
+        scenarios: [
+          { title: "Enable Face ID after password", given: "the user is logged in with password", when: "the user goes to Security and enables Face ID", then: "next launch offers Face ID as the primary login" },
+          { title: "Fallback to password when biometric fails", given: "the user has biometric login enabled", when: "Face ID or fingerprint fails or is cancelled", then: "the user can tap 'Use password' and sign in normally" },
+          { title: "Biometric disabled when credentials change", given: "the user has changed their password or security settings", when: "the user next opens the app", then: "biometric is disabled and password login is required once" }
+        ] },
+      { title: "Card Management", description: "View and control debit and credit cards: freeze, limits, and spending insights.", tag_list: "mobile, cards, security",
+        scenarios: [
+          { title: "Freeze card temporarily", given: "the user is viewing their card details", when: "the user toggles 'Freeze card'", then: "the card is declined for new transactions until unfrozen" },
+          { title: "Set spending limit on card", given: "the user has a card with limit controls", when: "the user sets a daily spending limit of $500", then: "transactions are declined once the daily total exceeds $500" },
+          { title: "View card transactions", given: "the user is on the card detail screen", when: "the user taps 'Recent transactions'", then: "transactions for that card only are listed" }
+        ] },
+      { title: "Alerts and Notifications", description: "Configurable push and in-app alerts for transactions, balance, and security.", tag_list: "mobile, notifications, security",
+        scenarios: [
+          { title: "Enable low balance alert", given: "the user is in notification settings", when: "the user sets a low balance alert at $100", then: "a push notification is sent when balance drops below $100" },
+          { title: "Transaction alert for large amount", given: "the user enables transaction alerts", when: "a transaction over $200 is posted", then: "the user receives an immediate notification with amount and merchant" },
+          { title: "Turn off marketing notifications", given: "the user is in notification preferences", when: "the user disables marketing and promotions", then: "only security and account alerts are sent" }
         ] }
     ]
   },
@@ -285,7 +350,8 @@ PROJECTS_SEED = [
           { title: "Create task with due date", given: "the user is on a project board", when: "the user creates a new task with title, description, and due date", then: "the task appears in the backlog column" },
           { title: "Assign task to team member", given: "a task exists without an assignee", when: "the user assigns the task to a team member", then: "the assignee receives a notification and the task shows their avatar" },
           { title: "Set task priority", given: "the user is creating or editing a task", when: "the user selects 'High' priority", then: "the task is saved with high priority and may be visually highlighted" },
-          { title: "Add subtasks", given: "the user is editing a task", when: "the user adds two subtasks with titles", then: "the subtasks appear under the task and progress can be tracked" }
+          { title: "Add subtasks", given: "the user is editing a task", when: "the user adds two subtasks with titles", then: "the subtasks appear under the task and progress can be tracked" },
+          { title: "Duplicate task", given: "the user is viewing a task", when: "the user selects 'Duplicate'", then: "a copy of the task is created in the same list with title prefixed by 'Copy of'" }
         ] },
       { title: "Project Boards", description: "Kanban-style boards for visualizing task progress across different stages.", tag_list: "kanban, visualization, project-management",
         scenarios: [
@@ -305,6 +371,24 @@ PROJECTS_SEED = [
           { title: "Start time tracking", given: "the user is viewing a task", when: "the user clicks 'Start timer'", then: "the timer starts and elapsed time is shown on the task" },
           { title: "Log time manually", given: "the user has completed work on a task", when: "the user enters 2 hours in the time log and saves", then: "the time is recorded against the task and appears in reports" },
           { title: "View time report by project", given: "the user is on the reporting section", when: "the user selects a project and date range", then: "total and per-task time is displayed for the project" }
+        ] },
+      { title: "Labels and Tags", description: "Organize tasks with labels, tags, and custom fields for filtering and reporting.", tag_list: "organization, filtering, productivity",
+        scenarios: [
+          { title: "Add label to task", given: "the user is editing a task", when: "the user adds the label 'bug'", then: "the task shows the label and can be filtered by it" },
+          { title: "Filter board by label", given: "the user is viewing a project board", when: "the user selects the 'urgent' label filter", then: "only tasks with that label are shown on the board" },
+          { title: "Create new label", given: "the user is in project settings or the label picker", when: "the user creates a new label with name and color", then: "the label is available for all tasks in the project" }
+        ] },
+      { title: "Recurring Tasks", description: "Create tasks that repeat on a schedule (daily, weekly, or custom).", tag_list: "automation, productivity, scheduling",
+        scenarios: [
+          { title: "Create weekly recurring task", given: "the user is creating a task", when: "the user sets recurrence to 'Every Monday'", then: "the task is created and a new copy appears each Monday" },
+          { title: "Complete instance of recurring task", given: "a recurring task has generated today's instance", when: "the user marks the instance complete", then: "only that instance is completed; the series continues" },
+          { title: "Edit series vs single instance", given: "the user is editing a recurring task instance", when: "the user chooses 'Edit this occurrence'", then: "only that instance is changed; the series is unchanged" }
+        ] },
+      { title: "Integrations", description: "Connect to Slack, GitHub, calendar, and other tools for notifications and sync.", tag_list: "integrations, automation, collaboration",
+        scenarios: [
+          { title: "Connect Slack workspace", given: "the user has admin access to the project", when: "the user goes to Integrations and connects Slack", then: "task updates and mentions can be posted to a chosen channel" },
+          { title: "Create task from Slack message", given: "Slack integration is connected", when: "the user uses the /task command with a title in Slack", then: "a new task is created in the linked project and link is posted back" },
+          { title: "GitHub PR links to task", given: "GitHub integration is set up", when: "a PR description contains the task ID", then: "the task shows the linked PR and status updates when the PR is merged" }
         ] }
     ]
   }
@@ -371,13 +455,19 @@ end
 puts "Creating scenario executions..."
 all_users = [ admin_user ] + seed_users
 Scenario.includes(:feature).find_each do |scenario|
-  # Number of executions per scenario: 4–10, deterministic from scenario id
-  count = 4 + (scenario.id % 7)
+  # Number of executions per scenario: 12–22, deterministic from scenario id (more data, recent-heavy)
+  count = 12 + (scenario.id % 11)
   count.times do |i|
     template = EXECUTION_TEMPLATES[(scenario.id + i) % EXECUTION_TEMPLATES.size]
     status_sym, days_ago, note_idx = template
     status = status_sym.to_s
-    executed_at = days_ago.days.ago + (scenario.id * 37 + i * 11).seconds
+    # For today (days_ago 0), spread executions over the last 8 hours so they feel recent
+    executed_at = if days_ago.zero?
+      offset_sec = (scenario.id * 37 + i * 11) % (8 * 3600)
+      offset_sec.seconds.ago
+    else
+      days_ago.days.ago + (scenario.id * 37 + i * 11).seconds
+    end
     notes = if note_idx.nil?
       nil
     else
