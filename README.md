@@ -8,6 +8,7 @@ Gwirian empowers development teams to manage their BDD features with ease. Creat
 
 - [What Gwirian Does](#what-gwirian-does)
 - [Key Features](#key-features)
+- [BDD Export Workflow](#bdd-export-workflow)
 - [Architecture Overview](#architecture-overview)
 - [Technical Stack](#technical-stack)
 - [Requirements](#requirements)
@@ -58,6 +59,52 @@ Experience a lightning-fast interface built with the latest web technologies. Na
 - **Keyboard-first navigation**: G-nav (G + letter) and shortcuts overlay (?); prev/next feature (G P / G N)
 - **API Access**: Workspace-scoped API tokens for programmatic access
 - **MCP Integration**: Model Context Protocol server for AI assistant integration
+- **BDD Export**: Download project-level Gherkin as a ZIP (`project_info.md` + one `.feature` file per feature)
+
+## BDD Export Workflow
+
+Use this workflow when you need to share executable BDD specs with another toolchain, archive a project snapshot, or review behavior outside the app.
+
+### Public interface
+
+- **UI action**: Project dashboard -> **Export** button
+- **Route**: `GET /:workspace_slug/projects/:id/export_bdd`
+- **Controller action**: `ProjectsController#export_bdd`
+- **Authorization**: Requires `:read` access to the project
+  - Not authenticated -> redirect to `/session/new`
+  - Authenticated but not a project member -> `404 Not Found` (project is outside accessible scope)
+
+### Export file structure
+
+The download is a ZIP named from the project slug (for example, `checkout-platform.zip`) and contains:
+
+1. `project_info.md` (always first)
+   - Project name
+   - Optional description
+   - Optional project context in a fenced code block
+2. One `.feature` file per feature
+   - Filename is the feature title slug (for example, `user-login.feature`)
+   - Duplicate slugs are suffixed (`login.feature`, `login-1.feature`, `login-2.feature`, ...)
+
+### Gherkin serialization rules
+
+- Features are exported in title order.
+- Scenarios are exported in scenario position order.
+- Feature output includes, when present:
+  - `@tags` line
+  - `Feature: <title>`
+  - Description lines
+  - `Background:` with each background line prefixed as `Given`
+- Scenario output includes:
+  - `Scenario: <title>`
+  - Optional `Given`, `When`, and `Then` lines
+
+### Troubleshooting and pitfalls
+
+- **"I get HTML instead of a ZIP"**: ensure the export link is not HTMX-boosted for partial navigation (`hx-boost="false"` on the export action).
+- **"Why is data missing from `project_info.md`?"**: description and context are optional and omitted when blank.
+- **"Why are filenames numbered?"**: numbering prevents overwrite when multiple features slugify to the same basename.
+- **"Why are steps missing from the export?"**: export uses scenario `given`/`when`/`then` fields; it does not serialize the separate `steps` association.
 
 ## Architecture Overview
 
