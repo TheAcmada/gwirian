@@ -81,8 +81,11 @@ Once connected, you can use the following tools. All operations are scoped to th
 ### Projects (Read-only)
 - `list_projects` - List all accessible projects in the workspace
 - `get_project` - Get project details with executions and team members
+- `search_project` - Search a project for matching features and scenarios
 
 Project payloads include an optional `context` field (text) for test context: environments and URLs, test accounts and logins, and other hints for scenario execution.
+
+`search_project` accepts `project_id`, `query`, and optional `limit` arguments. The limit defaults to 20 and is clamped between 1 and 100 results per type. Search is backed by Elasticsearch and matches feature titles, descriptions, and tags, plus scenario titles and Given/When/Then text. Results are returned as feature and scenario objects with current status metadata.
 
 ### Features (Full CRUD)
 - `list_features` - List features for a project
@@ -175,6 +178,7 @@ curl -X POST http://localhost:3000/mcp \
 - Verify the server URL is correct
 - Check that the Rails server is running
 - Ensure CORS is properly configured if accessing from a browser
+- For `search_project`, confirm Elasticsearch is reachable and indexes have been created/reindexed
 
 ### Tool Not Found Errors
 - Use `tools/list` to see all available tools
