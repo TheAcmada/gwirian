@@ -4,6 +4,23 @@ We provide pre-built Docker images that can be used to run Gwirian on your own s
 
 If you don't need to change the source code, and just want the out-of-the-box Gwirian experience, this can be a great way to get started.
 
+### Image tags and architectures
+
+The publish workflow builds `linux/amd64` and `linux/arm64` images separately, pushes temporary architecture-specific tags such as `:main-amd64` and `:main-arm64`, then creates multi-architecture manifest tags without the suffix. In normal use, pull the unsuffixed tag and Docker will select the right image for the host:
+
+```sh
+docker pull ghcr.io/theacmada/gwirian:main
+```
+
+Available tags include:
+
+- `:main` for the latest image built from the main branch.
+- `:sha-<short-sha>` for a specific commit build.
+- Version tags such as `:v1.0.0`, `:1.0.0`, `:1.0`, and `:1` for releases pushed with a `v*` Git tag.
+- `:latest` only for version tag builds.
+
+Use an architecture-suffixed tag only when you intentionally want to pin one architecture.
+
 ### Mounting a storage volume
 
 The standard Gwirian setup keeps all of its storage inside the path `/rails/storage`.
@@ -29,19 +46,13 @@ To configure your Gwirian installation, you can use environment variables.
 Gwirian has several of them.
 Many of these are optional, but at a minimum you'll want to configure your secret key, and your SMTP email settings.
 
-#### Secret Key Base
+#### Rails master key
 
 Various features inside Gwirian rely on cryptography to work.
 To set this up, you need to provide a secret value that will be used as the basis of those secrets.
-This value can be anything, but it should be unguessable, and specific to your instance.
+For the production Docker image, provide the Rails credentials key through `RAILS_MASTER_KEY`.
 
-You can use any long random string for this, or you can have the Gwirian codebase generate one for you by running:
-
-```sh
-bin/rails secret
-```
-
-Once you have one, set it in the `RAILS_MASTER_KEY` environment variable:
+Set it in the `RAILS_MASTER_KEY` environment variable:
 
 ```sh
 docker run --env RAILS_MASTER_KEY=abcdefabcdef ...

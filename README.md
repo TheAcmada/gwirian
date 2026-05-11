@@ -54,6 +54,7 @@ Experience a lightning-fast interface built with the latest web technologies. Na
 - **Executions**: Track scenario execution status and history
 - **Tags**: Organize features and scenarios with flexible tagging
 - **Search**: Full-text search powered by Elasticsearch; instant search from the global command palette (Ctrl+K)
+- **BDD Export**: Download a project ZIP containing `project_info.md` and one Gherkin `.feature` file per feature
 - **Global command palette**: One shortcut (Ctrl+K) for search, navigation, and actions—no full page reloads
 - **Keyboard-first navigation**: G-nav (G + letter) and shortcuts overlay (?); prev/next feature (G P / G N)
 - **API Access**: Workspace-scoped API tokens for programmatic access
@@ -179,11 +180,21 @@ This uses `Procfile.dev` which runs:
 ### Development Workflow
 
 - **Tailwind CSS**: Auto-compiled via `bin/rails tailwindcss:watch` (included in `bin/dev`)
-- **htmx and Alpine.js**: Included via `/public/js/htmx.min.js` and `/public/js/alpinejs.min.js`
+- **htmx and Alpine.js**: Imported with importmap pins in `config/importmap.rb` and vendored files in `vendor/javascript/`
 - **Main layout**: `app/views/layouts/application.html.erb`
 - **ViewComponent components**: Located in `app/components/`
 - **Models**: Located in `app/models/`
 - **Controllers**: Located in `app/controllers/`
+
+### BDD Export Workflow
+
+Project readers can use the **Export** action on a project dashboard to download a ZIP archive of the current BDD specification. The export route is `GET /:workspace_slug/projects/:id/export_bdd` and requires normal project read access.
+
+The ZIP contains:
+- `project_info.md` with the project name, description, and context.
+- One `.feature` file per feature, ordered by title. File names are generated from the feature title and duplicate names receive a numeric suffix.
+
+Generated Gherkin includes feature tags, descriptions, background text, and each scenario's Given/When/Then fields. The export uses the data currently stored in the database; if search indexes are stale, export output is unaffected.
 
 ### Database Management
 
@@ -214,6 +225,8 @@ This task will:
 3. Import all features and scenario executions into the indices
 
 > **Note**: Make sure Elasticsearch is running before executing this command (`docker-compose up -d`).
+
+The development `docker-compose.yml`, CI workflow, and Kamal accessory pin concrete Elasticsearch image versions for their own environments. Keep the app's search behavior verified against the version you operate, and reindex after changing mappings or importing large data sets.
 
 ## Testing
 
@@ -317,19 +330,27 @@ cat config/deploy.yml
 
 ### Environment Variables
 
-Create a `.env` file in the project root (see `.env.example` for reference):
+Gwirian reads configuration from process environment variables. Supply them from your shell, process manager, Docker command, Kamal secrets/clear environment, or another tool that loads a local `.env` file.
 
 ```bash
-# Database
-DATABASE_URL=sqlite3:db/development.sqlite3
-
 # Elasticsearch
 ELASTICSEARCH_URL=http://localhost:9200
 
-# Application
-SECRET_KEY_BASE=your_secret_key_here
+# Email and links
+MAILER_FROM_ADDRESS="Gwirian <support@example.com>"
+SMTP_HOST=localhost
+SMTP_PORT=1025
+SMTP_USERNAME=
+SMTP_PASSWORD=
+BASE_URL=http://localhost:3000
+
+# Optional runtime tuning
+PORT=3000
+RAILS_LOG_LEVEL=info
 RAILS_ENV=development
 ```
+
+For production Docker and Kamal deployments, provide `RAILS_MASTER_KEY` so Rails can decrypt credentials. See the deployment guides for the required runtime settings.
 
 ### Configuration Files
 
@@ -355,6 +376,7 @@ RAILS_ENV=development
 
 - [MCP Client Configuration Guide](docs/mcp.md)
 - [Kamal Deployment Guide](docs/kamal-deployment.md)
+- [Docker Deployment Guide](docs/docker-deployment.md)
 
 ### Community
 
