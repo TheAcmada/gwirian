@@ -81,8 +81,17 @@ Once connected, you can use the following tools. All operations are scoped to th
 ### Projects (Read-only)
 - `list_projects` - List all accessible projects in the workspace
 - `get_project` - Get project details with executions and team members
+- `search_project` - Search a project for matching features and scenarios
 
 Project payloads include an optional `context` field (text) for test context: environments and URLs, test accounts and logins, and other hints for scenario execution.
+
+`search_project` accepts:
+
+- `project_id` (integer, required) - Project to search within. The project must be accessible to the user associated with the API token.
+- `query` (string, required) - Text matched against feature titles and descriptions, plus scenario titles and Given/When/Then content.
+- `limit` (integer, optional) - Maximum results per type, clamped from 1 to 100. Defaults to 20.
+
+Search responses are returned as JSON text with a `results` array. Feature results include `type`, `id`, `title`, `description`, `project_id`, and aggregate `status`; scenario results include `type`, `id`, `title`, `feature_id`, `feature_title`, and current `status`.
 
 ### Features (Full CRUD)
 - `list_features` - List features for a project
@@ -109,13 +118,9 @@ Executions support an optional `tag_list` (comma-separated string) for test type
 
 ## Testing the Connection
 
-You can test the connection using curl. Replace `YOUR_API_TOKEN` with your actual API token:
+The MCP endpoint is a JSON-RPC transport mounted at `POST /mcp`; there is no separate MCP health-check route. You can test the connection using curl. Replace `YOUR_API_TOKEN` with your actual API token:
 
 ```bash
-# Health check (requires Bearer token authentication)
-curl http://localhost:3000/mcp/health \
-  -H "Authorization: Bearer YOUR_API_TOKEN"
-
 # Initialize (requires Bearer token authentication)
 curl -X POST http://localhost:3000/mcp \
   -H "Content-Type: application/json" \
@@ -151,6 +156,24 @@ curl -X POST http://localhost:3000/mcp \
       "arguments": {}
     }
   }'
+
+# Search a project (requires Bearer token authentication)
+curl -X POST http://localhost:3000/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 4,
+    "method": "tools/call",
+    "params": {
+      "name": "search_project",
+      "arguments": {
+        "project_id": 123,
+        "query": "login",
+        "limit": 10
+      }
+    }
+  }'
 ```
 
 **Note**: You can also use an environment variable for the token:
@@ -173,7 +196,9 @@ curl -X POST http://localhost:3000/mcp \
 
 ### Connection Errors
 - Verify the server URL is correct
+- Use `POST /mcp` for MCP JSON-RPC requests; `/mcp/health` is not a route
 - Check that the Rails server is running
+- If you only need the Rails application health check, use `GET /up`
 - Ensure CORS is properly configured if accessing from a browser
 
 ### Tool Not Found Errors
