@@ -1,0 +1,450 @@
+<title>Gwirian — Synthèse vision produit</title>
+<style>
+  :root {
+    --bg: #f7f8f6;
+    --surface: #fdfdfc;
+    --surface-2: #eef1ee;
+    --ink: #1c2422;
+    --ink-soft: #4a5451;
+    --ink-faint: #75807c;
+    --line: #d9dedb;
+    --accent: #147063;
+    --accent-ink: #0e5a50;
+    --accent-soft: #e3efec;
+    --warn: #9a6b1f;
+    --warn-soft: #f5ecdb;
+    --good: #2e7d4f;
+    --bad: #a4433a;
+    --code-bg: #eef1ee;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: Seravek, "Avenir Next", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141917;
+      --surface: #1a201e;
+      --surface-2: #212826;
+      --ink: #e6ebe8;
+      --ink-soft: #aeb8b3;
+      --ink-faint: #7d8783;
+      --line: #333c39;
+      --accent: #4cc9b0;
+      --accent-ink: #6fd8c2;
+      --accent-soft: #1d312c;
+      --warn: #d1a04c;
+      --warn-soft: #322917;
+      --good: #6cc493;
+      --bad: #d98078;
+      --code-bg: #10514a1f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141917;
+    --surface: #1a201e;
+    --surface-2: #212826;
+    --ink: #e6ebe8;
+    --ink-soft: #aeb8b3;
+    --ink-faint: #7d8783;
+    --line: #333c39;
+    --accent: #4cc9b0;
+    --accent-ink: #6fd8c2;
+    --accent-soft: #1d312c;
+    --warn: #d1a04c;
+    --warn-soft: #322917;
+    --good: #6cc493;
+    --bad: #d98078;
+    --code-bg: #10514a1f;
+  }
+  :root[data-theme="light"] {
+    --bg: #f7f8f6;
+    --surface: #fdfdfc;
+    --surface-2: #eef1ee;
+    --ink: #1c2422;
+    --ink-soft: #4a5451;
+    --ink-faint: #75807c;
+    --line: #d9dedb;
+    --accent: #147063;
+    --accent-ink: #0e5a50;
+    --accent-soft: #e3efec;
+    --warn: #9a6b1f;
+    --warn-soft: #f5ecdb;
+    --good: #2e7d4f;
+    --bad: #a4433a;
+    --code-bg: #eef1ee;
+  }
+
+  html { background: var(--bg); }
+  body {
+    font-family: var(--sans);
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.65;
+    font-size: 1.0125rem;
+  }
+  .page {
+    max-width: 47rem;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+  }
+
+  a { color: var(--accent-ink); text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); text-underline-offset: 3px; }
+  a:hover { text-decoration-color: var(--accent); }
+  a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+  /* ---------- header ---------- */
+  header.doc-head { display: flex; flex-direction: column; gap: 1.1rem; margin-bottom: 3.2rem; }
+  .doc-meta {
+    display: flex; flex-wrap: wrap; gap: .5rem 1.4rem;
+    font-size: .78rem; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--ink-faint); font-variant-numeric: tabular-nums;
+  }
+  .doc-meta strong { color: var(--accent-ink); font-weight: 600; }
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(1.9rem, 5vw, 2.6rem);
+    font-weight: 600;
+    line-height: 1.15;
+    text-wrap: balance;
+    margin: 0;
+  }
+  .doc-lede {
+    font-size: 1.1rem; color: var(--ink-soft); max-width: 40rem; text-wrap: pretty; margin: 0;
+  }
+
+  /* ---------- thesis banner ---------- */
+  .thesis {
+    border-block: 1px solid var(--line);
+    padding: 1.6rem .25rem;
+    margin: 0 0 3rem;
+  }
+  .thesis p {
+    font-family: var(--serif);
+    font-size: 1.32rem;
+    line-height: 1.45;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .thesis em { color: var(--accent-ink); font-style: italic; }
+  .thesis .who { display: block; margin-top: .9rem; font-family: var(--sans); font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); }
+
+  /* ---------- sections ---------- */
+  section { margin-bottom: 3.2rem; }
+  .eyebrow {
+    font-size: .76rem; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--accent-ink); font-weight: 600; font-variant-numeric: tabular-nums;
+    display: flex; align-items: center; gap: .7rem; margin-bottom: .45rem;
+  }
+  .eyebrow::after { content: ""; height: 1px; flex: 0 0 2.2rem; background: var(--accent); opacity: .5; }
+  h2 {
+    font-family: var(--serif); font-weight: 600;
+    font-size: 1.55rem; line-height: 1.25; text-wrap: balance;
+    margin: 0 0 1rem;
+  }
+  h3 { font-size: 1.02rem; font-weight: 650; margin: 1.6rem 0 .5rem; }
+  p { margin: 0 0 1rem; max-width: 44rem; text-wrap: pretty; }
+  section > p:last-child { margin-bottom: 0; }
+  ul, ol { margin: 0 0 1rem; padding-left: 1.25rem; display: flex; flex-direction: column; gap: .45rem; }
+  li::marker { color: var(--accent); }
+  strong { font-weight: 650; }
+
+  /* ---------- callouts ---------- */
+  .verdict {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    padding: .95rem 1.2rem;
+    border-radius: 0 6px 6px 0;
+    margin: 1.4rem 0;
+  }
+  .verdict p { margin: 0; }
+  .caveat {
+    background: var(--warn-soft);
+    border-left: 3px solid var(--warn);
+    padding: .95rem 1.2rem;
+    border-radius: 0 6px 6px 0;
+    margin: 1.4rem 0;
+  }
+  .caveat p { margin: 0; }
+  .label { font-size: .74rem; letter-spacing: .1em; text-transform: uppercase; font-weight: 650; display: block; margin-bottom: .3rem; }
+  .verdict .label { color: var(--accent-ink); }
+  .caveat .label { color: var(--warn); }
+
+  /* ---------- two-column pro/con ---------- */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.3rem 0; }
+  @media (max-width: 620px) { .split { grid-template-columns: 1fr; } }
+  .split > div {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 1.05rem 1.2rem;
+  }
+  .split h3 { margin-top: 0; font-size: .8rem; letter-spacing: .09em; text-transform: uppercase; }
+  .split .neg h3 { color: var(--bad); }
+  .split .pos h3 { color: var(--good); }
+  .split ul { font-size: .95rem; gap: .55rem; margin: 0; }
+
+  /* ---------- axes ---------- */
+  .axes { display: flex; flex-direction: column; gap: 1.15rem; margin: 1.4rem 0; }
+  .axe {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.3rem 1.4rem 1.2rem;
+  }
+  .axe.lead { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); box-shadow: 0 1px 0 color-mix(in srgb, var(--accent) 25%, transparent) inset; }
+  .axe-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: .6rem .8rem; margin-bottom: .55rem; }
+  .axe-top h3 { margin: 0; font-family: var(--serif); font-size: 1.22rem; font-weight: 600; }
+  .badge {
+    font-size: .7rem; font-weight: 650; letter-spacing: .07em; text-transform: uppercase;
+    padding: .18rem .6rem; border-radius: 99px; white-space: nowrap;
+  }
+  .badge.hi  { background: var(--accent-soft); color: var(--accent-ink); }
+  .badge.mid { background: var(--surface-2); color: var(--ink-soft); }
+  .badge.lo  { background: var(--warn-soft); color: var(--warn); }
+  .axe .pitch { font-style: italic; color: var(--ink-soft); margin-bottom: .8rem; }
+  .axe dl {
+    display: grid; grid-template-columns: max-content 1fr; gap: .35rem 1.1rem;
+    font-size: .93rem; margin: 0;
+  }
+  .axe dt { color: var(--ink-faint); font-size: .78rem; letter-spacing: .07em; text-transform: uppercase; padding-top: .12rem; }
+  .axe dd { margin: 0; }
+  @media (max-width: 540px) { .axe dl { grid-template-columns: 1fr; gap: .1rem; } .axe dd { margin-bottom: .5rem; } }
+
+  /* ---------- mono diagrams ---------- */
+  .diagram {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 1.1rem 1.3rem;
+    overflow-x: auto;
+    margin: 1.3rem 0;
+  }
+  .diagram pre {
+    font-family: var(--mono);
+    font-size: .82rem;
+    line-height: 1.55;
+    margin: 0;
+    color: var(--ink);
+  }
+  .diagram .c { color: var(--ink-faint); }
+  .diagram .k { color: var(--accent-ink); font-weight: 600; }
+  code {
+    font-family: var(--mono); font-size: .86em;
+    background: var(--code-bg); border: 1px solid var(--line);
+    padding: .08em .35em; border-radius: 4px;
+  }
+
+  /* ---------- tables ---------- */
+  .table-wrap { overflow-x: auto; margin: 1.3rem 0; border: 1px solid var(--line); border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; font-size: .93rem; background: var(--surface); }
+  th, td { text-align: left; padding: .65rem .95rem; vertical-align: top; }
+  th {
+    font-size: .74rem; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 650;
+    border-bottom: 1px solid var(--line); background: var(--surface-2);
+  }
+  tr + tr td { border-top: 1px solid var(--line); }
+  td:first-child { font-weight: 650; white-space: nowrap; }
+
+  /* ---------- steps ---------- */
+  ol.steps { counter-reset: step; list-style: none; padding: 0; gap: .7rem; margin: 1.3rem 0; }
+  ol.steps li {
+    counter-increment: step;
+    display: grid; grid-template-columns: 2rem 1fr; gap: .85rem; align-items: baseline;
+  }
+  ol.steps li::before {
+    content: counter(step);
+    font-family: var(--mono); font-size: .8rem; font-weight: 700;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    border-radius: 99px;
+    width: 1.7rem; height: 1.7rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    transform: translateY(.2rem);
+  }
+
+  /* ---------- footer / sources ---------- */
+  footer { border-top: 1px solid var(--line); padding-top: 1.6rem; margin-top: 1rem; }
+  footer h2 { font-size: .8rem; font-family: var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); }
+  footer ul { font-size: .88rem; color: var(--ink-soft); gap: .35rem; }
+</style>
+
+<div class="page">
+
+<header class="doc-head">
+  <div class="doc-meta">
+    <span><strong>Gwirian</strong> · vision produit</span>
+    <span>Synthèse d’échange — 8 juillet 2026</span>
+  </div>
+  <h1>Au-delà de la v1&nbsp;: de la gestion de tests BDD à la spec vivante et vérifiée</h1>
+  <p class="doc-lede">Point de départ&nbsp;: aller au-delà du produit en cours de développement et chercher une différenciation réelle face au marché — ouverte, IA-native — en étant très critique sur l’existant, pivot complet autorisé.</p>
+</header>
+
+<div class="thesis">
+  <p>«&nbsp;Gwirian ne gère plus des tests BDD&nbsp;: c’est l’endroit où humains et agents <em>s’accordent sur ce que le logiciel doit faire</em> — et vérifient qu’il le fait toujours.&nbsp;»</p>
+  <span class="who">La thèse issue de l’échange — les issues portent le delta, Gwirian porte l’intégrale</span>
+</div>
+
+<section>
+  <div class="eyebrow">01 · Marché</div>
+  <h2>Le marché historique meurt, la vague qui monte n’a pas de maison</h2>
+  <p><strong>Le créneau «&nbsp;plateforme de gestion BDD&nbsp;» a été invalidé publiquement.</strong> SmartBear a tenté 4&nbsp;ans de commercialiser Cucumber via CucumberStudio&nbsp;: échec assumé, Cucumber rendu à la communauté fin 2024, domaine cucumber.io éteint en mars 2025. Le récit dominant des vendors est même «&nbsp;Cucumber is dead&nbsp;». Le test management classique (TestRail, Xray, Zephyr) reste un silo QA Jira-centrique à l’IA cosmétique&nbsp;; testomat.io est le concurrent moderne le plus proche.</p>
+  <p><strong>La vraie vague 2025-2026 est le spec-driven development</strong> (GitHub Spec Kit — 90&nbsp;000+ étoiles —, AWS Kiro, Tessl, OpenSpec)&nbsp;: la spec devient l’artefact premier, le code un output régénérable par les agents. Or l’analyse critique de ces outils (Martin Fowler) pointe le même angle mort&nbsp;: des tonnes de markdown sans cycle de vie, <em>aucune</em> collaboration d’équipe, aucune place pour les PM, aucune stratégie de vérification. Les specs SDD naissent dans un repo, ne sont jamais confrontées au produit réel, et meurent.</p>
+  <div class="verdict"><span class="label">L’angle mort</span>
+    <p>Personne n’a construit la maison où ces specs vivent, se partagent et se vérifient. C’est exactement la forme de Gwirian.</p>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">02 · Critique de l’existant</div>
+  <h2>Un beau produit de 2018, un châssis de 2026</h2>
+  <div class="split">
+    <div class="neg">
+      <h3>Ce qui ne tient pas</h3>
+      <ul>
+        <li>Le cœur actuel est un <strong>CucumberStudio plus propre</strong> — la reconstruction soignée d’un produit dont le marché vient de mourir.</li>
+        <li>Les <strong>exécutions saisies à la main</strong> sont périmées à la seconde où elles sont créées&nbsp;: la CI possède déjà cette donnée, en mieux.</li>
+        <li><strong>Pas de sync git</strong> — les specs des équipes BDD vivent dans les repos&nbsp;; sans sync bidirectionnelle, la plateforme est un second silo (la cause exacte de l’échec de CucumberStudio).</li>
+        <li>Elasticsearch&nbsp;: complexité opérationnelle disproportionnée qui pénalise le self-host (Postgres FTS suffirait).</li>
+        <li>La licence O’Saasy n’est pas OSI&nbsp;: assumer «&nbsp;source-available&nbsp;» ou corriger.</li>
+      </ul>
+    </div>
+    <div class="pos">
+      <h3>Les actifs du pivot</h3>
+      <ul>
+        <li><strong>Serveur MCP en full CRUD</strong> sur features, scénarios et exécutions, tokens scopés par workspace — rare&nbsp;: les MCP de TestRail/Xray sont des wrappers tiers.</li>
+        <li>Le champ <code>context</code> projet (URLs, comptes de test) — déjà pensé pour l’exécution par agent.</li>
+        <li>Modèle de données propre et hiérarchique, produit léger, keyboard-first.</li>
+        <li>Open core déjà séparé (<code>saas/</code>), self-hostable.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="verdict"><span class="label">Verdict</span>
+    <p><strong>Pivoter le positionnement, garder le châssis.</strong> «&nbsp;BDD feature management&nbsp;» n’a pas d’avenir — mais ~70&nbsp;% du code construit sert le positionnement qui, lui, a le vent dans le dos.</p>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">03 · Axes stratégiques</div>
+  <h2>Trois axes, classés par conviction</h2>
+  <div class="axes">
+    <div class="axe lead">
+      <div class="axe-top"><h3>Axe 1 — Le système de référence des specs pour l’ère des agents</h3><span class="badge hi">Conviction forte · retenu</span></div>
+      <p class="pitch">Le «&nbsp;GitHub des specs&nbsp;»&nbsp;: la source de vérité collaborative que les agents (Claude Code, Cursor, Kiro, Spec Kit) lisent avant d’implémenter et mettent à jour après.</p>
+      <dl>
+        <dt>Cible</dt><dd>Le duo tech lead + PM des équipes en coding agentique — pas le QA manager.</dd>
+        <dt>Pourquoi nous</dt><dd>MCP full CRUD déjà là&nbsp;; Gherkin est le seul format de spec lisible par un PM <em>et</em> vérifiable par une machine.</dd>
+        <dt>On jette</dt><dd>Le positionnement test management, la saisie manuelle comme flux principal, Elasticsearch, la rigidité Gherkin-only.</dd>
+        <dt>Premier chantier</dt><dd>La sync git bidirectionnelle + cycle de vie des specs, puis les adaptateurs d’import Spec Kit / OpenSpec.</dd>
+        <dt>Fragilité</dt><dd>Les devs considèrent que git <em>est</em> leur plateforme&nbsp;; si la sync n’est pas irréprochable, «&nbsp;un dossier specs/&nbsp;» gagne.</dd>
+      </dl>
+    </div>
+    <div class="axe">
+      <div class="axe-top"><h3>Axe 2 — La boucle de vérification agentique</h3><span class="badge mid">Conviction moyenne-forte · le moat à 12 mois</span></div>
+      <p class="pitch">Chaque scénario devient un contrat qu’un agent navigateur exécute réellement contre le produit déployé&nbsp;: «&nbsp;le produit fait-il encore ce que nous avons dit&nbsp;?&nbsp;», indépendamment des tests écrits par l’agent qui a écrit le code.</p>
+      <dl>
+        <dt>Pourquoi nous</dt><dd>Le modèle d’exécution existe, le champ <code>context</code> aussi&nbsp;; les incumbents ne suivront pas (cannibalise leurs sièges de testeurs).</dd>
+        <dt>Modèle</dt><dd>Le run d’agents = le SaaS payant&nbsp;; la spec = open source. Résout élégamment la tension open core.</dd>
+        <dt>Fragilité</dt><dd>Coût et flakiness de l’exécution par agent&nbsp;; des acteurs financés attaquent l’exécution — mais aucun ne possède la spec.</dd>
+      </dl>
+    </div>
+    <div class="axe">
+      <div class="axe-top"><h3>Axe 3 — La mémoire produit partagée humains-agents</h3><span class="badge lo">Pivot radical · horizon, pas premier mouvement</span></div>
+      <p class="pitch">Abandonner le cadre test/BDD&nbsp;: le «&nbsp;cerveau produit&nbsp;» interrogeable par MCP — intentions, décisions, comportements attendus.</p>
+      <dl>
+        <dt>Fragilité</dt><dd>Catégorie inexistante à évangéliser seul, frontière floue avec Notion/Linear, et on abandonne le seul avantage défendable&nbsp;: la vérifiabilité. C’est l’horizon où l’axe 1 s’élargit s’il réussit.</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">04 · L’objection décisive</div>
+  <h2>«&nbsp;Les issues GitHub font déjà ça&nbsp;» — non, et voici pourquoi</h2>
+  <p>Le workflow type (skills de Matt Pocock&nbsp;: <code>to-spec</code> → issue, <code>to-tickets</code> → tickets tracer-bullet, <code>triage</code> → machine à états) est excellent pour le <strong>flux de changement</strong>, et Gwirian ne le battra pas sur ce terrain. Mais quatre failles structurelles&nbsp;:</p>
+  <ul>
+    <li><strong>Une issue décrit un delta, jamais l’état.</strong> Fermée, elle devient de l’archéologie. «&nbsp;Que se passe-t-il quand le magic link expire&nbsp;?&nbsp;» est éparpillé entre l’issue #47 qui a créé le comportement, la #212 qui l’a amendé et la #389 qui le contredit. La somme des issues n’est pas une spec — c’est un historique de diffs sans intégrale.</li>
+    <li><strong>Une issue fermée ne prouve rien.</strong> «&nbsp;Closed&nbsp;» = «&nbsp;mergé un jour&nbsp;», pas «&nbsp;encore vrai&nbsp;». Un scénario Gwirian porte un statut de vérification daté et situé.</li>
+    <li><strong>Économie de contexte pour les agents.</strong> Chercher dans les issues = full-text dans un mélange de bugs, chores et specs périmées, 40 issues à charger. Un store structuré via MCP = «&nbsp;les 6 scénarios actifs du checkout, avec leurs steps&nbsp;».</li>
+    <li><strong>Deux frontières infranchissables&nbsp;:</strong> le multi-repo (le comportement produit traverse front, back, mobile&nbsp;; les issues sont scopées par repo) et les non-développeurs (un PM ne lira jamais le produit à travers des issues fermées).</li>
+  </ul>
+  <div class="verdict"><span class="label">Conséquence sur le positionnement</span>
+    <p>Gwirian ne concurrence pas les issues, il s’y branche&nbsp;: <strong>les issues portent le delta, Gwirian porte l’intégrale.</strong> Quand un ticket ship, l’agent absorbe le delta dans le contrat courant via MCP, puis il est vérifié.</p>
+  </div>
+  <p>D’où la définition validée ensemble&nbsp;: Gwirian est <strong>la spec fonctionnelle complète, <em>courante</em> (un état maintenu, pas un cumul) et <em>continuellement vérifiée</em></strong> (c’est ce qui la distingue d’un dossier <code>docs/</code> ou d’un Notion qui dérivent en silence) du produit — limitée aux comportements observables&nbsp;; le «&nbsp;pourquoi&nbsp;» reste dans les ADRs et le tracker.</p>
+</section>
+
+<section>
+  <div class="eyebrow">05 · Structure de la spec</div>
+  <h2>Trois couches, trois régimes de vérité</h2>
+  <p>Les scénarios seuls font une suite de tests, pas une spec&nbsp;: un Given/When/Then est un <em>exemple</em>&nbsp;; une spec est faite de <em>normes</em>. La pièce centrale manquante est la <strong>Règle</strong> — énoncé normatif court et falsifiable («&nbsp;Un magic link expire après 15 minutes&nbsp;») — que Gherkin supporte nativement (<code>Rule:</code>, v6+) et qui outille enfin l’Example Mapping.</p>
+  <div class="diagram"><pre>
+<span class="k">Workspace</span> (= le produit)
+└── <span class="k">Domaine</span>                <span class="c">~10-30, stables (Auth, Facturation…)</span>
+    ├── Glossaire           <span class="c">entités, définitions, états &amp; cycles de vie</span>
+    ├── Acteurs             <span class="c">rôles et ce qui les distingue</span>
+    └── <span class="k">Feature</span>             <span class="c">une capacité</span>
+        ├── Intention       <span class="c">le « pourquoi » en 2 phrases + liens (issues, ADRs)</span>
+        ├── <span class="k">Règles</span>          <span class="c">les énoncés normatifs ← le cœur manquant</span>
+        │   └── <span class="k">Scénarios</span>   <span class="c">les exemples qui illustrent chaque règle</span>
+        │       └── Exécutions  <span class="c">les preuves</span>
+        ├── Questions ouvertes
+        └── Statut          <span class="c">draft → approuvée → implémentée → vérifiée → dépréciée</span></pre></div>
+  <div class="table-wrap"><table>
+    <tr><th>Couche</th><th>Contenu</th><th>Régime de vérité</th></tr>
+    <tr><td>Vocabulaire</td><td>Glossaire, acteurs, états</td><td>Cohérence — lint sémantique par agent&nbsp;: termes définis, transitions légales, orphelins.</td></tr>
+    <tr><td>Normative</td><td>Règles</td><td>Couverture &amp; non-contradiction — chaque règle illustrée par ≥&nbsp;1 scénario ou marquée non-exécutable&nbsp;; détection de contradictions par agent.</td></tr>
+    <tr><td>Illustrative</td><td>Scénarios</td><td>Exécution — CI ou agent, avec preuves datées.</td></tr>
+  </table></div>
+  <p>Deux choix de périmètre&nbsp;: l’intention est un <strong>pointeur</strong>, pas un contenu (la frontière avec l’axe 3)&nbsp;; matrices de permissions et machines à états sont des <strong>vues dérivées des règles</strong>, générées, jamais maintenues à la main. Et c’est la bonne granularité pour les agents&nbsp;: glossaire + règles du domaine = quelques centaines de tokens denses, puis 3-4 scénarios pour les cas limites.</p>
+</section>
+
+<section>
+  <div class="eyebrow">06 · Exécution &amp; CI</div>
+  <h2>Gwirian n’exécute pas — il est le registre des preuves</h2>
+  <p>Préalable&nbsp;: <strong>l’ancrage</strong>. Un ID stable porté par le Gherkin lui-même (<code>@gwirian-6f3a2b</code>) — survit au rebase et au déplacement, reste du Gherkin pur. C’est le point où CucumberStudio s’est cassé les dents.</p>
+  <h3>Canal 1 — CI&nbsp;: ingestion des résultats existants</h3>
+  <div class="diagram"><pre>
+repo (.feature + glue)
+   │  <span class="c">CI run (job de test inchangé)</span>
+   ▼
+rapport <span class="c">(Cucumber Messages / JSON, JUnit XML, Playwright)</span>
+   │  <span class="k">gwirian push</span> --report cucumber.ndjson --sha $SHA --env staging
+   ▼
+Gwirian&nbsp;: exécutions en batch, rattachées par @gwirian-id
+          <span class="c">chaque preuve porte SHA + branche + environnement + date</span></pre></div>
+  <p>«&nbsp;Passed&nbsp;» devient un énoncé daté et situé&nbsp;: <em>conforme sur main@f2e9f6f en staging, mardi</em>. Toute équipe Cucumber/Playwright a de la valeur immédiate sans changer ses tests — la porte d’entrée adoption.</p>
+  <h3>Canal 2 — Agent&nbsp;: la longue traîne</h3>
+  <p>Pour les scénarios qui ne méritent pas de glue code&nbsp;: un orchestrateur lit le champ <code>context</code>, joue le Given/When/Then via agent navigateur, dépose une exécution avec preuves (screenshots, trace, verdict). À la demande, en cron, ou après déploiement. <strong>Le canal différenciant — et le produit payant.</strong></p>
+  <h3>Canal 3 — La CI gardienne de la spec (sens inverse)</h3>
+  <p>Un check de PR qui répond à trois questions&nbsp;: <strong>impact</strong> («&nbsp;cette PR affecte 4 scénarios&nbsp;: 3 vérifiés, 1 jamais re-vérifié&nbsp;»), <strong>couverture</strong> (comportement nouveau sans mise à jour de spec&nbsp;?) et <strong>cohérence</strong> (les règles modifiées contredisent-elles l’existant&nbsp;?).</p>
+  <p>Chaque scénario porte alors un <strong>mode de vérification</strong> (automatisé, agent, manuel, non vérifié) et une <strong>fraîcheur</strong> relative au code — le tableau de bord de santé de la spec est calculé depuis les preuves, plus déclaratif.</p>
+  <ol class="steps">
+    <li>Tags d’ancrage + endpoint d’ingestion batch (SHA/env en champs de première classe).</li>
+    <li>CLI <code>gwirian push</code> + GitHub Action / composant GitLab CI.</li>
+    <li>Le check de PR (impact, couverture, cohérence).</li>
+    <li>L’orchestrateur d’agents — en dernier&nbsp;: le plus dur, et il gagne à s’appuyer sur des trous de couverture déjà visibles.</li>
+  </ol>
+</section>
+
+<section>
+  <div class="eyebrow">07 · Prochain pas</div>
+  <h2>Valider à coût quasi nul, cette semaine</h2>
+  <p><strong>Dogfooding&nbsp;: développer Gwirian avec Gwirian.</strong> Écrire la spec de la prochaine fonctionnalité comme règles/scénarios dans Gwirian, brancher le MCP local sur Claude Code, et imposer le flux&nbsp;: l’agent lit la spec avant d’implémenter, implémente, vérifie, écrit l’exécution. Variante encore plus petite&nbsp;: un skill <code>sync-contract</code> (~une session) qui, au ship d’un ticket du workflow Pocock existant, absorbe le delta dans le contrat courant via MCP.</p>
+  <div class="caveat"><span class="label">Critère de décision</span>
+    <p>Deux semaines d’usage&nbsp;: si la vue «&nbsp;contrat courant vérifié&nbsp;» n’apporte rien que le tracker n’apportait pas, l’axe 1 est réfuté à peu de frais. Si elle apporte, le mode d’emploi devient le premier récit marketing&nbsp;: «&nbsp;ça complète votre workflow d’issues, ça ne le remplace pas&nbsp;».</p>
+  </div>
+</section>
+
+<footer>
+  <h2>Sources principales</h2>
+  <ul>
+    <li><a href="https://agileway.substack.com/p/smartbears-attempt-to-commercialize">L’échec de la commercialisation de Cucumber par SmartBear (Agileway)</a></li>
+    <li><a href="https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html">Understanding Spec-Driven Development&nbsp;: Kiro, spec-kit, Tessl (Martin Fowler)</a></li>
+    <li><a href="https://github.com/github/spec-kit">GitHub Spec Kit</a> · <a href="https://thebcms.com/blog/spec-driven-development">SDD&nbsp;: guide 2026 (BCMS)</a></li>
+    <li><a href="https://testomat.io/blog/top-ai-test-management-tools/">AI test management tools 2026 (testomat.io)</a> · <a href="https://mcp.directory/blog/testrail-mcp-alternatives-2026">TestRail MCP alternatives (MCP.Directory)</a></li>
+    <li><a href="https://github.com/mattpocock/skills/tree/main/skills/engineering">Skills engineering de Matt Pocock</a> — le workflow issues discuté en §04</li>
+  </ul>
+</footer>
+
+</div>
