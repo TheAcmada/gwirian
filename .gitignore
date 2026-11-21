@@ -38,3 +38,6 @@
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+# graft code index cache
+/graft/
