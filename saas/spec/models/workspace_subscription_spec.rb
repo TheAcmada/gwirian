@@ -138,7 +138,7 @@ RSpec.describe WorkspaceSubscription, type: :model do
     end
 
     it "returns true when canceled? and on_grace_period?" do
-      sub = create(:workspace_subscription, workspace: workspace, plan_key: "starter", status: "active",
+      sub = create(:workspace_subscription, workspace: workspace, plan_key: "starter", status: "canceled",
         paddle_subscription_id: "sub_01", canceled_at: 1.day.ago,
         current_period_ends_at: 1.month.from_now)
       expect(sub.can_undo_scheduled_change?).to be true

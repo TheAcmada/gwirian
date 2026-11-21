@@ -100,3 +100,29 @@ jobs:
           name: screenshots
           path: ${{ github.workspace }}/tmp/screenshots
           if-no-files-found: ignore
+
+  test_saas:
+    runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+      SAAS: "true"
+      BUNDLE_GEMFILE: Gemfile.saas
+
+    steps:
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y build-essential git libyaml-dev pkg-config
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Setup test database
+        run: bin/rails db:test:prepare
+
+      - name: Run SaaS RSpec tests
+        run: bundle exec rspec saas/spec
